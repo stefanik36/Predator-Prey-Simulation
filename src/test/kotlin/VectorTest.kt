@@ -1,3 +1,4 @@
+import com.agh.abm.pps.Vector
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

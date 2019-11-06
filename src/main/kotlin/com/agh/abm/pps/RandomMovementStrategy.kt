@@ -1,3 +1,5 @@
+package com.agh.abm.pps
+
 import kotlin.random.Random
 
 class RandomMovementStrategy : MovementStrategy {

@@ -1,14 +1,16 @@
-package species
+package com.agh.abm.pps.species
 
-import Vector
-import MovementStrategy
+import com.agh.abm.pps.Vector
+import com.agh.abm.pps.MovementStrategy
 
 abstract class Species(
     var currentPosition: Vector,
     protected val movementStrategy: MovementStrategy,
     protected val energy: Double,
     protected val moveCost: Double,
-    protected val moveMaxDistance: Double
+    protected val moveMaxDistance: Double,
+    val size: Double,
+    val range: Double
 ) {
 
     fun move() {

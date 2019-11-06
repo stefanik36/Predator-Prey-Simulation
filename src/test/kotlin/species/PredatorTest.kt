@@ -2,7 +2,8 @@ package species
 
 import org.junit.jupiter.api.Test
 
-import Vector
+import com.agh.abm.pps.Vector
+import com.agh.abm.pps.species.Predator
 import org.junit.jupiter.api.Assertions
 
 class PredatorTest {
