@@ -1,9 +1,7 @@
 package com.agh.abm.pps
 
-import com.agh.abm.pps.*
 import com.agh.abm.pps.species.Predator
 import com.agh.abm.pps.species.Prey
-import javafx.scene.paint.Color
 import tornadofx.*
 
 fun main() {
