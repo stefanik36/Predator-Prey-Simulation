@@ -51,15 +51,16 @@ class Board : View() {
 
         gc = canv.graphicsContext2D
 
-
-
         canv.onMouseClicked = EventHandler { e ->
             when (e.button) {
                 MouseButton.PRIMARY -> controller.addGuy(e.x, e.y, typeSelect.selectionModel.selectedItem)
                 MouseButton.SECONDARY -> controller.removeGuy(e.x, e.y)
                 MouseButton.MIDDLE -> when (typeSelect.selectionModel.selectedIndex) {
+//                    TODO fix for more species types
                     0 -> typeSelect.selectionModel.selectNext()
                     1 -> typeSelect.selectionModel.selectPrevious()
+                }
+                else -> {
                 }
             }
         }
@@ -69,13 +70,13 @@ class Board : View() {
 
     private fun drawCircle(x: Double, y: Double, size: Double, color: Color) {
         gc.fill = color
-        gc.fillOval(x - size/2, y - size/2, size, size)
+        gc.fillOval(x - size / 2, y - size / 2, size, size)
     }
 
-    private fun drawViewRange(x: Double, y: Double, size: Double){
+    private fun drawViewRange(x: Double, y: Double, size: Double) {
         gc.stroke = Color.GRAY
         gc.lineWidth = 0.5
-        gc.strokeOval(x- size/2, y - size/2, size, size)
+        gc.strokeOval(x - size / 2, y - size / 2, size, size)
     }
 
     private fun clearBoard() {

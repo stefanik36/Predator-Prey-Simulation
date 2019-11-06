@@ -41,9 +41,9 @@ class SimulationController : Controller() {
     fun addGuy(x: Double, y: Double, type: GuyType) {
         when (type) {
             GuyType.PRAY ->
-                state.guys.add(Prey.standard(Vector(x,y)))
+                state.guys.add(Prey.standard(Vector(x, y)))
             GuyType.PREDATOR ->
-                state.guys.add(Predator.standard(Vector(x,y)))
+                state.guys.add(Predator.standard(Vector(x, y)))
         }
         fire(UPDATEBOARDVIEW)
     }
@@ -52,7 +52,8 @@ class SimulationController : Controller() {
         state.guys.removeIf { c ->
             val cx = c.currentPosition.x
             val cy = c.currentPosition.y
-            cx - c.size < x && cx + c.size > x && cy - c.size < y && cy + c.size > y }
+            cx - c.size < x && cx + c.size > x && cy - c.size < y && cy + c.size > y
+        }
         fire(UPDATEBOARDVIEW)
     }
 
