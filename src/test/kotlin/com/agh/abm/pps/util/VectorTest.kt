@@ -1,4 +1,6 @@
-import com.agh.abm.pps.Vector
+package com.agh.abm.pps.util
+
+import com.agh.abm.pps.util.geometric.Vector
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -47,6 +49,18 @@ class VectorTest {
 
         assertEquals(2.6, result.x)
         assertEquals(4.9, result.y)
+
+    }
+
+    @Test
+    fun distance() {
+        var vector01 = Vector(2.0, 5.0)
+        var vector02 = Vector(-1.0, 1.0)
+
+
+        var result = vector01.distance(vector02)
+
+        assertEquals(5.0, result, 0.001)
 
     }
 }

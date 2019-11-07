@@ -1,7 +1,7 @@
 package com.agh.abm.pps
 
-import com.agh.abm.pps.species.Predator
-import com.agh.abm.pps.species.Prey
+import com.agh.abm.pps.model.species.Predator
+import com.agh.abm.pps.model.species.Prey
 import javafx.event.EventHandler
 import javafx.scene.canvas.Canvas
 import javafx.scene.canvas.GraphicsContext
@@ -9,7 +9,7 @@ import javafx.scene.control.ComboBox
 import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
-import com.agh.abm.pps.species.Species
+import com.agh.abm.pps.model.species.Species
 import tornadofx.*
 
 enum class GuyType {
@@ -56,7 +56,7 @@ class Board : View() {
                 MouseButton.PRIMARY -> controller.addGuy(e.x, e.y, typeSelect.selectionModel.selectedItem)
                 MouseButton.SECONDARY -> controller.removeGuy(e.x, e.y)
                 MouseButton.MIDDLE -> when (typeSelect.selectionModel.selectedIndex) {
-//                    TODO fix for more species types
+//                    TODO fix for more com.agh.abm.pps.model.species types
                     0 -> typeSelect.selectionModel.selectNext()
                     1 -> typeSelect.selectionModel.selectPrevious()
                 }

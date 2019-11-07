@@ -1,7 +1,9 @@
 package com.agh.abm.pps
 
-import com.agh.abm.pps.species.Predator
-import com.agh.abm.pps.species.Prey
+import com.agh.abm.pps.util.geometric.Vector
+import com.agh.abm.pps.model.species.Predator
+import com.agh.abm.pps.model.species.Prey
+import com.agh.abm.pps.util.factory.SpeciesFactory
 import tornadofx.*
 
 fun main() {
@@ -39,9 +41,9 @@ class SimulationController : Controller() {
     fun addGuy(x: Double, y: Double, type: GuyType) {
         when (type) {
             GuyType.PRAY ->
-                state.guys.add(Prey.standard(Vector(x, y)))
+                state.guys.add(SpeciesFactory.standardPrey(Vector(x, y)))
             GuyType.PREDATOR ->
-                state.guys.add(Predator.standard(Vector(x, y)))
+                state.guys.add(SpeciesFactory.standardPredator(Vector(x, y)))
         }
         fire(UPDATEBOARDVIEW)
     }
