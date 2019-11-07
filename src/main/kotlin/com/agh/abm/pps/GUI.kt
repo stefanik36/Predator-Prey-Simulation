@@ -10,6 +10,9 @@ import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
 import com.agh.abm.pps.model.species.Species
+import javafx.scene.chart.CategoryAxis
+import javafx.scene.chart.NumberAxis
+import javafx.scene.chart.XYChart
 import tornadofx.*
 
 enum class GuyType {
@@ -20,7 +23,9 @@ data class BoardState(val guys: MutableList<Species>)
 
 object EXIT : FXEvent()
 object START : FXEvent()
-object UPDATEBOARDVIEW : FXEvent()
+object UPDATE_BOARDVIEW : FXEvent()
+
+class NOTIFY_POPULATION_GRAPH(val alivePredNum: Int, val alivePreyNum: Int) : FXEvent()
 
 class Board : View() {
     private val width = 900.0
@@ -42,12 +47,13 @@ class Board : View() {
             typeSelect = combobox(values = listOf(GuyType.PRAY, GuyType.PREDATOR)) {
                 selectionModel.select(0)
             }
+            button("Show graph!") { action { PopulationGraphView().openWindow() } }
         }
 
     }
 
     init {
-        subscribe<UPDATEBOARDVIEW> { updateView(controller.state) }
+        subscribe<UPDATE_BOARDVIEW> { updateView(controller.state) }
 
         gc = canv.graphicsContext2D
 
@@ -65,7 +71,7 @@ class Board : View() {
             }
         }
 
-        fire(UPDATEBOARDVIEW)
+        fire(UPDATE_BOARDVIEW)
     }
 
     private fun drawCircle(x: Double, y: Double, size: Double, color: Color) {
@@ -102,6 +108,37 @@ class Board : View() {
         fire(EXIT)
         super.onUndock()
     }
+}
+
+
+class PopulationGraphView : View() {
+
+    var preySeries: XYChart.Series<String, Number> by singleAssign()
+    var predatorSeries: XYChart.Series<String, Number> by singleAssign()
+    var posi = 0
+
+    override val root = group {
+        linechart("Population graph", CategoryAxis(), NumberAxis()) {
+            predatorSeries = series("Alive predators")
+            preySeries = series("Alive prays")
+        }
+        button("Clear") {
+            action {
+                preySeries.data.clear()
+                predatorSeries.data.clear()
+
+            }
+        }
+    }
+
+    init {
+        subscribe<NOTIFY_POPULATION_GRAPH> {
+            preySeries.data.add(XYChart.Data(posi.toString(), it.alivePreyNum))
+            predatorSeries.data.add(XYChart.Data(posi.toString(), it.alivePredNum))
+            posi++
+        }
+    }
+
 }
 
 class GUI : App(Board::class, Styles::class)

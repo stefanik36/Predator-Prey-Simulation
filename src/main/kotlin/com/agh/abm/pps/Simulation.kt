@@ -24,7 +24,13 @@ class SimulationController : Controller() {
     /////////////////MAIN_LOOP\\\\\\\\\\\\\\\\\\\
     private fun loop() {
         println("OK")
-        fire(UPDATEBOARDVIEW)
+        fire(
+            NOTIFY_POPULATION_GRAPH(
+                alivePredNum = state.guys.filterIsInstance<Predator>().count(),
+                alivePreyNum = state.guys.filterIsInstance<Prey>().count()
+            )
+        )
+        fire(UPDATE_BOARDVIEW)
         Thread.sleep(500)
     }
     /////////////////MAIN_LOOP\\\\\\\\\\\\\\\\\\\
@@ -45,7 +51,7 @@ class SimulationController : Controller() {
             GuyType.PREDATOR ->
                 state.guys.add(SpeciesFactory.standardPredator(Vector(x, y)))
         }
-        fire(UPDATEBOARDVIEW)
+        fire(UPDATE_BOARDVIEW)
     }
 
     fun removeGuy(x: Double, y: Double) {
@@ -54,12 +60,12 @@ class SimulationController : Controller() {
             val cy = c.currentPosition.y
             cx - c.size < x && cx + c.size > x && cy - c.size < y && cy + c.size > y
         }
-        fire(UPDATEBOARDVIEW)
+        fire(UPDATE_BOARDVIEW)
     }
 
     fun clearBoard() {
         state.guys.clear()
-        fire(UPDATEBOARDVIEW)
+        fire(UPDATE_BOARDVIEW)
     }
 
 }
