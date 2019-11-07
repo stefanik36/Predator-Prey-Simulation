@@ -1,4 +1,4 @@
-package com.agh.abm.pps.movement
+package com.agh.abm.pps.strategy.movement
 
 import com.agh.abm.pps.util.geometric.Vector
 

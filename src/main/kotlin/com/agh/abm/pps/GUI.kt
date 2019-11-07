@@ -99,7 +99,7 @@ class Board : View() {
             }
 
             drawCircle(guy.currentPosition.x, guy.currentPosition.y, guy.size, color)
-            drawViewRange(guy.currentPosition.x, guy.currentPosition.y, guy.range)
+            drawViewRange(guy.currentPosition.x, guy.currentPosition.y, guy.consumeRange)
         }
 
     }

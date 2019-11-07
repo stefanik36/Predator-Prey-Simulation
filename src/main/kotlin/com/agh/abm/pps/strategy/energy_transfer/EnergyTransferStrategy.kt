@@ -1,4 +1,4 @@
-package com.agh.abm.pps.movement
+package com.agh.abm.pps.strategy.energy_transfer
 
 import com.agh.abm.pps.model.species.Species
 

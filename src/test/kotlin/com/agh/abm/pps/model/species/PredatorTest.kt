@@ -1,6 +1,6 @@
 package com.agh.abm.pps.model.species
 
-import com.agh.abm.pps.movement.RandomMovementStrategy
+import com.agh.abm.pps.strategy.movement.RandomMovementStrategy
 import com.agh.abm.pps.util.factory.AreaFactory
 import com.agh.abm.pps.util.factory.SpeciesFactory
 import org.junit.jupiter.api.Test
@@ -39,7 +39,9 @@ class PredatorTest {
     @Test
     fun move01() {
         //init
-        var predator = SpeciesFactory.standardPredator(Vector(1.0, 2.0), RandomMovementStrategy(Random(2)))
+        var predator = SpeciesFactory.standardPredator(Vector(1.0, 2.0),
+            Random(2)
+        )
 
         // run test
         predator.move()
@@ -52,11 +54,13 @@ class PredatorTest {
     @Test
     fun eat01() {
         //init
-        var predator = SpeciesFactory.standardPredator(Vector(1.0, 2.0), RandomMovementStrategy(Random(2)))
-        var area = AreaFactory.standard3x3()
+        var predator = SpeciesFactory.standardPredator(Vector(1.0, 2.0),
+            Random(2)
+        )
+        var area = AreaFactory.standard3x3x3()
 
         // run test
-        predator.eat(area)
+        predator.consume(area)
 
 
     }

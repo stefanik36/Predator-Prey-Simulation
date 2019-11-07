@@ -1,8 +1,6 @@
-package com.agh.abm.pps.movement
+package com.agh.abm.pps.strategy.energy_transfer
 
 import com.agh.abm.pps.model.species.Species
-import com.agh.abm.pps.util.geometric.Vector
-import kotlin.random.Random
 
 class GetFromAllEnergyTransferStrategy: EnergyTransferStrategy {
     override fun transfer(food: List<Species>, maxTransfer: Double): Double {

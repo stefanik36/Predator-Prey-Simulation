@@ -1,9 +1,10 @@
 package com.agh.abm.pps.model.species
 
 import com.agh.abm.pps.model.Area
-import com.agh.abm.pps.movement.EnergyTransferStrategy
+import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategy
 import com.agh.abm.pps.util.geometric.Vector
-import com.agh.abm.pps.movement.MovementStrategy
+import com.agh.abm.pps.strategy.movement.MovementStrategy
+import com.agh.abm.pps.strategy.reproduce.ReproduceStrategy
 import kotlin.math.max
 import kotlin.math.min
 
@@ -12,6 +13,7 @@ abstract class Species(
 
     protected val movementStrategy: MovementStrategy,
     protected val energyTransferStrategy: EnergyTransferStrategy,
+    protected val reproduceStrategy: ReproduceStrategy,
 
     protected val eats: List<SpeciesType>,
 
@@ -21,19 +23,26 @@ abstract class Species(
     protected val minEnergy: Double,
     protected val maxEnergy: Double,
 
-    var energy: Double,
+    inEnergy: Double,
 
-    protected val maxTransfer: Double,
-    protected val energyConsume: Double,
+    //consume
+    protected val maxConsumption: Double,
+    protected val restEnergyConsumption: Double,
+    val consumeRange: Double,
 
-    //costs
+    //move
     protected val moveCost: Double,
-
     protected val moveMaxDistance: Double,
 
-    val size: Double,
-    val range: Double
+    val reproduceThreshold: Double,
+    val reproduceCost: Double,
+    val reproduceProbability: Double,
+    val maxNumberOfOffspring: Int,
+    val reproduceRange: Double,
+
+    val size: Double
 ) {
+    var energy: Double = min(inEnergy, maxEnergy);
     abstract fun getType(): SpeciesType
 
     fun move() {
@@ -43,29 +52,33 @@ abstract class Species(
         energy -= consumedEnergy
     }
 
-    fun eat(area: Area) {
+    fun consume(area: Area) {
         val food = area.species
             .filter { s -> s.alive }
             .filter { s -> this.canEat(s) }
             .filter { s -> this.isInRange(s) }
 
-        val transferredEnergy = energyTransferStrategy.transfer(food, maxTransfer)
+        val transferredEnergy = energyTransferStrategy.transfer(food, maxConsumption)
         energy = min(energy + transferredEnergy, maxEnergy)
 
 //        food.map { s -> s.getOverview() }.also { s -> println(s) }
     }
 
-    fun performOtherActions() {
+    fun performOtherActions(area: Area) {
         if (energy <= minEnergy) {
             die()
+            return
         }
-        //TODO
-
-        energy -= energyConsume
+        reproduce(area)
+        energy -= restEnergyConsumption
     }
 
-    fun reproduce() {
-        TODO()
+    fun reproduce(area: Area) {
+        if (energy >= reproduceThreshold) {
+            val (newSpecies, cost) = reproduceStrategy.reproduce(this)
+            area.add(newSpecies)
+            energy -= cost;
+        }
     }
 
     private fun die() {
@@ -79,11 +92,13 @@ abstract class Species(
         return takenEnergy
     }
 
+    abstract fun generate(currentPosition: Vector, energy: Double): Species
+
     private fun canEat(species: Species): Boolean =
         species.getType() in this.eats
 
     private fun isInRange(species: Species): Boolean =
-        species.currentPosition.distance(this.currentPosition) <= this.range
+        species.currentPosition.distance(this.currentPosition) <= this.consumeRange
 
     fun getOverview(): String {
         return (if (alive) "" else "- ") +

@@ -5,7 +5,7 @@ import com.agh.abm.pps.strategy.movement.MovementStrategy
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategy
 import com.agh.abm.pps.util.geometric.Vector
 
-class Predator(
+class Grass(
     currentPosition: Vector,
     movementStrategy: MovementStrategy,
     energyTransferStrategy: EnergyTransferStrategy,
@@ -48,14 +48,14 @@ class Predator(
     reproduceRange,
     size
 ) {
-    private val speciesType: SpeciesType = SpeciesType.PREDATOR
+    private val speciesType: SpeciesType = SpeciesType.GRASS
 
     override fun getType(): SpeciesType {
         return speciesType;
     }
 
     override fun generate(currentPosition: Vector, energy: Double): Species {
-        return Predator(
+        return Grass(
             currentPosition,
             movementStrategy,
             energyTransferStrategy,
@@ -79,4 +79,3 @@ class Predator(
         )
     }
 }
-

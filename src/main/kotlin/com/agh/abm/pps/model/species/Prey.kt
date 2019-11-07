@@ -1,44 +1,81 @@
 package com.agh.abm.pps.model.species
 
-import com.agh.abm.pps.movement.EnergyTransferStrategy
-import com.agh.abm.pps.movement.MovementStrategy
-import com.agh.abm.pps.movement.RandomMovementStrategy
+import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategy
+import com.agh.abm.pps.strategy.movement.MovementStrategy
+import com.agh.abm.pps.strategy.reproduce.ReproduceStrategy
 import com.agh.abm.pps.util.geometric.Vector
 
 class Prey(
     currentPosition: Vector,
     movementStrategy: MovementStrategy,
     energyTransferStrategy: EnergyTransferStrategy,
+    reproduceStrategy: ReproduceStrategy,
     eats: List<SpeciesType>,
     alive: Boolean,
     minEnergy: Double,
     maxEnergy: Double,
     energy: Double,
-    maxTransfer: Double,
+    maxConsumption: Double,
     energyConsume: Double,
+    consumeRange: Double,
     moveCost: Double,
     moveMaxDistance: Double,
-    size: Double,
-    range: Double
+    reproduceThreshold: Double,
+    reproduceCost: Double,
+    reproduceProbability: Double,
+    maxNumberOfOffspring: Int,
+    reproduceRange: Double,
+    size: Double
 ) : Species(
     currentPosition,
     movementStrategy,
     energyTransferStrategy,
+    reproduceStrategy,
     eats,
     alive,
     minEnergy,
     maxEnergy,
     energy,
-    maxTransfer,
+    maxConsumption,
     energyConsume,
+    consumeRange,
     moveCost,
     moveMaxDistance,
-    size,
-    range
+    reproduceThreshold,
+    reproduceCost,
+    reproduceProbability,
+    maxNumberOfOffspring,
+    reproduceRange,
+    size
 ) {
     private val speciesType: SpeciesType = SpeciesType.PREY
 
     override fun getType(): SpeciesType {
         return speciesType;
+    }
+
+    override fun generate(currentPosition: Vector, energy: Double): Species {
+        return Prey(
+            currentPosition,
+            movementStrategy,
+            energyTransferStrategy,
+            reproduceStrategy,
+            eats,
+            alive,
+            minEnergy,
+            maxEnergy,
+            energy,
+            maxConsumption,
+            restEnergyConsumption,
+            consumeRange,
+            moveCost,
+            moveMaxDistance,
+            reproduceThreshold,
+            reproduceCost,
+            reproduceProbability,
+            maxNumberOfOffspring,
+            reproduceRange,
+            size
+        )
     }
 }
