@@ -20,7 +20,10 @@ class ProbabilityReproduceStrategy() : ReproduceStrategy {
                     if (species.maxNumberOfOffspring == 1) 1 else random.nextInt(1, species.maxNumberOfOffspring)
                 speciesList = IntArray(numberOfOffspring) { it }
                     .map {
-                        generate(VectorFactory.random(random, reproduceRange), reproduceCost)
+                        generate(
+                            VectorFactory.random(random, reproduceRange).add(species.currentPosition),
+                            reproduceCost
+                        )
                     }
                 cost = speciesList.map { reproduceCost }.sum()
             }

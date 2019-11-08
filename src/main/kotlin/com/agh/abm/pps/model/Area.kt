@@ -2,16 +2,19 @@ package com.agh.abm.pps.model
 
 import com.agh.abm.pps.model.species.Species
 
-class Area(var species: MutableCollection<Species>) {
+class Area(val species: MutableList<Species>) {
     var step: Int = 0
 
 
     fun nextStep() {
+
         val alive = species.filter { s -> s.alive }
         alive.parallelStream().forEach { s -> s.move() }
         alive.parallelStream().forEach { s -> s.consume(this) }
         alive.parallelStream().forEach { s -> s.performOtherActions(this) }
         step++
+
+
     }
 
 
@@ -19,11 +22,12 @@ class Area(var species: MutableCollection<Species>) {
         return species.joinToString(
             ",${System.lineSeparator()}\t",
             "AREA [$step] " +
-                    "alive [${species.filter { s -> s.alive }.size}]:${System.lineSeparator()}\t"
+                    "alive [${species.filter { s -> s.alive }}]:${System.lineSeparator()}\t"
         ) { s -> s.getOverview() }
     }
 
-    fun add(newSpecies: List<Species>) {
-        species.addAll(newSpecies)
+    fun add(newSpecies: List<Species?>) {
+        species.addAll(newSpecies.filterNotNull().toMutableList())
+
     }
 }

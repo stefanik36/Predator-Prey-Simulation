@@ -1,10 +1,11 @@
 package com.agh.abm.pps
 
+import com.agh.abm.pps.model.Area
+import com.agh.abm.pps.model.species.*
 import com.agh.abm.pps.util.geometric.Vector
-import com.agh.abm.pps.model.species.Predator
-import com.agh.abm.pps.model.species.Prey
 import com.agh.abm.pps.util.factory.SpeciesFactory
 import tornadofx.*
+import kotlin.random.Random
 
 fun main() {
     launch<GUI>()
@@ -13,25 +14,31 @@ fun main() {
 class SimulationController : Controller() {
     private var isAlive = true
 
-    val state: BoardState = BoardState(mutableListOf())
+    val board: BoardState = BoardState(900.0, 900.0, mutableListOf())
+    lateinit var area: Area
 
     /////////////////SETUP\\\\\\\\\\\\\\\\\\\
     private fun setupSimulation() {
-
+        area = Area(board.guys)
     }
     /////////////////SETUP\\\\\\\\\\\\\\\\\\\
 
     /////////////////MAIN_LOOP\\\\\\\\\\\\\\\\\\\
     private fun loop() {
-        println("OK")
+
+        area.nextStep()
+//        area.getOverview().also { println(it) }
+        board.guys.removeIf { !it.alive }
+        println(board.guys.size)
         fire(
             NOTIFY_POPULATION_GRAPH(
-                alivePredNum = state.guys.filterIsInstance<Predator>().count(),
-                alivePreyNum = state.guys.filterIsInstance<Prey>().count()
+                alivePredNum = board.guys.filterIsInstance<Predator>().count(),
+                alivePreyNum = board.guys.filterIsInstance<Prey>().count(),
+                aliveGrassNum = board.guys.filterIsInstance<Grass>().count()
             )
         )
         fire(UPDATE_BOARDVIEW)
-        Thread.sleep(500)
+//        Thread.sleep(500)
     }
     /////////////////MAIN_LOOP\\\\\\\\\\\\\\\\\\\
 
@@ -44,18 +51,22 @@ class SimulationController : Controller() {
         setupSimulation()
     }
 
-    fun addGuy(x: Double, y: Double, type: GuyType) {
+    fun addGuy(x: Double, y: Double, type: SpeciesType, number: Double, areaSize: Double) {
         when (type) {
-            GuyType.PRAY ->
-                state.guys.add(SpeciesFactory.standardPrey(Vector(x, y)))
-            GuyType.PREDATOR ->
-                state.guys.add(SpeciesFactory.standardPredator(Vector(x, y)))
+            SpeciesType.PREY ->
+                initSpecies(x, y, areaSize, number) { x, y -> SpeciesFactory.standardPrey(Vector(x, y)) }
+            SpeciesType.PREDATOR ->
+                initSpecies(x, y, areaSize, number) { x, y -> SpeciesFactory.standardPredator(Vector(x, y)) }
+            SpeciesType.GRASS ->
+                initSpecies(x, y, areaSize, number) { x, y -> SpeciesFactory.standardGrass(Vector(x, y), Random) }
+            else -> {
+            }
         }
         fire(UPDATE_BOARDVIEW)
     }
 
     fun removeGuy(x: Double, y: Double) {
-        state.guys.removeIf { c ->
+        board.guys.removeIf { c ->
             val cx = c.currentPosition.x
             val cy = c.currentPosition.y
             cx - c.size < x && cx + c.size > x && cy - c.size < y && cy + c.size > y
@@ -63,8 +74,21 @@ class SimulationController : Controller() {
         fire(UPDATE_BOARDVIEW)
     }
 
+    private fun initSpecies(x: Double, y: Double, range: Double, numb: Double, fac: (Double, Double) -> Species) {
+        val fromX = if (x - range > 20) x - range else 20.0
+        val toX = if (x + range < board.width - 20) x + range else board.width - 20.0
+        val fromY = if (y - range > 20) y - range else 20.0
+        val toY = if (y + range < board.height - 20) y + range else board.height - 20.0
+
+        for (i in 1..numb.toInt()) {
+            val x = Random.nextDouble(fromX, toX)
+            val y = Random.nextDouble(fromY, toY)
+            board.guys.add(fac(x, y))
+        }
+    }
+
     fun clearBoard() {
-        state.guys.clear()
+        board.guys.clear()
         fire(UPDATE_BOARDVIEW)
     }
 

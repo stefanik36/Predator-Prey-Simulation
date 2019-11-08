@@ -26,10 +26,10 @@ class SpeciesFactory {
                 position,
                 movementStrategy, GetFromAllEnergyTransferStrategy(), reproduceStrategy,
                 listOf(), true,
-                0.0, 5.0, 5.0, 0.0, 0.1, 2.0,
+                0.0, 5.0, 5.0, 0.0, 0.0, 2.0,
                 0.0, 0.0,
-                2.0, 0.5, 0.7, 3, 15.0,
-                1.0
+                2.0, 0.5, 0.7, 3, 50.0,
+                2.0
             )
         }
 
@@ -45,7 +45,7 @@ class SpeciesFactory {
             return standardGrass(
                 position,
                 NoMovementStrategy(),
-                ParametrizedProbabilityReproduceStrategy(random, 5.0)
+                ParametrizedProbabilityReproduceStrategy(random, 4.0)
             )
         }
 
@@ -71,8 +71,8 @@ class SpeciesFactory {
                 listOf(SpeciesType.GRASS), true,
                 0.0, 50.0, energy, 3.0, 1.0, 10.0,
                 0.5, 2.0,
-                5.0, reproduceCost, 0.9, 2, 1.0,
-                2.0
+                5.0, reproduceCost, 0.9, 2, 100.0,
+                4.0
             )
         }
 
@@ -122,7 +122,7 @@ class SpeciesFactory {
                 0.0, 100.0, 10.0, 2.0, 3.0, 4.0,
                 1.0, 2.0,
                 7.0, 3.0, 0.7, 3, 5.0,
-                5.0
+                8.0
             )
         }
 
