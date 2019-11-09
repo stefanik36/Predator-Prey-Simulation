@@ -5,6 +5,7 @@ import com.agh.abm.pps.util.geometric.Vector
 import kotlin.random.Random
 
 class RandomMovementStrategy() : MovementStrategy {
+
     private var random: Random = Random
 
     constructor(random: Random) : this() {
@@ -18,5 +19,9 @@ class RandomMovementStrategy() : MovementStrategy {
 
     override fun getConsumedEnergy(distance: Double, moveCost: Double): Double {
         return moveCost
+    }
+
+    override fun getType(): MovementStrategyType {
+        return MovementStrategyType.RANDOM_MOVEMENT_STRATEGY
     }
 }

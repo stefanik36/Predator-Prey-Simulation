@@ -5,6 +5,7 @@ import com.agh.abm.pps.util.factory.VectorFactory
 import kotlin.random.Random
 
 class ParametrizedProbabilityReproduceStrategy(val multipleEnergy: Double) : ReproduceStrategy {
+
     private var random: Random = Random
 
     constructor(random: Random, multipleEnergy: Double) : this(multipleEnergy) {
@@ -29,5 +30,9 @@ class ParametrizedProbabilityReproduceStrategy(val multipleEnergy: Double) : Rep
             }
         }
         return Pair(speciesList, cost)
+    }
+
+    override fun getType(): ReproduceStrategyType {
+        return ReproduceStrategyType.PARAMETRIZED_PROBABILITY
     }
 }

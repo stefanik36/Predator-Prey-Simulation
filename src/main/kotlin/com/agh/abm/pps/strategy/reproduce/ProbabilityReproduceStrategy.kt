@@ -5,6 +5,7 @@ import com.agh.abm.pps.util.factory.VectorFactory
 import kotlin.random.Random
 
 class ProbabilityReproduceStrategy() : ReproduceStrategy {
+
     private var random: Random = Random
 
     constructor(random: Random) : this() {
@@ -29,5 +30,9 @@ class ProbabilityReproduceStrategy() : ReproduceStrategy {
             }
         }
         return Pair(speciesList, cost)
+    }
+
+    override fun getType(): ReproduceStrategyType {
+        return ReproduceStrategyType.PROBABILITY
     }
 }

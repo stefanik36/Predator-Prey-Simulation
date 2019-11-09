@@ -11,28 +11,28 @@ import kotlin.math.min
 abstract class Species(
     var currentPosition: Vector,
 
-    protected val movementStrategy: MovementStrategy,
-    protected val energyTransferStrategy: EnergyTransferStrategy,
-    protected val reproduceStrategy: ReproduceStrategy,
+    val movementStrategy: MovementStrategy,
+    val energyTransferStrategy: EnergyTransferStrategy,
+    val reproduceStrategy: ReproduceStrategy,
 
-    protected val eats: List<SpeciesType>,
+    val eats: List<SpeciesType>,
 
     var alive: Boolean,
 
     //energy
-    protected val minEnergy: Double,
-    protected val maxEnergy: Double,
+    val minEnergy: Double,
+    val maxEnergy: Double,
 
     inEnergy: Double,
 
     //consume
-    protected val maxConsumption: Double,
-    protected val restEnergyConsumption: Double,
+    val maxConsumption: Double,
+    val restEnergyConsumption: Double,
     val consumeRange: Double,
 
     //move
-    protected val moveCost: Double,
-    protected val moveMaxDistance: Double,
+    val moveCost: Double,
+    val moveMaxDistance: Double,
 
     val reproduceThreshold: Double,
     val reproduceCost: Double,
@@ -52,7 +52,7 @@ abstract class Species(
         energy -= consumedEnergy
     }
 
-    fun consume(area: Area) {
+    open fun consume(area: Area) {
         val food = area.species
             .filter { s -> s.alive }
             .filter { s -> this.canEat(s) }

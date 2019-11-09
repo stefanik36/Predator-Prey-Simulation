@@ -1,13 +1,13 @@
 package com.agh.abm.pps
 
 import com.agh.abm.pps.model.species.*
+import com.agh.abm.pps.util.gui.ConfigView
 import javafx.event.EventHandler
 import javafx.scene.canvas.Canvas
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.control.ComboBox
 import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
-import javafx.scene.text.FontWeight
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
@@ -36,6 +36,7 @@ class Board : View() {
     private var spawnAreaSizeSlider: Slider by singleAssign()
 
     val controller: SimulationController by inject()
+    val configView: ConfigView by inject()
 
     override val root = group {
         canv = canvas(controller.board.width, controller.board.height)
@@ -54,10 +55,13 @@ class Board : View() {
                 value = 1.0
             }
             label(" spawn area size: ")
-            spawnAreaSizeSlider = slider{
+            spawnAreaSizeSlider = slider {
                 min = 1.0
                 max = 500.0
                 value = 1.0
+            }
+            button("Config") {
+                action { configView.openWindow() }
             }
         }
 
@@ -70,7 +74,13 @@ class Board : View() {
 
         canv.onMouseClicked = EventHandler { e ->
             when (e.button) {
-                MouseButton.PRIMARY -> controller.addGuy(e.x, e.y, typeSelect.selectionModel.selectedItem, spawnNumSlider.value, spawnAreaSizeSlider.value)
+                MouseButton.PRIMARY -> controller.addGuy(
+                    e.x,
+                    e.y,
+                    configView.species.first { it.type == typeSelect.selectionModel.selectedItem },
+                    spawnNumSlider.value,
+                    spawnAreaSizeSlider.value
+                )
                 MouseButton.SECONDARY -> controller.removeGuy(e.x, e.y)
                 MouseButton.MIDDLE -> when (typeSelect.selectionModel.selectedIndex) {
 //                    TODO fix for more com.agh.abm.pps.model.species types
@@ -175,15 +185,16 @@ class PopulationGraphView : View() {
 
 }
 
+
 class GUI : App(Board::class, Styles::class)
 
 class Styles : Stylesheet() {
     init {
-        Companion.label {
-            fontSize = 14.px
-            fontWeight = FontWeight.BOLD
-            backgroundColor += c("#cecece")
-        }
+//        Companion.label {
+//            fontSize = 14.px
+//            fontWeight = FontWeight.BOLD
+//            backgroundColor += c("#cecece")
+//        }
     }
 }
 

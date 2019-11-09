@@ -13,4 +13,8 @@ class NoMovementStrategy : MovementStrategy {
     override fun getConsumedEnergy(distance: Double, moveCost: Double): Double {
         return moveCost
     }
+
+    override fun getType(): MovementStrategyType {
+        return MovementStrategyType.NO_MOVEMENT_STRATEGY
+    }
 }

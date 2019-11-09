@@ -1,5 +1,6 @@
 package com.agh.abm.pps.model.species
 
+import com.agh.abm.pps.model.Area
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategy
 import com.agh.abm.pps.strategy.movement.MovementStrategy
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategy
@@ -77,5 +78,9 @@ class Grass(
             reproduceRange,
             size
         )
+    }
+
+    override fun consume(area: Area) {
+//        OPTIMIZATION
     }
 }

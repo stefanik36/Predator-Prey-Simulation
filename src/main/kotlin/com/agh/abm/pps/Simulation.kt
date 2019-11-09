@@ -4,6 +4,7 @@ import com.agh.abm.pps.model.Area
 import com.agh.abm.pps.model.species.*
 import com.agh.abm.pps.util.geometric.Vector
 import com.agh.abm.pps.util.factory.SpeciesFactory
+import com.agh.abm.pps.util.gui.SpeciesConfData
 import tornadofx.*
 import kotlin.random.Random
 
@@ -51,17 +52,8 @@ class SimulationController : Controller() {
         setupSimulation()
     }
 
-    fun addGuy(x: Double, y: Double, type: SpeciesType, number: Double, areaSize: Double) {
-        when (type) {
-            SpeciesType.PREY ->
-                initSpecies(x, y, areaSize, number) { x, y -> SpeciesFactory.standardPrey(Vector(x, y)) }
-            SpeciesType.PREDATOR ->
-                initSpecies(x, y, areaSize, number) { x, y -> SpeciesFactory.standardPredator(Vector(x, y)) }
-            SpeciesType.GRASS ->
-                initSpecies(x, y, areaSize, number) { x, y -> SpeciesFactory.standardGrass(Vector(x, y), Random) }
-            else -> {
-            }
-        }
+    fun addGuy(x: Double, y: Double, conf: SpeciesConfData, number: Double, areaSize: Double) {
+        initSpecies(x, y, areaSize, number) { x, y -> conf.createSpecies(Vector(x, y)) }
         fire(UPDATE_BOARDVIEW)
     }
 
