@@ -1,22 +1,44 @@
-package com.agh.abm.pps.util.gui
+package com.agh.abm.pps.gui
 
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
 import com.agh.abm.pps.strategy.movement.MovementStrategyType
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategyType
 import com.agh.abm.pps.util.factory.SpeciesFactory
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import javafx.collections.ObservableList
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TableView
 import javafx.scene.control.TextField
 import tornadofx.*
+import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
 import kotlin.random.Random
 
 class ConfigView : View() {
 
-    val species = listOf(
-        SpeciesConfData.fromSpecies(SpeciesFactory.standardGrass(Random))
-        , SpeciesConfData.fromSpecies(SpeciesFactory.standardPredator(Random))
-        , SpeciesConfData.fromSpecies(SpeciesFactory.standardPrey(Random))
-    ).observable()
+    val filePath = "src/main/resource/JD"
+    var species: ObservableList<SpeciesConfData>
+
+    init {
+        val file = File(filePath)
+        species = if (file.exists()) {
+            val mapper = ObjectMapper()
+            mapper.registerModule(KotlinModule())
+            (mapper.readValue(
+                file,
+                mapper.typeFactory.constructCollectionType(List::class.java, SpeciesConfData::class.java)
+            ) as List<SpeciesConfData>).observable()
+        } else {
+            listOf(
+                SpeciesConfData.fromSpecies(SpeciesFactory.standardGrass(Random))
+                , SpeciesConfData.fromSpecies(SpeciesFactory.standardPredator(Random))
+                , SpeciesConfData.fromSpecies(SpeciesFactory.standardPrey(Random))
+            ).observable()
+        }
+    }
 
     private var movementStrategyCombo: ComboBox<MovementStrategyType> by singleAssign()
     private var energyTransferStrategyCombo: ComboBox<EnergyTransferStrategyType> by singleAssign()
@@ -170,5 +192,11 @@ class ConfigView : View() {
         sizeField.bind(it.sizeProperty)
 
         prevSelection = it
+    }
+
+    override fun onUndock() {
+        val fw = FileWriter(File(filePath))
+        fw.write(ObjectMapper().writeValueAsString(species.toList()))
+        fw.close()
     }
 }

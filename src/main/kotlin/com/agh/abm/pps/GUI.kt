@@ -1,8 +1,11 @@
 package com.agh.abm.pps
 
 import com.agh.abm.pps.model.species.*
-import com.agh.abm.pps.util.gui.ConfigView
+import com.agh.abm.pps.gui.ConfigView
+import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
+import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.canvas.Canvas
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.control.ComboBox
@@ -11,6 +14,7 @@ import javafx.scene.paint.Color
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
+import javafx.scene.control.Label
 import javafx.scene.control.Slider
 import tornadofx.*
 
@@ -21,10 +25,11 @@ data class BoardState(
 )
 
 object EXIT : FXEvent()
-object START : FXEvent()
+class START(val delay: Long) : FXEvent()
 object UPDATE_BOARDVIEW : FXEvent()
 
 class NOTIFY_POPULATION_GRAPH(val alivePredNum: Int, val alivePreyNum: Int, val aliveGrassNum: Int) : FXEvent()
+class NOTIFY_DELAY_CHANGE(val delay: Long) : FXEvent()
 
 class Board : View() {
 
@@ -34,43 +39,95 @@ class Board : View() {
     private var typeSelect: ComboBox<SpeciesType> by singleAssign()
     private var spawnNumSlider: Slider by singleAssign()
     private var spawnAreaSizeSlider: Slider by singleAssign()
+    private var delaySlider: Slider by singleAssign()
+    private var statusLabel: Label by singleAssign()
 
-    val controller: SimulationController by inject()
-    val configView: ConfigView by inject()
+    private val controller: SimulationController by inject()
+    private val configView: ConfigView by inject()
 
     override val root = group {
-        canv = canvas(controller.board.width, controller.board.height)
-        hbox {
-            button("Clear") { action { controller.clearBoard() } }
-            button("Start") { action { fire(START) } }
-            button("Pause") { action { fire(EXIT) } }
-            typeSelect = combobox(values = listOf(SpeciesType.PREDATOR, SpeciesType.PREY, SpeciesType.GRASS)) {
-                selectionModel.select(0)
-            }
-            button("Show graph!") { action { PopulationGraphView().openWindow() } }
-            label(" spawn number: ")
-            spawnNumSlider = slider {
-                min = 1.0
-                max = 500.0
-                value = 1.0
-            }
-            label(" spawn area size: ")
-            spawnAreaSizeSlider = slider {
-                min = 1.0
-                max = 500.0
-                value = 1.0
-            }
-            button("Config") {
-                action { configView.openWindow() }
-            }
-        }
+        vbox {
+            spacing = 5.0
+            hbox {
+                alignment = Pos.CENTER_LEFT
+                spacing = 5.0
+                padding = Insets(0.0, 0.0, 0.0, 15.0)
+                button("Clear") { action { controller.clearBoard() } }
+                button("Start") {
+                    action {
+                        fire(START(delaySlider.value.toLong()))
+                        statusLabel.text = "Status: Running"
+                        statusLabel.textFill = Color.GREEN
+                    }
+                }
+                button("Pause") {
+                    action {
+                        fire(EXIT)
+                        statusLabel.text = "Status: Stopped"
+                        statusLabel.textFill = Color.RED
+                    }
+                }
 
+                typeSelect = combobox(values = listOf(SpeciesType.PREDATOR, SpeciesType.PREY, SpeciesType.GRASS)) {
+                    selectionModel.select(0)
+                }
+                label("Spawn number:")
+                spawnNumSlider = slider {
+                    padding = Insets(0.0, 0.0, 0.0, 0.0)
+                    min = 1.0
+                    max = 500.0
+                    value = 1.0
+                    isShowTickLabels = true
+                    isShowTickMarks = true
+                    majorTickUnit = 500.0
+                }
+                label("Spawn area size:")
+                spawnAreaSizeSlider = slider {
+                    padding = Insets(0.0, 0.0, 0.0, 0.0)
+                    min = 1.0
+                    max = 500.0
+                    value = 1.0
+                    isShowTickLabels = true
+                    isShowTickMarks = true
+                    majorTickUnit = 500.0
+                }
+            }
+            hbox {
+                alignment = Pos.CENTER_LEFT
+                spacing = 5.0
+                padding = Insets(0.0, 0.0, 0.0, 15.0)
+                button("Config") {
+                    action { configView.openWindow() }
+                }
+                button("Show graph!") { action { PopulationGraphView().openWindow() } }
+                label("Delay:")
+                delaySlider = slider {
+                    min = 1.0
+                    max = 1000.0
+                    value = 200.0
+                    isShowTickLabels = true
+                    isShowTickMarks = true
+                    majorTickUnit = 1000.0
+
+                }
+
+                statusLabel = label("Status:"){
+                    padding = Insets(2.0, 5.0, 2.0, 20.0)
+                }
+            }
+            canv = canvas(controller.board.width, controller.board.height)
+        }
     }
 
     init {
         subscribe<UPDATE_BOARDVIEW> { updateView(controller.board) }
 
         gc = canv.graphicsContext2D
+
+        delaySlider.valueProperty()
+            .addListener(ChangeListener() { _: ObservableValue<out Number>?, _: Number, number1: Number ->
+                fire(NOTIFY_DELAY_CHANGE(number1.toLong()))
+            })
 
         canv.onMouseClicked = EventHandler { e ->
             when (e.button) {
