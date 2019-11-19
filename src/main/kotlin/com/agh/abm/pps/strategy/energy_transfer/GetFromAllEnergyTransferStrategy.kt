@@ -1,11 +1,12 @@
 package com.agh.abm.pps.strategy.energy_transfer
 
+import com.agh.abm.pps.model.parameter.ConsumeParameter
 import com.agh.abm.pps.model.species.Species
 
 class GetFromAllEnergyTransferStrategy : EnergyTransferStrategy {
 
-    override fun transfer(food: List<Species>, maxTransfer: Double): Double {
-        return food.map { s -> s.takeEnergy(maxTransfer / food.size) }.sum();
+    override fun transfer(food: List<Species>, consumeParameter: ConsumeParameter): Double {
+        return food.map { s -> s.takeEnergy(consumeParameter.maxConsumption / food.size) }.sum();
     }
 
     override fun getType(): EnergyTransferStrategyType {

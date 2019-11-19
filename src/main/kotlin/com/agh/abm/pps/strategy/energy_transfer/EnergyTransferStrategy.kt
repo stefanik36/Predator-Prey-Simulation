@@ -1,5 +1,6 @@
 package com.agh.abm.pps.strategy.energy_transfer
 
+import com.agh.abm.pps.model.parameter.ConsumeParameter
 import com.agh.abm.pps.model.species.Species
 
 enum class EnergyTransferStrategyType(name: String, val strategy: EnergyTransferStrategy){
@@ -11,6 +12,6 @@ enum class EnergyTransferStrategyType(name: String, val strategy: EnergyTransfer
     }}
 
 interface EnergyTransferStrategy {
-    fun transfer(food: List<Species>, maxTransfer: Double): Double
+    fun transfer(food: List<Species>, consumeParameter: ConsumeParameter): Double
     fun getType(): EnergyTransferStrategyType
 }

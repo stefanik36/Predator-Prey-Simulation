@@ -1,15 +1,18 @@
 package com.agh.abm.pps.util.factory
 
+import com.agh.abm.pps.model.parameter.*
 import com.agh.abm.pps.model.species.Grass
 import com.agh.abm.pps.model.species.Predator
 import com.agh.abm.pps.model.species.Prey
 import com.agh.abm.pps.model.species.SpeciesType
+import com.agh.abm.pps.strategy.die_strategy.TooLowEnergyDieStrategy
 import com.agh.abm.pps.strategy.energy_transfer.GetFromAllEnergyTransferStrategy
 import com.agh.abm.pps.strategy.movement.MovementStrategy
 import com.agh.abm.pps.strategy.movement.NoMovementStrategy
 import com.agh.abm.pps.strategy.movement.RandomMovementStrategy
 import com.agh.abm.pps.strategy.reproduce.ParametrizedProbabilityReproduceStrategy
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategy
+import com.agh.abm.pps.util.default_species.DefaultSpecies
 import com.agh.abm.pps.util.geometric.Vector
 import kotlin.random.Random
 
@@ -22,30 +25,55 @@ class SpeciesFactory {
             reproduceStrategy: ReproduceStrategy
         ): Grass {
             return Grass(
-                position,
-                movementStrategy, GetFromAllEnergyTransferStrategy(), reproduceStrategy,
-                true,
-                0.0, 5.0, 5.0,
-                0.0, 0.0, 2.0, listOf(),
-                0.0, 0.0,
-                2.0, 0.0, 0.7, 3, 50.0, 1.0, 0.0,
-                2.0
+                movementStrategy = movementStrategy,
+                energyTransferStrategy = GetFromAllEnergyTransferStrategy(),
+                reproduceStrategy = reproduceStrategy,
+                dieStrategy = TooLowEnergyDieStrategy(),
+                consumeParameter = ConsumeParameter(
+                    maxConsumption = DefaultSpecies.grassParameters.maxConsumption,
+                    restEnergyConsumption = DefaultSpecies.grassParameters.restEnergyConsumption,
+                    consumeRange = DefaultSpecies.grassParameters.consumeRange,
+                    canConsume = DefaultSpecies.grassParameters.canConsume
+                ),
+                energyTransferParameter = EnergyTransferParameter(
+                    minEnergy = DefaultSpecies.grassParameters.minEnergy,
+                    maxEnergy = DefaultSpecies.grassParameters.maxEnergy,
+                    inEnergy = DefaultSpecies.grassParameters.energy,
+                    alive = DefaultSpecies.grassParameters.alive
+                ),
+                movementParameter = MovementParameter(
+                    currentPosition = position,
+                    moveCost = DefaultSpecies.grassParameters.moveCost,
+                    moveMaxDistance = DefaultSpecies.grassParameters.moveMaxDistance
+                ),
+                reproduceParameter = ReproduceParameter(
+                    reproduceThreshold = DefaultSpecies.grassParameters.reproduceThreshold,
+                    reproduceCost = DefaultSpecies.grassParameters.reproduceCost,
+                    reproduceProbability = DefaultSpecies.grassParameters.reproduceProbability,
+                    maxNumberOfOffspring = DefaultSpecies.grassParameters.maxNumberOfOffspring,
+                    reproduceRange = DefaultSpecies.grassParameters.reproduceRange,
+                    reproduceMultiplyEnergy = DefaultSpecies.grassParameters.reproduceMultiplyEnergy,
+                    reproduceAddEnergy = DefaultSpecies.grassParameters.reproduceAddEnergy
+                ),
+                guiParameter = GuiParameter(
+                    size = DefaultSpecies.grassParameters.size
+                )
             )
         }
 
         fun standardGrass(position: Vector, random: Random): Grass {
             return standardGrass(
-                position,
-                NoMovementStrategy(),
-                ParametrizedProbabilityReproduceStrategy(random)
+                position = position,
+                movementStrategy = DefaultSpecies.grassParameters.movementStrategy,
+                reproduceStrategy = ParametrizedProbabilityReproduceStrategy(random)
             )
         }
 
         fun standardGrass(random: Random): Grass {
             return standardGrass(
-                VectorFactory.random(random, 20.0),
-                NoMovementStrategy(),
-                ParametrizedProbabilityReproduceStrategy(random)
+                position = VectorFactory.random(random, 20.0),
+                movementStrategy = DefaultSpecies.grassParameters.movementStrategy,
+                reproduceStrategy = ParametrizedProbabilityReproduceStrategy(random)
             )
         }
 
@@ -57,13 +85,39 @@ class SpeciesFactory {
             reproduceCost: Double
         ): Prey {
             return Prey(
-                position,
-                movementStrategy, GetFromAllEnergyTransferStrategy(), reproduceStrategy,
-                true,
-                0.0, 50.0, energy, 5.0, 1.0, 10.0, listOf(SpeciesType.GRASS),
-                0.5, 2.0,
-                20.1, reproduceCost, 0.5, 2, 100.0, 1.0, 0.0,
-                4.0
+                movementStrategy = movementStrategy,
+                energyTransferStrategy = GetFromAllEnergyTransferStrategy(),
+                reproduceStrategy = reproduceStrategy,
+                dieStrategy = TooLowEnergyDieStrategy(),
+                consumeParameter = ConsumeParameter(
+                    maxConsumption = DefaultSpecies.preyParameters.maxConsumption,
+                    restEnergyConsumption = DefaultSpecies.preyParameters.restEnergyConsumption,
+                    consumeRange = DefaultSpecies.preyParameters.consumeRange,
+                    canConsume = DefaultSpecies.preyParameters.canConsume
+                ),
+                energyTransferParameter = EnergyTransferParameter(
+                    minEnergy = DefaultSpecies.preyParameters.minEnergy,
+                    maxEnergy = DefaultSpecies.preyParameters.maxEnergy,
+                    inEnergy = energy,
+                    alive = DefaultSpecies.preyParameters.alive
+                ),
+                movementParameter = MovementParameter(
+                    currentPosition = position,
+                    moveCost = DefaultSpecies.preyParameters.moveCost,
+                    moveMaxDistance = DefaultSpecies.preyParameters.moveMaxDistance
+                ),
+                reproduceParameter = ReproduceParameter(
+                    reproduceThreshold = DefaultSpecies.preyParameters.reproduceThreshold,
+                    reproduceCost = reproduceCost,
+                    reproduceProbability = DefaultSpecies.preyParameters.reproduceProbability,
+                    maxNumberOfOffspring = DefaultSpecies.preyParameters.maxNumberOfOffspring,
+                    reproduceRange = DefaultSpecies.preyParameters.reproduceRange,
+                    reproduceMultiplyEnergy = DefaultSpecies.preyParameters.reproduceMultiplyEnergy,
+                    reproduceAddEnergy = DefaultSpecies.preyParameters.reproduceAddEnergy
+                ),
+                guiParameter = GuiParameter(
+                    size = DefaultSpecies.preyParameters.size
+                )
             )
         }
 
@@ -73,7 +127,7 @@ class SpeciesFactory {
                 RandomMovementStrategy(random),
                 ParametrizedProbabilityReproduceStrategy(random),
                 energy,
-                3.0
+                DefaultSpecies.preyParameters.reproduceCost
             )
         }
 
@@ -82,13 +136,19 @@ class SpeciesFactory {
                 position,
                 RandomMovementStrategy(random),
                 ParametrizedProbabilityReproduceStrategy(random),
-                20.0,
-                3.0
+                DefaultSpecies.preyParameters.energy,
+                DefaultSpecies.preyParameters.reproduceCost
             )
         }
 
         fun standardPrey(position: Vector): Prey {
-            return standardPrey(position, RandomMovementStrategy(), ParametrizedProbabilityReproduceStrategy(), 20.0, 3.0);
+            return standardPrey(
+                position,
+                RandomMovementStrategy(),
+                ParametrizedProbabilityReproduceStrategy(),
+                DefaultSpecies.preyParameters.energy,
+                DefaultSpecies.preyParameters.reproduceCost
+            );
         }
 
         fun standardPrey(random: Random): Prey {
@@ -96,8 +156,8 @@ class SpeciesFactory {
                 VectorFactory.random(random, 20.0),
                 RandomMovementStrategy(),
                 ParametrizedProbabilityReproduceStrategy(),
-                20.0,
-                3.0
+                DefaultSpecies.preyParameters.energy,
+                DefaultSpecies.preyParameters.reproduceCost
             );
         }
 
@@ -107,18 +167,48 @@ class SpeciesFactory {
             reproduceStrategy: ReproduceStrategy
         ): Predator {
             return Predator(
-                position,
-                movementStrategy, GetFromAllEnergyTransferStrategy(), reproduceStrategy,
-                true,
-                0.0, 100.0, 10.0, 2.0, 3.0, 4.0, listOf(SpeciesType.PREY),
-                1.0, 2.0,
-                7.0, 3.0, 0.7, 3, 5.0, 1.0, 0.0,
-                8.0
+                movementStrategy = movementStrategy,
+                energyTransferStrategy = GetFromAllEnergyTransferStrategy(),
+                reproduceStrategy = reproduceStrategy,
+                dieStrategy = TooLowEnergyDieStrategy(),
+                consumeParameter = ConsumeParameter(
+                    maxConsumption = DefaultSpecies.predatorParameters.maxConsumption,
+                    restEnergyConsumption = DefaultSpecies.predatorParameters.restEnergyConsumption,
+                    consumeRange = DefaultSpecies.predatorParameters.consumeRange,
+                    canConsume = DefaultSpecies.predatorParameters.canConsume
+                ),
+                energyTransferParameter = EnergyTransferParameter(
+                    minEnergy = DefaultSpecies.predatorParameters.minEnergy,
+                    maxEnergy = DefaultSpecies.predatorParameters.maxEnergy,
+                    inEnergy = DefaultSpecies.predatorParameters.energy,
+                    alive = DefaultSpecies.predatorParameters.alive
+                ),
+                movementParameter = MovementParameter(
+                    currentPosition = position,
+                    moveCost = DefaultSpecies.predatorParameters.moveCost,
+                    moveMaxDistance = DefaultSpecies.predatorParameters.moveMaxDistance
+                ),
+                reproduceParameter = ReproduceParameter(
+                    reproduceThreshold = DefaultSpecies.predatorParameters.reproduceThreshold,
+                    reproduceCost = DefaultSpecies.predatorParameters.reproduceCost,
+                    reproduceProbability = DefaultSpecies.predatorParameters.reproduceProbability,
+                    maxNumberOfOffspring = DefaultSpecies.predatorParameters.maxNumberOfOffspring,
+                    reproduceRange = DefaultSpecies.predatorParameters.reproduceRange,
+                    reproduceMultiplyEnergy = DefaultSpecies.predatorParameters.reproduceMultiplyEnergy,
+                    reproduceAddEnergy = DefaultSpecies.predatorParameters.reproduceAddEnergy
+                ),
+                guiParameter = GuiParameter(
+                    size = DefaultSpecies.predatorParameters.size
+                )
             )
         }
 
         fun standardPredator(position: Vector, random: Random): Predator {
-            return standardPredator(position, RandomMovementStrategy(random), ParametrizedProbabilityReproduceStrategy(random))
+            return standardPredator(
+                position,
+                RandomMovementStrategy(random),
+                ParametrizedProbabilityReproduceStrategy(random)
+            )
         }
 
         fun standardPredator(position: Vector): Predator {

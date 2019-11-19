@@ -166,18 +166,18 @@ class Board : View() {
 
 
     private fun draw(o: Predator) {
-        drawCircle(o.currentPosition.x, o.currentPosition.y, o.size, Color.RED)
-        drawViewRange(o.currentPosition.x, o.currentPosition.y, o.consumeRange)
+        drawCircle(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.guiParameter.size, Color.RED)//TODO add color to guiParameter
+        drawViewRange(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.consumeParameter.consumeRange)
     }
 
     private fun draw(o: Prey) {
-        drawCircle(o.currentPosition.x, o.currentPosition.y, o.size, Color.GREY)
-        drawViewRange(o.currentPosition.x, o.currentPosition.y, o.consumeRange)
+        drawCircle(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.guiParameter.size, Color.GREY)
+        drawViewRange(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.consumeParameter.consumeRange)
     }
 
     private fun draw(o: Grass) {
         gc.fill = Color.GREEN
-        gc.fillRect(o.currentPosition.x, o.currentPosition.y, o.size, o.size)
+        gc.fillRect(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.guiParameter.size, o.guiParameter.size)
     }
 
     private fun backgroundColor() {

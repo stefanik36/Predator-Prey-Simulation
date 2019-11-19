@@ -1,7 +1,7 @@
 package com.agh.abm.pps.util.factory
 
-import com.agh.abm.pps.model.Area
-import com.agh.abm.pps.strategy.movement.RandomMovementStrategy
+import com.agh.abm.pps.model.board.Area
+import com.agh.abm.pps.util.default_species.DefaultSpecies
 import com.agh.abm.pps.util.geometric.Vector
 import kotlin.random.Random
 

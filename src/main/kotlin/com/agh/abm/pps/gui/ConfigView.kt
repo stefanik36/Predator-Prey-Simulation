@@ -3,6 +3,7 @@ package com.agh.abm.pps.gui
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
 import com.agh.abm.pps.strategy.movement.MovementStrategyType
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategyType
+import com.agh.abm.pps.util.default_species.DefaultSpecies
 import com.agh.abm.pps.util.factory.SpeciesFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -31,10 +32,16 @@ class ConfigView : View() {
             ) as List<SpeciesConfData>).observable()
         } else {
             listOf(
-                SpeciesConfData.fromSpecies(SpeciesFactory.standardGrass(Random))
-                , SpeciesConfData.fromSpecies(SpeciesFactory.standardPredator(Random))
-                , SpeciesConfData.fromSpecies(SpeciesFactory.standardPrey(Random))
+                SpeciesConfData.fromParameters(DefaultSpecies.grassParameters)
+                , SpeciesConfData.fromParameters(DefaultSpecies.preyParameters)
+                , SpeciesConfData.fromParameters(DefaultSpecies.predatorParameters)
             ).observable()
+
+//            listOf(
+//                SpeciesConfData.fromSpecies(SpeciesFactory.standardGrass(Random))
+//                , SpeciesConfData.fromSpecies(SpeciesFactory.standardPredator(Random))
+//                , SpeciesConfData.fromSpecies(SpeciesFactory.standardPrey(Random))
+//            ).observable()
         }
     }
 
@@ -193,8 +200,8 @@ class ConfigView : View() {
     }
 
     override fun onUndock() {
-        val fw = FileWriter(File(filePath))
-        fw.write(ObjectMapper().writeValueAsString(species.toList()))
-        fw.close()
+//        val fw = FileWriter(File(filePath))
+//        fw.write(ObjectMapper().writeValueAsString(species.toList()))
+//        fw.close()
     }
 }

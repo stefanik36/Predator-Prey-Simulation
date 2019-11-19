@@ -1,56 +1,32 @@
 package com.agh.abm.pps.model.species
 
+import com.agh.abm.pps.model.parameter.*
+import com.agh.abm.pps.strategy.die_strategy.DieStrategy
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategy
 import com.agh.abm.pps.strategy.movement.MovementStrategy
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategy
 import com.agh.abm.pps.util.geometric.Vector
 
 class Prey(
-    currentPosition: Vector,
     movementStrategy: MovementStrategy,
     energyTransferStrategy: EnergyTransferStrategy,
     reproduceStrategy: ReproduceStrategy,
-    alive: Boolean,
-    minEnergy: Double,
-    maxEnergy: Double,
-    inEnergy: Double,
-    maxConsumption: Double,
-    restEnergyConsumption: Double,
-    consumeRange: Double,
-    eats: List<SpeciesType>,
-    moveCost: Double,
-    moveMaxDistance: Double,
-    reproduceThreshold: Double,
-    reproduceCost: Double,
-    reproduceProbability: Double,
-    maxNumberOfOffspring: Int,
-    reproduceRange: Double,
-    reproduceMultiplyEnergy: Double,
-    reproduceAddEnergy: Double,
-    size: Double
+    dieStrategy: DieStrategy,
+    consumeParameter: ConsumeParameter,
+    energyTransferParameter: EnergyTransferParameter,
+    movementParameter: MovementParameter,
+    reproduceParameter: ReproduceParameter,
+    guiParameter: GuiParameter
 ) : Species(
-    currentPosition,
     movementStrategy,
     energyTransferStrategy,
     reproduceStrategy,
-    alive,
-    minEnergy,
-    maxEnergy,
-    inEnergy,
-    maxConsumption,
-    restEnergyConsumption,
-    consumeRange,
-    eats,
-    moveCost,
-    moveMaxDistance,
-    reproduceThreshold,
-    reproduceCost,
-    reproduceProbability,
-    maxNumberOfOffspring,
-    reproduceRange,
-    reproduceMultiplyEnergy,
-    reproduceAddEnergy,
-    size
+    dieStrategy,
+    consumeParameter,
+    energyTransferParameter,
+    movementParameter,
+    reproduceParameter,
+    guiParameter
 ) {
     private val speciesType: SpeciesType = SpeciesType.PREY
 
@@ -60,28 +36,15 @@ class Prey(
 
     override fun generate(currentPosition: Vector, inEnergy: Double): Species {
         return Prey(
-            currentPosition,
             movementStrategy,
             energyTransferStrategy,
             reproduceStrategy,
-            alive,
-            minEnergy,
-            maxEnergy,
-            inEnergy,
-            maxConsumption,
-            restEnergyConsumption,
-            consumeRange,
-            eats,
-            moveCost,
-            moveMaxDistance,
-            reproduceThreshold,
-            reproduceCost,
-            reproduceProbability,
-            maxNumberOfOffspring,
-            reproduceRange,
-            reproduceMultiplyEnergy,
-            reproduceAddEnergy,
-            size
+            dieStrategy,
+            consumeParameter,
+            energyTransferParameter.also { it.energy = inEnergy },
+            movementParameter.also { it.currentPosition = currentPosition },
+            reproduceParameter,
+            guiParameter
         )
     }
 }

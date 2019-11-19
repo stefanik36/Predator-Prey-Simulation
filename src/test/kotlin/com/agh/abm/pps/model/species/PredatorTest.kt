@@ -1,12 +1,10 @@
 package com.agh.abm.pps.model.species
 
-import com.agh.abm.pps.strategy.movement.RandomMovementStrategy
 import com.agh.abm.pps.util.factory.AreaFactory
 import com.agh.abm.pps.util.factory.SpeciesFactory
-import org.junit.jupiter.api.Test
-
 import com.agh.abm.pps.util.geometric.Vector
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import kotlin.random.Random
 
 class PredatorTest {
@@ -47,8 +45,8 @@ class PredatorTest {
         predator.move()
 
         // check result
-        Assertions.assertNotEquals(1.0, predator.currentPosition.x, 0.001)
-        Assertions.assertNotEquals(2.0, predator.currentPosition.x, 0.001)
+        Assertions.assertNotEquals(1.0, predator.movementParameter.currentPosition.x, 0.001)
+        Assertions.assertNotEquals(2.0, predator.movementParameter.currentPosition.x, 0.001)
     }
 
     @Test

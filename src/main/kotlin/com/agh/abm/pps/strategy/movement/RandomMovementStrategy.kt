@@ -1,5 +1,6 @@
 package com.agh.abm.pps.strategy.movement
 
+import com.agh.abm.pps.model.parameter.MovementParameter
 import com.agh.abm.pps.util.factory.VectorFactory
 import com.agh.abm.pps.util.geometric.Vector
 import kotlin.random.Random
@@ -12,13 +13,13 @@ class RandomMovementStrategy() : MovementStrategy {
         this.random = random;
     }
 
-    override fun getNextPosition(maxDistance: Double, currentPosition: Vector): Vector {
-        val shift = VectorFactory.random(random, maxDistance)
-        return currentPosition.add(shift)
+    override fun getNextPosition(movementParameter: MovementParameter): Vector {
+        val shift = VectorFactory.random(random, movementParameter.moveMaxDistance)
+        return movementParameter.currentPosition.add(shift)
     }
 
-    override fun getConsumedEnergy(distance: Double, moveCost: Double): Double {
-        return moveCost
+    override fun getConsumedEnergy(movementParameter: MovementParameter, distance: Double): Double {
+        return movementParameter.moveCost
     }
 
     override fun getType(): MovementStrategyType {
