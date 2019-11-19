@@ -4,8 +4,7 @@ import com.agh.abm.pps.model.species.Species
 import kotlin.random.Random
 
 enum class ReproduceStrategyType(name: String, val strategy: ReproduceStrategy) {
-    PARAMETRIZED_PROBABILITY("Parametrized probability", ParametrizedProbabilityReproduceStrategy(3.0)),
-    PROBABILITY("Probability reproduce", ProbabilityReproduceStrategy());
+    PARAMETRIZED_PROBABILITY("Parametrized probability", ParametrizedProbabilityReproduceStrategy());
 
     override fun toString(): String {
         return name
@@ -13,6 +12,6 @@ enum class ReproduceStrategyType(name: String, val strategy: ReproduceStrategy) 
 }
 
 interface ReproduceStrategy {
-    fun reproduce(species: Species): Pair<List<Species>, Double>
+    fun reproduce(species: Species, multiplyEnergy: Double, addEnergy: Double): Pair<List<Species>, Double>
     fun getType(): ReproduceStrategyType
 }

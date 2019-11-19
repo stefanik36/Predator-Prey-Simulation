@@ -92,6 +92,7 @@ class SpeciesConfData(
     val reproduceProbabilityProperty = SimpleDoubleProperty(this, "reproduceProbability", reproduceProbability)
     var reproduceProbability: Double by reproduceProbabilityProperty
 
+
     @JsonIgnore
     val maxNumberOfOffspringProperty = SimpleIntegerProperty(this, "maxNumberOfOffspring", maxNumberOfOffspring)
     var maxNumberOfOffspring: Int by maxNumberOfOffspringProperty
@@ -108,40 +109,54 @@ class SpeciesConfData(
         return when (type) {
             SpeciesType.GRASS -> Grass(
                 pos,
+
                 movementStrategy.strategy,
                 energyTransferStrategy.strategy,
                 reproduceStrategy.strategy,
-                listOf(),
+
                 true,
+
                 minEnergy,
                 maxEnergy,
                 energy,
+
                 maxConsumption,
                 restEnergyConsumption,
                 consumeRange,
+                listOf(),
+
                 moveCost,
                 moveMaxDistance,
+
                 reproduceThreshold,
                 reproduceCost,
                 reproduceProbability,
                 maxNumberOfOffspring,
                 reproduceRange,
+                1.0,
+                0.0,
+
                 size
             )
             SpeciesType.PREDATOR ->
                 Predator(
                     pos,
+
                     movementStrategy.strategy,
                     energyTransferStrategy.strategy,
                     reproduceStrategy.strategy,
-                    listOf(SpeciesType.PREY),
+
                     true,
+
                     minEnergy,
                     maxEnergy,
                     energy,
+
                     maxConsumption,
                     restEnergyConsumption,
                     consumeRange,
+                    listOf(SpeciesType.PREY),
+
                     moveCost,
                     moveMaxDistance,
                     reproduceThreshold,
@@ -149,6 +164,9 @@ class SpeciesConfData(
                     reproduceProbability,
                     maxNumberOfOffspring,
                     reproduceRange,
+                    1.0,
+                    0.0,
+
                     size
                 )
             SpeciesType.PREY -> Prey(
@@ -156,21 +174,29 @@ class SpeciesConfData(
                 movementStrategy.strategy,
                 energyTransferStrategy.strategy,
                 reproduceStrategy.strategy,
-                listOf(SpeciesType.GRASS),
+
                 true,
+
                 minEnergy,
                 maxEnergy,
                 energy,
+
                 maxConsumption,
                 restEnergyConsumption,
                 consumeRange,
+                listOf(SpeciesType.GRASS),
+
                 moveCost,
                 moveMaxDistance,
+
                 reproduceThreshold,
                 reproduceCost,
                 reproduceProbability,
                 maxNumberOfOffspring,
                 reproduceRange,
+                1.0,
+                0.0,
+
                 size
             )
         }

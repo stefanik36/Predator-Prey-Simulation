@@ -14,5 +14,9 @@ class VectorFactory {
             return Vector.of(angle, distance)
         }
 
+        fun zero(): Vector {
+            return Vector.of(0.0, 0.0)
+        }
+
     }
 }

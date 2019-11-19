@@ -18,7 +18,7 @@ class Area(val species: MutableList<Species>) {
 
             step++
 
-
+            println(getOverview())
         }
 
 

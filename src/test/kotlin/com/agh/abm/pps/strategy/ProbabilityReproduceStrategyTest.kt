@@ -1,7 +1,6 @@
 package com.agh.abm.pps.strategy
 
 import com.agh.abm.pps.strategy.movement.RandomMovementStrategy
-import com.agh.abm.pps.strategy.reproduce.ProbabilityReproduceStrategy
 import com.agh.abm.pps.util.factory.SpeciesFactory
 import com.agh.abm.pps.util.geometric.Vector
 import org.junit.jupiter.api.Assertions

@@ -11,14 +11,14 @@ class Grass(
     movementStrategy: MovementStrategy,
     energyTransferStrategy: EnergyTransferStrategy,
     reproduceStrategy: ReproduceStrategy,
-    eats: List<SpeciesType>,
     alive: Boolean,
     minEnergy: Double,
     maxEnergy: Double,
-    energy: Double,
+    inEnergy: Double,
     maxConsumption: Double,
-    energyConsume: Double,
+    restEnergyConsumption: Double,
     consumeRange: Double,
+    eats: List<SpeciesType>,
     moveCost: Double,
     moveMaxDistance: Double,
     reproduceThreshold: Double,
@@ -26,20 +26,22 @@ class Grass(
     reproduceProbability: Double,
     maxNumberOfOffspring: Int,
     reproduceRange: Double,
+    reproduceMultiplyEnergy: Double,
+    reproduceAddEnergy: Double,
     size: Double
 ) : Species(
     currentPosition,
     movementStrategy,
     energyTransferStrategy,
     reproduceStrategy,
-    eats,
     alive,
     minEnergy,
     maxEnergy,
-    energy,
+    inEnergy,
     maxConsumption,
-    energyConsume,
+    restEnergyConsumption,
     consumeRange,
+    eats,
     moveCost,
     moveMaxDistance,
     reproduceThreshold,
@@ -47,6 +49,8 @@ class Grass(
     reproduceProbability,
     maxNumberOfOffspring,
     reproduceRange,
+    reproduceMultiplyEnergy,
+    reproduceAddEnergy,
     size
 ) {
     private val speciesType: SpeciesType = SpeciesType.GRASS
@@ -55,20 +59,20 @@ class Grass(
         return speciesType;
     }
 
-    override fun generate(currentPosition: Vector, energy: Double): Species {
+    override fun generate(currentPosition: Vector, inEnergy: Double): Species {
         return Grass(
             currentPosition,
             movementStrategy,
             energyTransferStrategy,
             reproduceStrategy,
-            eats,
             alive,
             minEnergy,
             maxEnergy,
-            energy,
+            inEnergy,
             maxConsumption,
             restEnergyConsumption,
             consumeRange,
+            eats,
             moveCost,
             moveMaxDistance,
             reproduceThreshold,
@@ -76,6 +80,8 @@ class Grass(
             reproduceProbability,
             maxNumberOfOffspring,
             reproduceRange,
+            reproduceMultiplyEnergy,
+            reproduceAddEnergy,
             size
         )
     }

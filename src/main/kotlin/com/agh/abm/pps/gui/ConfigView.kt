@@ -4,7 +4,6 @@ import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
 import com.agh.abm.pps.strategy.movement.MovementStrategyType
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategyType
 import com.agh.abm.pps.util.factory.SpeciesFactory
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import javafx.collections.ObservableList
@@ -13,13 +12,12 @@ import javafx.scene.control.TableView
 import javafx.scene.control.TextField
 import tornadofx.*
 import java.io.File
-import java.io.FileReader
 import java.io.FileWriter
 import kotlin.random.Random
 
 class ConfigView : View() {
 
-    val filePath = "src/main/resource/JD"
+    private val filePath = "src/main/resources/models/JD"
     var species: ObservableList<SpeciesConfData>
 
     init {

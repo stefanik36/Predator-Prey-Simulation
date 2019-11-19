@@ -11,18 +11,16 @@ import kotlin.math.min
 abstract class Species(
     var currentPosition: Vector,
 
+    //strategies
     val movementStrategy: MovementStrategy,
     val energyTransferStrategy: EnergyTransferStrategy,
     val reproduceStrategy: ReproduceStrategy,
-
-    val eats: List<SpeciesType>,
 
     var alive: Boolean,
 
     //energy
     val minEnergy: Double,
     val maxEnergy: Double,
-
     inEnergy: Double,
 
     //consume
@@ -30,15 +28,20 @@ abstract class Species(
     val restEnergyConsumption: Double,
     val consumeRange: Double,
 
+    val eats: List<SpeciesType>,
+
     //move
     val moveCost: Double,
     val moveMaxDistance: Double,
 
+    //reproduce
     val reproduceThreshold: Double,
     val reproduceCost: Double,
     val reproduceProbability: Double,
     val maxNumberOfOffspring: Int,
     val reproduceRange: Double,
+    val reproduceMultiplyEnergy: Double,
+    val reproduceAddEnergy: Double,
 
     val size: Double
 ) {
@@ -75,7 +78,7 @@ abstract class Species(
 
     fun reproduce(area: Area) {
         if (energy >= reproduceThreshold) {
-            val (newSpecies, cost) = reproduceStrategy.reproduce(this)
+            val (newSpecies, cost) = reproduceStrategy.reproduce(this, reproduceMultiplyEnergy, reproduceAddEnergy)
             area.add(newSpecies)
             energy -= cost;
         }
@@ -92,7 +95,7 @@ abstract class Species(
         return takenEnergy
     }
 
-    abstract fun generate(currentPosition: Vector, energy: Double): Species
+    abstract fun generate(currentPosition: Vector, inEnergy: Double): Species
 
     private fun canEat(species: Species): Boolean =
         species.getType() in this.eats
