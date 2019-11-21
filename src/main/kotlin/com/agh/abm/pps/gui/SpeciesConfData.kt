@@ -135,7 +135,8 @@ class SpeciesConfData(
                     maxNumberOfOffspring,
                     reproduceRange,
                     DefaultSpecies.grassParameters.reproduceMultiplyEnergy,//TODO parametrize from GUI
-                    DefaultSpecies.grassParameters.reproduceAddEnergy//TODO parametrize from GUI
+                    DefaultSpecies.grassParameters.reproduceAddEnergy,//TODO parametrize from GUI
+                    DefaultSpecies.grassParameters.maxNumberOfSpecies//TODO parametrize from GUI
                 ),
                 guiParameter = GuiParameter(size)
             )
@@ -160,8 +161,9 @@ class SpeciesConfData(
                     reproduceProbability,
                     maxNumberOfOffspring,
                     reproduceRange,
-                    DefaultSpecies.preyParameters.reproduceMultiplyEnergy,//TODO parametrize from GUI
-                    DefaultSpecies.preyParameters.reproduceAddEnergy//TODO parametrize from GUI
+                    reproduceMultiplyEnergy = DefaultSpecies.preyParameters.reproduceMultiplyEnergy,//TODO parametrize from GUI
+                    reproduceAddEnergy = DefaultSpecies.preyParameters.reproduceAddEnergy,//TODO parametrize from GUI
+                    maxNumberOfSpecies = DefaultSpecies.preyParameters.maxNumberOfSpecies//TODO parametrize from GUI
                 ),
                 guiParameter = GuiParameter(size)
             )
@@ -188,7 +190,8 @@ class SpeciesConfData(
                         maxNumberOfOffspring,
                         reproduceRange,
                         DefaultSpecies.predatorParameters.reproduceMultiplyEnergy,//TODO parametrize from GUI
-                        DefaultSpecies.predatorParameters.reproduceAddEnergy//TODO parametrize from GUI
+                        DefaultSpecies.predatorParameters.reproduceAddEnergy,//TODO parametrize from GUI
+                        DefaultSpecies.predatorParameters.maxNumberOfSpecies//TODO parametrize from GUI
                     ),
                     guiParameter = GuiParameter(size)
                 )
@@ -251,7 +254,6 @@ class SpeciesConfData(
         fun fromJson(json: String): SpeciesConfData {
             return ObjectMapper().readValue(json, SpeciesConfData::class.java)
         }
-
 
 
     }

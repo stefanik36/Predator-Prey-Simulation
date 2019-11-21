@@ -40,11 +40,11 @@ class Predator(
             energyTransferStrategy,
             reproduceStrategy,
             dieStrategy,
-            consumeParameter,
-            energyTransferParameter.also { it.energy = inEnergy },
-            movementParameter.also { it.currentPosition = currentPosition },
-            reproduceParameter,
-            guiParameter
+            consumeParameter.copy(),
+            energyTransferParameter.copy().also { it.energy = inEnergy },
+            movementParameter.copy().also { it.currentPosition = currentPosition },
+            reproduceParameter.copy(),
+            guiParameter.copy()
         )
     }
 }

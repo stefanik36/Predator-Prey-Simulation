@@ -21,14 +21,14 @@ class DefaultSpecies {
 
             //consumeParameter
             maxConsumption = 0.0,
-            restEnergyConsumption = 0.0,
+            restEnergyConsumption = 20.0,
             consumeRange = 0.0,
             canConsume = listOf(),
 
             //energyTransferParameter
             minEnergy = 0.0,
-            maxEnergy = 5.0,
-            energy = 5.0,
+            maxEnergy = 1000.0,
+            energy = 1000.0,
             alive = true,
 
             //movementParameter
@@ -37,13 +37,14 @@ class DefaultSpecies {
             moveMaxDistance = 0.0,
 
             //reproduceParameter
-            reproduceThreshold = 1.5,
-            reproduceCost = 0.5,
+            reproduceThreshold = 300.0,
+            reproduceCost = 100.0,
             reproduceProbability = 0.2,
             maxNumberOfOffspring = 3,
-            reproduceRange = 1.0,
-            reproduceMultiplyEnergy = 4.0,
-            reproduceAddEnergy = 0.5,
+            reproduceRange = 50.0,
+            reproduceMultiplyEnergy = 2.1,
+            reproduceAddEnergy = 100.0,
+            maxNumberOfSpecies = 7_000,
 
             //guiParameter
             size = 2.0
@@ -58,30 +59,31 @@ class DefaultSpecies {
             dieStrategy = TooLowEnergyDieStrategy(),
 
             //consumeParameter
-            maxConsumption = 1.0,
-            restEnergyConsumption = 0.1,
-            consumeRange = 4.0,
+            maxConsumption = 50.0,
+            restEnergyConsumption = 0.01,
+            consumeRange = 10.0,
             canConsume = listOf(SpeciesType.GRASS),
 
             //energyTransferParameter
             minEnergy = 0.0,
-            maxEnergy = 40.0,
-            energy = 10.0,
+            maxEnergy = 50.0,
+            energy = 20.0,
             alive = true,
 
             //movementParameter
             currentPosition = VectorFactory.zero(),
-            moveCost = 1.0,
-            moveMaxDistance = 10.0,
+            moveCost = 0.02,
+            moveMaxDistance = 30.0,
 
             //reproduceParameter
             reproduceThreshold = 11.0,
-            reproduceCost = 4.0,
-            reproduceProbability = 0.4,
-            maxNumberOfOffspring = 3,
-            reproduceRange = 10.0,
-            reproduceMultiplyEnergy = 1.5,
+            reproduceCost = 2.0,
+            reproduceProbability = 0.2,
+            maxNumberOfOffspring = 5,
+            reproduceRange = 15.0,
+            reproduceMultiplyEnergy = 0.1,
             reproduceAddEnergy = 0.0,
+            maxNumberOfSpecies = 2_000,
 
             //guiParameter
             size = 4.0
@@ -120,6 +122,7 @@ class DefaultSpecies {
             reproduceRange = 15.0,
             reproduceMultiplyEnergy = 1.3,
             reproduceAddEnergy = 0.0,
+            maxNumberOfSpecies = 4_000,
 
             //guiParameter
             size = 8.0

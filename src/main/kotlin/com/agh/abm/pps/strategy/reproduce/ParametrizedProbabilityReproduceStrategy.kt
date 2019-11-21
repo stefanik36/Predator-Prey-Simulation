@@ -1,5 +1,6 @@
 package com.agh.abm.pps.strategy.reproduce
 
+import com.agh.abm.pps.model.board.Area
 import com.agh.abm.pps.model.parameter.ReproduceParameter
 import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.util.factory.VectorFactory
@@ -13,9 +14,15 @@ class ParametrizedProbabilityReproduceStrategy() : ReproduceStrategy {
         this.random = random;
     }
 
-    override fun reproduce(species: Species): Pair<List<Species>, Double> {
-        val reproduceParameter = species.reproduceParameter;
-        if (random.nextDouble() <= reproduceParameter.reproduceProbability) {
+    override fun reproduce(species: Species, area: Area): Pair<List<Species>, Double> {
+        val reproduceParameter = species.reproduceParameter
+
+        val reproduceConditions = listOf(
+            random.nextDouble() <= reproduceParameter.reproduceProbability,
+            reproduceParameter.maxNumberOfSpecies >= area.countSpecies(species.getType())
+        )
+
+        if (reproduceConditions.none { it }) {
             return Pair(listOf(), 0.0)
         }
 

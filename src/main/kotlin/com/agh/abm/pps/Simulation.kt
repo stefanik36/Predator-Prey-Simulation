@@ -29,7 +29,6 @@ class SimulationController : Controller() {
         area.nextStep()
 //        area.getOverview().also { println(it) }
         board.guys.removeIf { !it.energyTransferParameter.alive }
-        println(board.guys.size)
         fire(
             NOTIFY_POPULATION_GRAPH(
                 alivePredNum = board.guys.filterIsInstance<Predator>().count(),

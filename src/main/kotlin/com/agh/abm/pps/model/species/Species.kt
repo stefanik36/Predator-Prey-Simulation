@@ -61,7 +61,7 @@ abstract class Species(
 
     fun reproduce(area: Area) {
         if (energyTransferParameter.energy >= reproduceParameter.reproduceThreshold) {
-            val (newSpecies, cost) = reproduceStrategy.reproduce(this)
+            val (newSpecies, cost) = reproduceStrategy.reproduce(this, area)
             area.add(newSpecies)
             energyTransferParameter.energy -= cost;
         }

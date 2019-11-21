@@ -53,7 +53,8 @@ class SpeciesFactory {
                     maxNumberOfOffspring = DefaultSpecies.grassParameters.maxNumberOfOffspring,
                     reproduceRange = DefaultSpecies.grassParameters.reproduceRange,
                     reproduceMultiplyEnergy = DefaultSpecies.grassParameters.reproduceMultiplyEnergy,
-                    reproduceAddEnergy = DefaultSpecies.grassParameters.reproduceAddEnergy
+                    reproduceAddEnergy = DefaultSpecies.grassParameters.reproduceAddEnergy,
+                    maxNumberOfSpecies = DefaultSpecies.grassParameters.maxNumberOfSpecies
                 ),
                 guiParameter = GuiParameter(
                     size = DefaultSpecies.grassParameters.size
@@ -113,7 +114,8 @@ class SpeciesFactory {
                     maxNumberOfOffspring = DefaultSpecies.preyParameters.maxNumberOfOffspring,
                     reproduceRange = DefaultSpecies.preyParameters.reproduceRange,
                     reproduceMultiplyEnergy = DefaultSpecies.preyParameters.reproduceMultiplyEnergy,
-                    reproduceAddEnergy = DefaultSpecies.preyParameters.reproduceAddEnergy
+                    reproduceAddEnergy = DefaultSpecies.preyParameters.reproduceAddEnergy,
+                    maxNumberOfSpecies = DefaultSpecies.preyParameters.maxNumberOfSpecies
                 ),
                 guiParameter = GuiParameter(
                     size = DefaultSpecies.preyParameters.size
@@ -195,7 +197,8 @@ class SpeciesFactory {
                     maxNumberOfOffspring = DefaultSpecies.predatorParameters.maxNumberOfOffspring,
                     reproduceRange = DefaultSpecies.predatorParameters.reproduceRange,
                     reproduceMultiplyEnergy = DefaultSpecies.predatorParameters.reproduceMultiplyEnergy,
-                    reproduceAddEnergy = DefaultSpecies.predatorParameters.reproduceAddEnergy
+                    reproduceAddEnergy = DefaultSpecies.predatorParameters.reproduceAddEnergy,
+                    maxNumberOfSpecies = DefaultSpecies.predatorParameters.maxNumberOfSpecies
                 ),
                 guiParameter = GuiParameter(
                     size = DefaultSpecies.predatorParameters.size

@@ -7,6 +7,7 @@ data class ReproduceParameter(
     var maxNumberOfOffspring: Int,
     var reproduceRange: Double,
     var reproduceMultiplyEnergy: Double,
-    var reproduceAddEnergy: Double
+    var reproduceAddEnergy: Double,
+    var maxNumberOfSpecies: Int
 ) {
 }
