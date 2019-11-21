@@ -4,6 +4,7 @@ import com.agh.abm.pps.model.board.Area
 import com.agh.abm.pps.model.species.*
 import com.agh.abm.pps.util.geometric.Vector
 import com.agh.abm.pps.gui.SpeciesConfData
+import com.agh.abm.pps.util.Benchmark
 import tornadofx.*
 import kotlin.random.Random
 
@@ -25,19 +26,19 @@ class SimulationController : Controller() {
 
     /////////////////MAIN_LOOP\\\\\\\\\\\\\\\\\\\
     private fun loop() {
-
-        area.nextStep()
-//        area.getOverview().also { println(it) }
-        board.guys.removeIf { !it.energyTransferParameter.alive }
-        fire(
-            NOTIFY_POPULATION_GRAPH(
-                alivePredNum = board.guys.filterIsInstance<Predator>().count(),
-                alivePreyNum = board.guys.filterIsInstance<Prey>().count(),
-                aliveGrassNum = board.guys.filterIsInstance<Grass>().count()
+        val flexibleDelay = delay - Benchmark.measure {
+            area.nextStep()
+            board.guys.removeIf { !it.energyTransferParameter.alive }
+            fire(
+                NOTIFY_POPULATION_GRAPH(
+                    alivePredNum = board.guys.filterIsInstance<Predator>().count(),
+                    alivePreyNum = board.guys.filterIsInstance<Prey>().count(),
+                    aliveGrassNum = board.guys.filterIsInstance<Grass>().count()
+                )
             )
-        )
-        fire(UPDATE_BOARDVIEW)
-        Thread.sleep(delay)
+            fire(UPDATE_BOARDVIEW)
+        }
+        Thread.sleep(if (flexibleDelay > 0) flexibleDelay else 1)
     }
     /////////////////MAIN_LOOP\\\\\\\\\\\\\\\\\\\
 

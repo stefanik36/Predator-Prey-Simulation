@@ -36,12 +36,6 @@ class ConfigView : View() {
                 , SpeciesConfData.fromParameters(DefaultSpecies.preyParameters)
                 , SpeciesConfData.fromParameters(DefaultSpecies.predatorParameters)
             ).observable()
-
-//            listOf(
-//                SpeciesConfData.fromSpecies(SpeciesFactory.standardGrass(Random))
-//                , SpeciesConfData.fromSpecies(SpeciesFactory.standardPredator(Random))
-//                , SpeciesConfData.fromSpecies(SpeciesFactory.standardPrey(Random))
-//            ).observable()
         }
     }
 

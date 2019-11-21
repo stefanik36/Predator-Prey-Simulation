@@ -96,10 +96,10 @@ class Board : View() {
                 alignment = Pos.CENTER_LEFT
                 spacing = 5.0
                 padding = Insets(0.0, 0.0, 0.0, 15.0)
-                button("Config") {
-                    action { configView.openWindow() }
-                }
-                button("Show graph!") { action { PopulationGraphView().openWindow() } }
+//                button("Config") {
+//                    action { configView.openWindow() }
+//                }
+//                button("Show graph!") { action { PopulationGraphView().openWindow() } }
                 label("Delay:")
                 delaySlider = slider {
                     min = 1.0
@@ -160,7 +160,7 @@ class Board : View() {
 
     private fun drawViewRange(x: Double, y: Double, size: Double) {
         gc.stroke = Color.GRAY
-        gc.lineWidth = 0.5
+        gc.lineWidth = 1.0
         gc.strokeOval(x - size / 2, y - size / 2, size, size)
     }
 
@@ -171,7 +171,7 @@ class Board : View() {
     }
 
     private fun draw(o: Prey) {
-        drawCircle(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.guiParameter.size, Color.GREY)
+        drawCircle(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.guiParameter.size, Color.BLACK)
         drawViewRange(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.consumeParameter.consumeRange)
     }
 
