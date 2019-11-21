@@ -41,7 +41,7 @@ class DefaultSpecies {
             reproduceCost = 100.0,
             reproduceProbability = 0.78,
             maxNumberOfOffspring = 3,
-            reproduceRange = 50.0,
+            reproduceRange = 30.0,
             reproduceMultiplyEnergy = 2.1,
             reproduceAddEnergy = 100.0,
             maxNumberOfSpecies = 5_000,
@@ -59,28 +59,28 @@ class DefaultSpecies {
             dieStrategy = TooLowEnergyDieStrategy(),
 
             //consumeParameter
-            maxConsumption = 50.0,
-            restEnergyConsumption = 4.0,
+            maxConsumption = 300.0,
+            restEnergyConsumption = 40.0,
             consumeRange = 10.0,
             canConsume = listOf(SpeciesType.GRASS),
 
             //energyTransferParameter
             minEnergy = 0.0,
-            maxEnergy = 50.0,
-            energy = 20.0,
+            maxEnergy = 500.0,
+            energy = 200.0,
             alive = true,
 
             //movementParameter
             currentPosition = VectorFactory.zero(),
-            moveCost = 10.0,
+            moveCost = 100.0,
             moveMaxDistance = 30.0,
 
             //reproduceParameter
-            reproduceThreshold = 11.0,
-            reproduceCost = 20.0,
-            reproduceProbability = 0.2,
+            reproduceThreshold = 110.0,
+            reproduceCost = 200.0,
+            reproduceProbability = 0.4,
             maxNumberOfOffspring = 5,
-            reproduceRange = 15.0,
+            reproduceRange = 10.0,
             reproduceMultiplyEnergy = 0.1,
             reproduceAddEnergy = 0.0,
             maxNumberOfSpecies = 500,
