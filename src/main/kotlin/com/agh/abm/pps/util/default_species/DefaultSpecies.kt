@@ -21,7 +21,7 @@ class DefaultSpecies {
 
             //consumeParameter
             maxConsumption = 0.0,
-            restEnergyConsumption = 20.0,
+            restEnergyConsumption = 18.0,
             consumeRange = 0.0,
             canConsume = listOf(),
 
@@ -39,12 +39,12 @@ class DefaultSpecies {
             //reproduceParameter
             reproduceThreshold = 300.0,
             reproduceCost = 100.0,
-            reproduceProbability = 0.2,
+            reproduceProbability = 0.78,
             maxNumberOfOffspring = 3,
             reproduceRange = 50.0,
             reproduceMultiplyEnergy = 2.1,
             reproduceAddEnergy = 100.0,
-            maxNumberOfSpecies = 7_000,
+            maxNumberOfSpecies = 5_000,
 
             //guiParameter
             size = 2.0
@@ -60,7 +60,7 @@ class DefaultSpecies {
 
             //consumeParameter
             maxConsumption = 50.0,
-            restEnergyConsumption = 0.01,
+            restEnergyConsumption = 4.0,
             consumeRange = 10.0,
             canConsume = listOf(SpeciesType.GRASS),
 
@@ -72,18 +72,18 @@ class DefaultSpecies {
 
             //movementParameter
             currentPosition = VectorFactory.zero(),
-            moveCost = 0.02,
+            moveCost = 10.0,
             moveMaxDistance = 30.0,
 
             //reproduceParameter
             reproduceThreshold = 11.0,
-            reproduceCost = 2.0,
+            reproduceCost = 20.0,
             reproduceProbability = 0.2,
             maxNumberOfOffspring = 5,
             reproduceRange = 15.0,
             reproduceMultiplyEnergy = 0.1,
             reproduceAddEnergy = 0.0,
-            maxNumberOfSpecies = 2_000,
+            maxNumberOfSpecies = 500,
 
             //guiParameter
             size = 4.0

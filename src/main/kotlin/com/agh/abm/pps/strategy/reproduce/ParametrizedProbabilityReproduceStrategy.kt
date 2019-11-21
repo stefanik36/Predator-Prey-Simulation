@@ -22,7 +22,7 @@ class ParametrizedProbabilityReproduceStrategy() : ReproduceStrategy {
             reproduceParameter.maxNumberOfSpecies >= area.countSpecies(species.getType())
         )
 
-        if (reproduceConditions.none { it }) {
+        if (!reproduceConditions.all { it }) {
             return Pair(listOf(), 0.0)
         }
 

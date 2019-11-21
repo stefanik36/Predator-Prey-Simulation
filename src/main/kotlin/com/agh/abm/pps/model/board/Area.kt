@@ -21,12 +21,13 @@ class Area(val species: MutableList<Species>) {
 
         step++
 
-        println(getOverview())
+//        println(getOverview())
     }
 
 
     fun getOverview(): String {
-        return species.filter { s -> s.getType() == SpeciesType.PREY }.joinToString(
+//        return species.filter { s -> s.getType() == SpeciesType.PREY }.joinToString(
+        return species.joinToString(
             ",${System.lineSeparator()}\t",
             "AREA " +
                     "[step: $step] " +
