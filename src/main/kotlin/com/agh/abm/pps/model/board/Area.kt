@@ -5,6 +5,7 @@ import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.util.Benchmark
 
 class Area(val species: MutableList<Species>) {
+//    var toAddSpecies: MutableList<Species> = mutableListOf()
     var step: Int = 0
 
 
@@ -19,6 +20,7 @@ class Area(val species: MutableList<Species>) {
         Benchmark.measure("Consume:") { alive.parallelStream().forEach { s -> s.consume(this) } }
         Benchmark.measure("Others:") { alive.forEach { s -> s.performOtherActions(this) } }
 
+//        species.addAll(toAddSpecies)
         step++
 
 //        println(getOverview())
