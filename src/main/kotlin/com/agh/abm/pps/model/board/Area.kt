@@ -5,7 +5,7 @@ import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.util.Benchmark
 
 class Area(val species: MutableList<Species>) {
-//    var toAddSpecies: MutableList<Species> = mutableListOf()
+    var reproducedSpecies: MutableList<Species> = mutableListOf()
     var step: Int = 0
 
 
@@ -18,12 +18,20 @@ class Area(val species: MutableList<Species>) {
             Benchmark.measure("Filter:") { species.filter { s -> s.energyTransferParameter.alive } } as List<Species>
         Benchmark.measure("Move:") { alive.forEach { s -> s.move() } }
         Benchmark.measure("Consume:") { alive.parallelStream().forEach { s -> s.consume(this) } }
-        Benchmark.measure("Others:") { alive.forEach { s -> s.performOtherActions(this) } }
+        Benchmark.measure("Die:") { alive.parallelStream().forEach { s -> s.performDieActions() } }
+        Benchmark.measure("Reproduce:") { alive.parallelStream().forEach { s -> s.reproduce(this) } }
+        Benchmark.measure("Others:") { alive.parallelStream().forEach { s -> s.performOtherActions() } }
 
-//        species.addAll(toAddSpecies)
+        addReproducedSpecies()
+
         step++
 
 //        println(getOverview())
+    }
+
+    private fun addReproducedSpecies() {
+        species.addAll(reproducedSpecies)
+        reproducedSpecies.clear()
     }
 
 
@@ -37,8 +45,9 @@ class Area(val species: MutableList<Species>) {
         ) { s -> s.getOverview() }
     }
 
-    fun add(newSpecies: List<Species?>) {
-        species.addAll(newSpecies.filterNotNull().toMutableList())
+    fun add(newSpecies: List<Species>) {
+        reproducedSpecies.addAll(newSpecies)
+//        species.addAll(newSpecies.filterNotNull().toMutableList())
     }
 
     private fun countAlive(): Int {

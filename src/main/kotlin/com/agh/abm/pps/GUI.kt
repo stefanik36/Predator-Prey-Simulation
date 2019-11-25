@@ -96,10 +96,10 @@ class Board : View() {
                 alignment = Pos.CENTER_LEFT
                 spacing = 5.0
                 padding = Insets(0.0, 0.0, 0.0, 15.0)
-//                button("Config") {
-//                    action { configView.openWindow() }
-//                }
-//                button("Show graph!") { action { PopulationGraphView().openWindow() } }
+                button("Config") {
+                    action { configView.openWindow() }
+                }
+                button("Show graph!") { action { PopulationGraphView().openWindow() } }
                 label("Delay:")
                 delaySlider = slider {
                     min = 1.0
@@ -111,7 +111,7 @@ class Board : View() {
 
                 }
 
-                statusLabel = label("Status:"){
+                statusLabel = label("Status:") {
                     padding = Insets(2.0, 5.0, 2.0, 20.0)
                 }
             }
@@ -166,18 +166,41 @@ class Board : View() {
 
 
     private fun draw(o: Predator) {
-        drawCircle(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.guiParameter.size, Color.RED)//TODO add color to guiParameter
-        drawViewRange(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.consumeParameter.consumeRange)
+        drawCircle(
+            o.movementParameter.currentPosition.x,
+            o.movementParameter.currentPosition.y,
+            o.guiParameter.size,
+            Color.RED
+        )//TODO add color to guiParameter
+        drawViewRange(
+            o.movementParameter.currentPosition.x,
+            o.movementParameter.currentPosition.y,
+            o.consumeParameter.consumeRange
+        )
     }
 
     private fun draw(o: Prey) {
-        drawCircle(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.guiParameter.size, Color.BLACK)
-        drawViewRange(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.consumeParameter.consumeRange)
+        drawCircle(
+            o.movementParameter.currentPosition.x,
+            o.movementParameter.currentPosition.y,
+            o.guiParameter.size,
+            Color.BLACK
+        )
+        drawViewRange(
+            o.movementParameter.currentPosition.x,
+            o.movementParameter.currentPosition.y,
+            o.consumeParameter.consumeRange
+        )
     }
 
     private fun draw(o: Grass) {
         gc.fill = Color.GREEN
-        gc.fillRect(o.movementParameter.currentPosition.x, o.movementParameter.currentPosition.y, o.guiParameter.size, o.guiParameter.size)
+        gc.fillRect(
+            o.movementParameter.currentPosition.x,
+            o.movementParameter.currentPosition.y,
+            o.guiParameter.size,
+            o.guiParameter.size
+        )
     }
 
     private fun backgroundColor() {
@@ -235,7 +258,7 @@ class PopulationGraphView : View() {
         subscribe<NOTIFY_POPULATION_GRAPH> {
             preySeries.data.add(XYChart.Data(posi.toString(), it.alivePreyNum))
             predatorSeries.data.add(XYChart.Data(posi.toString(), it.alivePredNum))
-            grassSeries.data.add(XYChart.Data(posi.toString(), it.aliveGrassNum))
+            grassSeries.data.add(XYChart.Data(posi.toString(), it.aliveGrassNum / 10))
             posi++
         }
     }

@@ -17,14 +17,22 @@ class ParametrizedProbabilityReproduceStrategy() : ReproduceStrategy {
     override fun reproduce(species: Species, area: Area): Pair<List<Species>, Double> {
         val reproduceParameter = species.reproduceParameter
 
-        val reproduceConditions = listOf(
-            random.nextDouble() <= reproduceParameter.reproduceProbability,
-            reproduceParameter.maxNumberOfSpecies >= area.countSpecies(species.getType())
-        )
-
-        if (!reproduceConditions.all { it }) {
+        if(random.nextDouble() > reproduceParameter.reproduceProbability){
             return Pair(listOf(), 0.0)
         }
+        if(reproduceParameter.maxNumberOfSpecies < area.countSpecies(species.getType())){
+            return Pair(listOf(), 0.0)
+        }
+
+
+//        val reproduceConditions = listOf(
+//            random.nextDouble() <= reproduceParameter.reproduceProbability,
+//            reproduceParameter.maxNumberOfSpecies >= area.countSpecies(species.getType())
+//        )
+//
+//        if (!reproduceConditions.all { it }) {
+//            return Pair(listOf(), 0.0)
+//        }
 
         val numberOfOffspring =
             if (reproduceParameter.maxNumberOfOffspring == 1) 1

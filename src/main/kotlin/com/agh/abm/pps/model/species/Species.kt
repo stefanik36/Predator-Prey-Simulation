@@ -49,14 +49,12 @@ abstract class Species(
 //        food.map { s -> s.getOverview() }.also { s -> println(s) }
     }
 
-    fun performOtherActions(area: Area) {
+    fun performDieActions() {
         val shouldDie = dieStrategy.checkIfShouldDie(energyTransferParameter)
         if (shouldDie) {
             die()
             return
         }
-        reproduce(area)
-        energyTransferParameter.energy -= consumeParameter.restEnergyConsumption
     }
 
     fun reproduce(area: Area) {
@@ -66,6 +64,11 @@ abstract class Species(
             energyTransferParameter.energy -= cost;
         }
     }
+
+    fun performOtherActions() {
+        energyTransferParameter.energy -= consumeParameter.restEnergyConsumption
+    }
+
 
     private fun die() {
         energyTransferParameter.alive = false

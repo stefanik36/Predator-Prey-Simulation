@@ -21,7 +21,7 @@ class DefaultSpecies {
 
             //consumeParameter
             maxConsumption = 0.0,
-            restEnergyConsumption = 18.0,
+            restEnergyConsumption = 30.0,
             consumeRange = 0.0,
             canConsume = listOf(),
 
@@ -37,12 +37,12 @@ class DefaultSpecies {
             moveMaxDistance = 0.0,
 
             //reproduceParameter
-            reproduceThreshold = 300.0,
+            reproduceThreshold = 200.0,
             reproduceCost = 100.0,
-            reproduceProbability = 0.78,
+            reproduceProbability = 0.3,
             maxNumberOfOffspring = 3,
             reproduceRange = 30.0,
-            reproduceMultiplyEnergy = 2.1,
+            reproduceMultiplyEnergy = 4.1,
             reproduceAddEnergy = 100.0,
             maxNumberOfSpecies = 5_000,
 
@@ -73,7 +73,7 @@ class DefaultSpecies {
             //movementParameter
             currentPosition = VectorFactory.zero(),
             moveCost = 100.0,
-            moveMaxDistance = 30.0,
+            moveMaxDistance = 50.0,
 
             //reproduceParameter
             reproduceThreshold = 110.0,
@@ -98,29 +98,29 @@ class DefaultSpecies {
             dieStrategy = TooLowEnergyDieStrategy(),
 
             //consumeParameter
-            maxConsumption = 5.0,
-            restEnergyConsumption = 0.05,
-            consumeRange = 8.0,
+            maxConsumption = 450.0,
+            restEnergyConsumption = 10.0,
+            consumeRange = 15.0,
             canConsume = listOf(SpeciesType.PREY),
 
             //energyTransferParameter
             minEnergy = 0.0,
-            maxEnergy = 20.0,
-            energy = 10.0,
+            maxEnergy = 800.0,
+            energy = 100.0,
             alive = true,
 
             //movementParameter
             currentPosition = VectorFactory.zero(),
-            moveCost = 0.5,
-            moveMaxDistance = 20.0,
+            moveCost = 50.0,
+            moveMaxDistance = 40.0,
 
             //reproduceParameter
-            reproduceThreshold = 15.0,
-            reproduceCost = 8.0,
+            reproduceThreshold = 300.0,
+            reproduceCost = 100.0,
             reproduceProbability = 0.7,
             maxNumberOfOffspring = 5,
             reproduceRange = 15.0,
-            reproduceMultiplyEnergy = 1.3,
+            reproduceMultiplyEnergy = 0.1,
             reproduceAddEnergy = 0.0,
             maxNumberOfSpecies = 4_000,
 
