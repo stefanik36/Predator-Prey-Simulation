@@ -17,7 +17,7 @@ class DefaultSpecies {
             movementStrategy = NoMovementStrategy(),
             energyTransferStrategy = NoEnergyTransferStrategy(),
             reproduceStrategy = ParametrizedProbabilityReproduceStrategy(),
-            dieStrategy = TooLowEnergyDieStrategy(),
+            dieStrategies = listOf(TooLowEnergyDieStrategy()),
 
             //consumeParameter
             maxConsumption = 0.0,
@@ -27,8 +27,8 @@ class DefaultSpecies {
 
             //energyTransferParameter
             minEnergy = 0.0,
-            maxEnergy = 1000.0,
-            energy = 1000.0,
+            maxEnergy = 500.0,
+            energy = 500.0,
             alive = true,
 
             //movementParameter
@@ -37,14 +37,14 @@ class DefaultSpecies {
             moveMaxDistance = 0.0,
 
             //reproduceParameter
-            reproduceThreshold = 200.0,
+            reproduceThreshold = 220.0,
             reproduceCost = 100.0,
             reproduceProbability = 0.3,
             maxNumberOfOffspring = 3,
             reproduceRange = 30.0,
-            reproduceMultiplyEnergy = 4.1,
+            reproduceMultiplyEnergy = 2.5,
             reproduceAddEnergy = 100.0,
-            maxNumberOfSpecies = 5_000,
+            maxNumberOfSpecies = 20_000,
 
             //guiParameter
             size = 2.0
@@ -56,12 +56,12 @@ class DefaultSpecies {
             movementStrategy = RandomMovementStrategy(),
             energyTransferStrategy = GetFromAllEnergyTransferStrategy(),
             reproduceStrategy = ParametrizedProbabilityReproduceStrategy(),
-            dieStrategy = TooLowEnergyDieStrategy(),
+            dieStrategies = listOf(TooLowEnergyDieStrategy()),
 
             //consumeParameter
-            maxConsumption = 300.0,
-            restEnergyConsumption = 40.0,
-            consumeRange = 10.0,
+            maxConsumption = 500.0,
+            restEnergyConsumption = 5.0,
+            consumeRange = 20.0,
             canConsume = listOf(SpeciesType.GRASS),
 
             //energyTransferParameter
@@ -72,18 +72,18 @@ class DefaultSpecies {
 
             //movementParameter
             currentPosition = VectorFactory.zero(),
-            moveCost = 100.0,
-            moveMaxDistance = 50.0,
+            moveCost = 10.0,
+            moveMaxDistance = 30.0,
 
             //reproduceParameter
-            reproduceThreshold = 110.0,
+            reproduceThreshold = 210.0,
             reproduceCost = 200.0,
             reproduceProbability = 0.4,
             maxNumberOfOffspring = 5,
             reproduceRange = 10.0,
             reproduceMultiplyEnergy = 0.1,
             reproduceAddEnergy = 0.0,
-            maxNumberOfSpecies = 500,
+            maxNumberOfSpecies = 1_000,
 
             //guiParameter
             size = 4.0
@@ -95,7 +95,7 @@ class DefaultSpecies {
             movementStrategy = RandomMovementStrategy(),
             energyTransferStrategy = GetFromAllEnergyTransferStrategy(),
             reproduceStrategy = ParametrizedProbabilityReproduceStrategy(),
-            dieStrategy = TooLowEnergyDieStrategy(),
+            dieStrategies = listOf(TooLowEnergyDieStrategy()),
 
             //consumeParameter
             maxConsumption = 450.0,

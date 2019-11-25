@@ -114,7 +114,7 @@ class SpeciesConfData(
                 movementStrategy = movementStrategy.strategy,
                 energyTransferStrategy = energyTransferStrategy.strategy,
                 reproduceStrategy = reproduceStrategy.strategy,
-                dieStrategy = TooLowEnergyDieStrategy(),
+                dieStrategies = listOf(TooLowEnergyDieStrategy()),
                 consumeParameter = ConsumeParameter(
                     maxConsumption,
                     restEnergyConsumption,
@@ -144,7 +144,7 @@ class SpeciesConfData(
                 movementStrategy = movementStrategy.strategy,
                 energyTransferStrategy = energyTransferStrategy.strategy,
                 reproduceStrategy = reproduceStrategy.strategy,
-                dieStrategy = TooLowEnergyDieStrategy(),
+                dieStrategies = listOf(TooLowEnergyDieStrategy()),
                 consumeParameter = ConsumeParameter(
                     maxConsumption,
                     restEnergyConsumption,
@@ -172,7 +172,7 @@ class SpeciesConfData(
                     movementStrategy = movementStrategy.strategy,
                     energyTransferStrategy = energyTransferStrategy.strategy,
                     reproduceStrategy = reproduceStrategy.strategy,
-                    dieStrategy = TooLowEnergyDieStrategy(),
+                    dieStrategies = listOf(TooLowEnergyDieStrategy()),
                     consumeParameter = ConsumeParameter(
                         maxConsumption,
                         restEnergyConsumption,

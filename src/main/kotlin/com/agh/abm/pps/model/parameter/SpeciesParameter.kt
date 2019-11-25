@@ -13,7 +13,7 @@ data class SpeciesParameter(
     var movementStrategy: MovementStrategy,
     var energyTransferStrategy: EnergyTransferStrategy,
     var reproduceStrategy: ReproduceStrategy,
-    var dieStrategy: DieStrategy,
+    var dieStrategies: List<DieStrategy>,
 
     // consumeParameter: ConsumeParameter
     var maxConsumption: Double,

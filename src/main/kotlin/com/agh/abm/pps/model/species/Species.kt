@@ -14,7 +14,7 @@ abstract class Species(
     val movementStrategy: MovementStrategy,
     val energyTransferStrategy: EnergyTransferStrategy,
     val reproduceStrategy: ReproduceStrategy,
-    val dieStrategy: DieStrategy,
+    val dieStrategies: List<DieStrategy>,
 
     val consumeParameter: ConsumeParameter,
     val energyTransferParameter: EnergyTransferParameter,
@@ -50,7 +50,8 @@ abstract class Species(
     }
 
     fun performDieActions() {
-        val shouldDie = dieStrategy.checkIfShouldDie(energyTransferParameter)
+
+        val shouldDie = dieStrategies.any { ds -> ds.checkIfShouldDie(energyTransferParameter) }
         if (shouldDie) {
             die()
             return

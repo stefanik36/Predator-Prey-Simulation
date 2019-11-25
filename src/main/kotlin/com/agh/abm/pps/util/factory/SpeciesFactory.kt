@@ -28,7 +28,7 @@ class SpeciesFactory {
                 movementStrategy = movementStrategy,
                 energyTransferStrategy = GetFromAllEnergyTransferStrategy(),
                 reproduceStrategy = reproduceStrategy,
-                dieStrategy = TooLowEnergyDieStrategy(),
+                dieStrategies = listOf(TooLowEnergyDieStrategy()),
                 consumeParameter = ConsumeParameter(
                     maxConsumption = DefaultSpecies.grassParameters.maxConsumption,
                     restEnergyConsumption = DefaultSpecies.grassParameters.restEnergyConsumption,
@@ -89,7 +89,7 @@ class SpeciesFactory {
                 movementStrategy = movementStrategy,
                 energyTransferStrategy = GetFromAllEnergyTransferStrategy(),
                 reproduceStrategy = reproduceStrategy,
-                dieStrategy = TooLowEnergyDieStrategy(),
+                dieStrategies = listOf(TooLowEnergyDieStrategy()),
                 consumeParameter = ConsumeParameter(
                     maxConsumption = DefaultSpecies.preyParameters.maxConsumption,
                     restEnergyConsumption = DefaultSpecies.preyParameters.restEnergyConsumption,
@@ -172,7 +172,7 @@ class SpeciesFactory {
                 movementStrategy = movementStrategy,
                 energyTransferStrategy = GetFromAllEnergyTransferStrategy(),
                 reproduceStrategy = reproduceStrategy,
-                dieStrategy = TooLowEnergyDieStrategy(),
+                dieStrategies = listOf(TooLowEnergyDieStrategy()),
                 consumeParameter = ConsumeParameter(
                     maxConsumption = DefaultSpecies.predatorParameters.maxConsumption,
                     restEnergyConsumption = DefaultSpecies.predatorParameters.restEnergyConsumption,
