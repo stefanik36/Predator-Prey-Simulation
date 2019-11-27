@@ -1,6 +1,7 @@
 package com.agh.abm.pps.model.species
 
 import com.agh.abm.pps.model.board.Area
+import com.agh.abm.pps.model.board.Chunk
 import com.agh.abm.pps.model.parameter.*
 import com.agh.abm.pps.strategy.die_strategy.DieStrategy
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategy
@@ -22,7 +23,10 @@ abstract class Species(
     val reproduceParameter: ReproduceParameter,
 
     val guiParameter: GuiParameter
+
 ) {
+
+    var chunk: Chunk? = null
 
     abstract fun getType(): SpeciesType
 
@@ -37,7 +41,8 @@ abstract class Species(
     }
 
     open fun consume(area: Area) {
-        val food = area.species
+        if (chunk == null) return
+        val food = chunk!!.ensureRange(movementParameter.currentPosition, consumeParameter.consumeRange)
             .filter { s -> s.energyTransferParameter.alive }
             .filter { s -> this.canEat(s) }
             .filter { s -> this.isInConsumeRange(s) }
@@ -46,7 +51,6 @@ abstract class Species(
         energyTransferParameter.energy =
             min(energyTransferParameter.energy + transferredEnergy, energyTransferParameter.maxEnergy)
 
-//        food.map { s -> s.getOverview() }.also { s -> println(s) }
     }
 
     fun performDieActions() {

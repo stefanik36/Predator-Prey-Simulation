@@ -8,29 +8,30 @@ class Area(val species: MutableList<Species>) {
     var reproducedSpecies: MutableList<Species> = mutableListOf()
     var step: Int = 0
     var numberOfSpecies: MutableMap<SpeciesType, Int> = mutableMapOf()
+    private val chunkManager: ChunkManager = ChunkManager(900.0, 900.0, 20.0, 20.0)
 
     fun nextStep() {
 
         println("======================================")
         println("Step: $step, species: ${countAlive()}")
 
-
-        val alive =
-            Benchmark.measure("Filter:") { species.filter { s -> s.energyTransferParameter.alive } } as List<Species>
+        val alive = species
 
         alive.forEach { a ->
             numberOfSpecies[a.getType()] = numberOfSpecies.getOrElse(a.getType(), { 0 }) + 1
         }
 
         Benchmark.measure("Move:") { alive.forEach { s -> s.move() } }
-        Benchmark.measure("Consume:") { alive.forEach { s -> s.consume(this) } }
+        Benchmark.measure("Fill chunk manager") { alive.forEach(chunkManager::addSpecies) }
+        Benchmark.measure("Consume:") { alive.parallelStream().forEach { s -> s.consume(this) } }
         Benchmark.measure("Die:") { alive.forEach { s -> s.performDieActions() } }
         Benchmark.measure("Reproduce:") { alive.forEach { s -> s.reproduce(this) } }
         Benchmark.measure("Others:") { alive.forEach { s -> s.performOtherActions() } }
+        Benchmark.measure("Remove dead agents") { species.removeIf { !it.energyTransferParameter.alive } }
 
         addReproducedSpecies()
         numberOfSpecies.clear()
-
+        chunkManager.clear()
 
         step++
 
@@ -55,7 +56,6 @@ class Area(val species: MutableList<Species>) {
 
     fun add(newSpecies: List<Species>) {
         reproducedSpecies.addAll(newSpecies)
-//        species.addAll(newSpecies.filterNotNull().toMutableList())
     }
 
     private fun countAlive(): Int {
@@ -63,7 +63,6 @@ class Area(val species: MutableList<Species>) {
     }
 
     fun countSpecies(type: SpeciesType): Int {
-//        return species.filter { s -> s.energyTransferParameter.alive }.filter { s -> s.getType() == type }.size
         return numberOfSpecies.getOrElse(type, { 0 })
     }
 }

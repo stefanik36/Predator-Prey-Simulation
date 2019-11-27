@@ -28,7 +28,6 @@ class SimulationController : Controller() {
     private fun loop() {
         val flexibleDelay = delay - Benchmark.measure {
             area.nextStep()
-            board.guys.removeIf { !it.energyTransferParameter.alive }
             fire(
                 NOTIFY_POPULATION_GRAPH(
                     alivePredNum = board.guys.filterIsInstance<Predator>().count(),
