@@ -1,5 +1,6 @@
 package com.agh.abm.pps.strategy
 
+import com.agh.abm.pps.model.board.Area
 import com.agh.abm.pps.strategy.movement.RandomMovementStrategy
 import com.agh.abm.pps.strategy.reproduce.ParametrizedProbabilityReproduceStrategy
 import com.agh.abm.pps.util.factory.SpeciesFactory
@@ -23,7 +24,7 @@ class ProbabilityReproduceStrategyTest {
         )
         prey01.reproduceParameter.reproduceMultiplyEnergy=1.0
 
-        val result = strategy.reproduce(prey01)
+        val result = strategy.reproduce(prey01, Area(mutableListOf()))
 
         Assertions.assertEquals(1, result.first.size)
         Assertions.assertEquals(3.0, result.first[0].energyTransferParameter.energy)
