@@ -1,5 +1,6 @@
 package com.agh.abm.pps.model.parameter
 
+import kotlin.math.max
 import kotlin.math.min
 
 data class EnergyTransferParameter(
@@ -10,6 +11,6 @@ data class EnergyTransferParameter(
 ) {
     var energy: Double = min(inEnergy, maxEnergy)
         set(value) {
-            field = min(value, maxEnergy)
+            field = min(max(value, minEnergy), maxEnergy)
         }
 }

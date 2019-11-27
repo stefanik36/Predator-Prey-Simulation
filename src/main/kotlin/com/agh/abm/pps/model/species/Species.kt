@@ -54,7 +54,6 @@ abstract class Species(
     }
 
     fun performDieActions() {
-
         val shouldDie = dieStrategies.any { ds -> ds.checkIfShouldDie(energyTransferParameter) }
         if (shouldDie) {
             die()
