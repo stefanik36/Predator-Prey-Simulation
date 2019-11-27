@@ -1,9 +1,11 @@
 package com.agh.abm.pps.strategy.reproduce
 
 import com.agh.abm.pps.model.board.Area
+import com.agh.abm.pps.model.parameter.MovementParameter
 import com.agh.abm.pps.model.parameter.ReproduceParameter
 import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.util.factory.VectorFactory
+import com.agh.abm.pps.util.geometric.PositionRestriction
 import com.agh.abm.pps.util.geometric.Vector
 import kotlin.random.Random
 
@@ -17,10 +19,10 @@ class ParametrizedProbabilityReproduceStrategy() : ReproduceStrategy {
     override fun reproduce(species: Species, area: Area): Pair<List<Species>, Double> {
         val reproduceParameter = species.reproduceParameter
 
-        if(random.nextDouble() > reproduceParameter.reproduceProbability){
+        if (random.nextDouble() > reproduceParameter.reproduceProbability) {
             return Pair(listOf(), 0.0)
         }
-        if(reproduceParameter.maxNumberOfSpecies < area.countSpecies(species.getType())){
+        if (reproduceParameter.maxNumberOfSpecies < area.countSpecies(species.getType())) {
             return Pair(listOf(), 0.0)
         }
 
@@ -40,9 +42,13 @@ class ParametrizedProbabilityReproduceStrategy() : ReproduceStrategy {
 
         val offspringList = IntArray(numberOfOffspring) { it }
             .map {
-                val shiftVector = computeShiftVector(reproduceParameter, species)
-                val inEnergy = computeEnergy(reproduceParameter)
-                species.generate(shiftVector, inEnergy)
+                val offspringPosition = computeOffspringPosition(
+                    reproduceParameter,
+                    species.movementParameter,
+                    area.restriction
+                )
+                val offspringEnergy = computeEnergy(reproduceParameter)
+                species.generate(offspringPosition, offspringEnergy)
             }
         val cost = offspringList.map { reproduceParameter.reproduceCost }.sum()
 
@@ -52,14 +58,13 @@ class ParametrizedProbabilityReproduceStrategy() : ReproduceStrategy {
     private fun computeEnergy(reproduceParameter: ReproduceParameter) =
         reproduceParameter.reproduceCost * reproduceParameter.reproduceMultiplyEnergy + reproduceParameter.reproduceAddEnergy
 
-    private fun computeShiftVector(
+    private fun computeOffspringPosition(
         reproduceParameter: ReproduceParameter,
-        species: Species
+        movementParameter: MovementParameter,
+        restriction: PositionRestriction
     ): Vector {
-        return VectorFactory.random(
-            random,
-            reproduceParameter.reproduceRange
-        ).add(species.movementParameter.currentPosition)
+        val shift = VectorFactory.random(random, reproduceParameter.reproduceRange)
+        return shift.addWithRestriction(movementParameter.currentPosition, restriction)
     }
 
     override fun getType(): ReproduceStrategyType {

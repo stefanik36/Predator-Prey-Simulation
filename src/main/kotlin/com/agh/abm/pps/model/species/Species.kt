@@ -30,8 +30,8 @@ abstract class Species(
 
     abstract fun getType(): SpeciesType
 
-    fun move() {
-        val nextPosition = movementStrategy.getNextPosition(movementParameter)
+    fun move(area: Area) {
+        val nextPosition = movementStrategy.getNextPosition(movementParameter, area)
         val consumedEnergy = movementStrategy.getConsumedEnergy(
             movementParameter,
             movementParameter.currentPosition.distance(nextPosition)

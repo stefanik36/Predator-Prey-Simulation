@@ -41,7 +41,7 @@ class DefaultSpecies {
             reproduceCost = 100.0,
             reproduceProbability = 0.3,
             maxNumberOfOffspring = 3,
-            reproduceRange = 30.0,
+            reproduceRange = 60.0,
             reproduceMultiplyEnergy = 2.5,
             reproduceAddEnergy = 100.0,
             maxNumberOfSpecies = 20_000,
@@ -59,31 +59,31 @@ class DefaultSpecies {
             dieStrategies = listOf(TooLowEnergyDieStrategy()),
 
             //consumeParameter
-            maxConsumption = 500.0,
-            restEnergyConsumption = 5.0,
-            consumeRange = 20.0,
+            maxConsumption = 200.0,
+            restEnergyConsumption = 20.0,
+            consumeRange = 15.0,
             canConsume = listOf(SpeciesType.GRASS),
 
             //energyTransferParameter
             minEnergy = 0.0,
-            maxEnergy = 500.0,
-            energy = 200.0,
+            maxEnergy = 1000.0,
+            energy = 400.0,
             alive = true,
 
             //movementParameter
             currentPosition = VectorFactory.zero(),
-            moveCost = 10.0,
+            moveCost = 40.0,
             moveMaxDistance = 30.0,
 
             //reproduceParameter
-            reproduceThreshold = 210.0,
-            reproduceCost = 200.0,
+            reproduceThreshold = 840.0,
+            reproduceCost = 800.0,
             reproduceProbability = 0.4,
-            maxNumberOfOffspring = 5,
+            maxNumberOfOffspring = 4,
             reproduceRange = 10.0,
             reproduceMultiplyEnergy = 0.1,
             reproduceAddEnergy = 0.0,
-            maxNumberOfSpecies = 1_000,
+            maxNumberOfSpecies = 1_000_000,
 
             //guiParameter
             size = 4.0
@@ -122,7 +122,7 @@ class DefaultSpecies {
             reproduceRange = 15.0,
             reproduceMultiplyEnergy = 0.1,
             reproduceAddEnergy = 0.0,
-            maxNumberOfSpecies = 4_000,
+            maxNumberOfSpecies = 1_000_000,
 
             //guiParameter
             size = 8.0

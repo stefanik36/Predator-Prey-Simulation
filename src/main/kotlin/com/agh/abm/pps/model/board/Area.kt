@@ -3,12 +3,21 @@ package com.agh.abm.pps.model.board
 import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.util.Benchmark
+import com.agh.abm.pps.util.geometric.PositionRestriction
 
 class Area(val species: MutableList<Species>) {
     var reproducedSpecies: MutableList<Species> = mutableListOf()
     var step: Int = 0
     var numberOfSpecies: MutableMap<SpeciesType, Int> = mutableMapOf()
     private val chunkManager: ChunkManager = ChunkManager(900.0, 900.0, 20.0, 20.0)
+
+    val restriction: PositionRestriction = PositionRestriction(
+        minX = 0.0,
+        maxX = 900.0,
+        minY = 0.0,
+        maxY = 900.0
+    )
+
 
     fun nextStep() {
 
@@ -21,7 +30,7 @@ class Area(val species: MutableList<Species>) {
             numberOfSpecies[a.getType()] = numberOfSpecies.getOrElse(a.getType(), { 0 }) + 1
         }
 
-        Benchmark.measure("Move:") { alive.forEach { s -> s.move() } }
+        Benchmark.measure("Move:") { alive.forEach { s -> s.move(this) } }
         Benchmark.measure("Fill chunk manager") { alive.forEach(chunkManager::addSpecies) }
         Benchmark.measure("Consume:") { alive.parallelStream().forEach { s -> s.consume(this) } }
         Benchmark.measure("Die:") { alive.forEach { s -> s.performDieActions() } }
