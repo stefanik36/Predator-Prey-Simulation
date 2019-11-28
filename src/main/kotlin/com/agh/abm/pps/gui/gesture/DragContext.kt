@@ -1,4 +1,4 @@
-package com.agh.abm.pps.gui
+package com.agh.abm.pps.gui.gesture
 
 internal class DragContext {
 

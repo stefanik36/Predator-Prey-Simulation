@@ -1,6 +1,6 @@
 package com.agh.abm.pps.model.board
 
-import com.agh.abm.pps.BoardState
+import com.agh.abm.pps.gui.BoardState
 import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.util.Benchmark

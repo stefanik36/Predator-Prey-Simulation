@@ -1,5 +1,6 @@
-package com.agh.abm.pps.gui
+package com.agh.abm.pps.gui.gesture
 
+import com.agh.abm.pps.gui.layout.PannableCanvas
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
@@ -49,7 +50,11 @@ internal class SceneGestures(var canvas: PannableCanvas) {
         else
             scale *= delta
 
-        scale = clamp(scale, MIN_SCALE, MAX_SCALE)
+        scale = clamp(
+            scale,
+            MIN_SCALE,
+            MAX_SCALE
+        )
 
         val f = scale / oldScale - 1
 
@@ -58,22 +63,23 @@ internal class SceneGestures(var canvas: PannableCanvas) {
 
         canvas.scale = scale
         canvas.setPivot(f * dx, f * dy)
+        println("scale: $scale")
 
         event.consume()
     }
 
     companion object {
 
-        private val MAX_SCALE = 10.0
-        private val MIN_SCALE = .1
+        private const val MAX_SCALE = 10.0
+        private const val MIN_SCALE = .1
 
 
         fun clamp(value: Double, min: Double, max: Double): Double {
 
-            if (java.lang.Double.compare(value, min) < 0)
+            if (value.compareTo(min) < 0)
                 return min
 
-            return if (java.lang.Double.compare(value, max) > 0) max else value
+            return if (value.compareTo(max) > 0) max else value
 
         }
     }

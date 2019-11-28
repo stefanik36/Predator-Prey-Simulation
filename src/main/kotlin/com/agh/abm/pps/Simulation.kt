@@ -1,9 +1,10 @@
 package com.agh.abm.pps
 
+import com.agh.abm.pps.gui.*
+import com.agh.abm.pps.gui.data.SpeciesConfData
 import com.agh.abm.pps.model.board.Area
 import com.agh.abm.pps.model.species.*
 import com.agh.abm.pps.util.geometric.Vector
-import com.agh.abm.pps.gui.SpeciesConfData
 import com.agh.abm.pps.util.Benchmark
 import tornadofx.*
 import kotlin.random.Random
@@ -15,7 +16,7 @@ fun main() {
 class SimulationController : Controller() {
     private var isAlive = true
     private var delay: Long = 1
-    val board: BoardState = BoardState(800.0, 600.0, 20.0)
+    val board: BoardState = BoardState(1000.0, 1000.0, 20.0)
     lateinit var area: Area
 
     /////////////////SETUP\\\\\\\\\\\\\\\\\\\
@@ -28,6 +29,8 @@ class SimulationController : Controller() {
     private fun loop() {
         val flexibleDelay = delay - Benchmark.measure {
             area.nextStep()
+
+            fire(UPDATE_BOARDVIEW)
             fire(
                 NOTIFY_POPULATION_GRAPH(
                     alivePredNum = board.agents.filterIsInstance<Predator>().count(),
@@ -35,7 +38,6 @@ class SimulationController : Controller() {
                     aliveGrassNum = board.agents.filterIsInstance<Grass>().count()
                 )
             )
-            fire(UPDATE_BOARDVIEW)
         }
         Thread.sleep(if (flexibleDelay > 0) flexibleDelay else 1)
     }

@@ -1,10 +1,10 @@
-package com.agh.abm.pps.gui
+package com.agh.abm.pps.gui.view
 
+import com.agh.abm.pps.gui.data.SpeciesConfData
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
 import com.agh.abm.pps.strategy.movement.MovementStrategyType
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategyType
 import com.agh.abm.pps.util.default_species.DefaultSpecies
-import com.agh.abm.pps.util.factory.SpeciesFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import javafx.collections.ObservableList
@@ -13,8 +13,6 @@ import javafx.scene.control.TableView
 import javafx.scene.control.TextField
 import tornadofx.*
 import java.io.File
-import java.io.FileWriter
-import kotlin.random.Random
 
 class ConfigView : View() {
 
