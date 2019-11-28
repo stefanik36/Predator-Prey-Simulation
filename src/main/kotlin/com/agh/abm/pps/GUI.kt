@@ -2,6 +2,8 @@ package com.agh.abm.pps
 
 import com.agh.abm.pps.model.species.*
 import com.agh.abm.pps.gui.ConfigView
+import com.agh.abm.pps.gui.PannableCanvas
+import com.agh.abm.pps.gui.SceneGestures
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.geometry.Insets
@@ -16,12 +18,16 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Label
 import javafx.scene.control.Slider
+import javafx.scene.input.MouseEvent
+import javafx.scene.input.ScrollEvent
 import tornadofx.*
 
 data class BoardState(
     val width: Double,
     val height: Double,
-    val guys: MutableList<Species>
+    val chunkSize: Double,
+    val agents: MutableList<Species> = mutableListOf()
+
 )
 
 object EXIT : FXEvent()
@@ -33,8 +39,9 @@ class NOTIFY_DELAY_CHANGE(val delay: Long) : FXEvent()
 
 class Board : View() {
 
-    private var canv: Canvas by singleAssign()
-    private var gc: GraphicsContext
+    private var pannableCanvas: PannableCanvas by singleAssign()
+    private val canv: Canvas
+    private val gc: GraphicsContext
 
     private var typeSelect: ComboBox<SpeciesType> by singleAssign()
     private var spawnNumSlider: Slider by singleAssign()
@@ -115,14 +122,20 @@ class Board : View() {
                     padding = Insets(2.0, 5.0, 2.0, 20.0)
                 }
             }
-            canv = canvas(controller.board.width, controller.board.height)
+            pannableCanvas = opcr(this, PannableCanvas(controller.board.width, controller.board.height))
+//            canv = canvas(controller.board.width, controller.board.height)
         }
     }
 
     init {
         subscribe<UPDATE_BOARDVIEW> { updateView(controller.board) }
-
+        canv = pannableCanvas.canvas
         gc = canv.graphicsContext2D
+
+        val sceneGestures = SceneGestures(pannableCanvas)
+        root.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.onMousePressedEventHandler)
+        root.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.onMouseDraggedEventHandler)
+        root.addEventFilter(ScrollEvent.ANY, sceneGestures.onScrollEventHandler)
 
         delaySlider.valueProperty()
             .addListener(ChangeListener() { _: ObservableValue<out Number>?, _: Number, number1: Number ->
@@ -138,7 +151,7 @@ class Board : View() {
                     spawnNumSlider.value,
                     spawnAreaSizeSlider.value
                 )
-                MouseButton.SECONDARY -> controller.removeGuy(e.x, e.y)
+//                MouseButton.SECONDARY -> controller.removeGuy(e.x, e.y)
                 MouseButton.MIDDLE -> when (typeSelect.selectionModel.selectedIndex) {
 //                    TODO fix for more com.agh.abm.pps.model.species types
                     2 -> typeSelect.selectionModel.selectFirst()
@@ -214,7 +227,7 @@ class Board : View() {
 
     private fun updateView(state: BoardState) {
         clearBoard()
-        state.guys.forEach { guy ->
+        state.agents.forEach { guy ->
             when (guy) {
                 is Prey -> draw(guy)
                 is Grass -> draw(guy)

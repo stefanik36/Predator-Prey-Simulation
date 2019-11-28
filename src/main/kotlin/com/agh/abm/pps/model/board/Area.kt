@@ -1,21 +1,24 @@
 package com.agh.abm.pps.model.board
 
+import com.agh.abm.pps.BoardState
 import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.util.Benchmark
 import com.agh.abm.pps.util.geometric.PositionRestriction
 
-class Area(val species: MutableList<Species>) {
+class Area(boardState: BoardState) {
+    val species = boardState.agents
     var reproducedSpecies: MutableList<Species> = mutableListOf()
     var step: Int = 0
     var numberOfSpecies: MutableMap<SpeciesType, Int> = mutableMapOf()
-    private val chunkManager: ChunkManager = ChunkManager(900.0, 900.0, 20.0, 20.0)
+    private val chunkManager: ChunkManager =
+        ChunkManager(boardState.width, boardState.height, boardState.chunkSize, boardState.chunkSize)
 
     val restriction: PositionRestriction = PositionRestriction(
         minX = 0.0,
-        maxX = 900.0,
+        maxX = boardState.width,
         minY = 0.0,
-        maxY = 900.0
+        maxY = boardState.height
     )
 
 

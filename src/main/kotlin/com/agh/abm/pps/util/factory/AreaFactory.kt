@@ -1,5 +1,6 @@
 package com.agh.abm.pps.util.factory
 
+import com.agh.abm.pps.BoardState
 import com.agh.abm.pps.model.board.Area
 import com.agh.abm.pps.util.default_species.DefaultSpecies
 import com.agh.abm.pps.util.geometric.Vector
@@ -23,10 +24,13 @@ class AreaFactory {
             var grass03 = SpeciesFactory.standardGrass(random)
 
             return Area(
-                mutableListOf(
-                    predator01, predator02, predator03,
-                    prey01, prey02, prey03,
-                    grass01, grass02, grass03
+                BoardState(
+                    100.0, 100.0, 10.0, agents =
+                    mutableListOf(
+                        predator01, predator02, predator03,
+                        prey01, prey02, prey03,
+                        grass01, grass02, grass03
+                    )
                 )
             )
         }
@@ -72,10 +76,13 @@ class AreaFactory {
             )
 
             return Area(
-                mutableListOf(
-                    predator01, predator02, predator03,
-                    prey01, prey02, prey03,
-                    grass01, grass02, grass03
+                BoardState(
+                    100.0, 100.0, 10.0, agents =
+                    mutableListOf(
+                        predator01, predator02, predator03,
+                        prey01, prey02, prey03,
+                        grass01, grass02, grass03
+                    )
                 )
             )
         }

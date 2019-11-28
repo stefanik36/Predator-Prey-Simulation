@@ -15,12 +15,12 @@ fun main() {
 class SimulationController : Controller() {
     private var isAlive = true
     private var delay: Long = 1
-    val board: BoardState = BoardState(900.0, 900.0, mutableListOf())
+    val board: BoardState = BoardState(800.0, 600.0, 20.0)
     lateinit var area: Area
 
     /////////////////SETUP\\\\\\\\\\\\\\\\\\\
     private fun setupSimulation() {
-        area = Area(board.guys)
+        area = Area(board)
     }
     /////////////////SETUP\\\\\\\\\\\\\\\\\\\
 
@@ -30,9 +30,9 @@ class SimulationController : Controller() {
             area.nextStep()
             fire(
                 NOTIFY_POPULATION_GRAPH(
-                    alivePredNum = board.guys.filterIsInstance<Predator>().count(),
-                    alivePreyNum = board.guys.filterIsInstance<Prey>().count(),
-                    aliveGrassNum = board.guys.filterIsInstance<Grass>().count()
+                    alivePredNum = board.agents.filterIsInstance<Predator>().count(),
+                    alivePreyNum = board.agents.filterIsInstance<Prey>().count(),
+                    aliveGrassNum = board.agents.filterIsInstance<Grass>().count()
                 )
             )
             fire(UPDATE_BOARDVIEW)
@@ -58,7 +58,7 @@ class SimulationController : Controller() {
     }
 
     fun removeGuy(x: Double, y: Double) {
-        board.guys.removeIf { c ->
+        board.agents.removeIf { c ->
             val cx = c.movementParameter.currentPosition.x
             val cy = c.movementParameter.currentPosition.y
             val size = c.guiParameter.size
@@ -76,12 +76,12 @@ class SimulationController : Controller() {
         for (i in 1..numb.toInt()) {
             val ix = Random.nextDouble(fromX, toX)
             val iy = Random.nextDouble(fromY, toY)
-            board.guys.add(fac(ix, iy))
+            board.agents.add(fac(ix, iy))
         }
     }
 
     fun clearBoard() {
-        board.guys.clear()
+        board.agents.clear()
         fire(UPDATE_BOARDVIEW)
     }
 
