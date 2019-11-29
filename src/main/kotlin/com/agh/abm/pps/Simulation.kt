@@ -16,7 +16,7 @@ fun main() {
 class SimulationController : Controller() {
     private var isAlive = true
     private var delay: Long = 1
-    val board: BoardState = BoardState(1000.0, 1000.0, 20.0)
+    val board: BoardState = BoardState(2000.0, 2000.0, 20.0)
     lateinit var area: Area
 
     /////////////////SETUP\\\\\\\\\\\\\\\\\\\
@@ -35,7 +35,7 @@ class SimulationController : Controller() {
                 NOTIFY_POPULATION_GRAPH(
                     alivePredNum = board.agents.filterIsInstance<Predator>().count(),
                     alivePreyNum = board.agents.filterIsInstance<Prey>().count(),
-                    aliveGrassNum = board.agents.filterIsInstance<Grass>().count()
+                    aliveGrassNum = 0
                 )
             )
         }

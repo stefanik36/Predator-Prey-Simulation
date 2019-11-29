@@ -43,9 +43,12 @@ abstract class Species(
     open fun consume(area: Area) {
         if (chunk == null) return
         val food = chunk!!.ensureRange(movementParameter.currentPosition, consumeParameter.consumeRange)
+            .asSequence()
             .filter { s -> s.energyTransferParameter.alive }
             .filter { s -> this.canEat(s) }
             .filter { s -> this.isInConsumeRange(s) }
+            .toList()
+
 
         val transferredEnergy = energyTransferStrategy.transfer(food, consumeParameter)
         energyTransferParameter.energy =

@@ -19,13 +19,13 @@ class PopulationGraphView : View() {
             createSymbols = false
             predatorSeries = series("Alive predators")
             preySeries = series("Alive prays")
-            grassSeries = series("Alive grass")
+//            grassSeries = series("Alive grass")
         }
         button("Clear") {
             action {
                 preySeries.data.clear()
                 predatorSeries.data.clear()
-                grassSeries.data.clear()
+//                grassSeries.data.clear()
                 posi = 0
             }
         }
@@ -36,12 +36,12 @@ class PopulationGraphView : View() {
             if(posi > 300){
                preySeries.data.remove(0, 1)
                 predatorSeries.data.remove(0, 1)
-                grassSeries.data.remove(0, 1)
+//                grassSeries.data.remove(0, 1)
             }
 
             preySeries.data.add(XYChart.Data(posi.toString(), it.alivePreyNum))
             predatorSeries.data.add(XYChart.Data(posi.toString(), it.alivePredNum))
-            grassSeries.data.add(XYChart.Data(posi.toString(), it.aliveGrassNum/10))
+//            grassSeries.data.add(XYChart.Data(posi.toString(), it.aliveGrassNum/10))
             posi++
         }
     }

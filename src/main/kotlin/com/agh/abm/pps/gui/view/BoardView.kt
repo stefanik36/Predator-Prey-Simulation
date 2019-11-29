@@ -4,10 +4,7 @@ import com.agh.abm.pps.SimulationController
 import com.agh.abm.pps.gui.*
 import com.agh.abm.pps.gui.layout.PannableCanvas
 import com.agh.abm.pps.gui.gesture.SceneGestures
-import com.agh.abm.pps.model.species.Grass
-import com.agh.abm.pps.model.species.Predator
-import com.agh.abm.pps.model.species.Prey
-import com.agh.abm.pps.model.species.SpeciesType
+import com.agh.abm.pps.model.species.*
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.geometry.Insets
@@ -47,7 +44,7 @@ class BoardView : View() {
             PannableCanvas(controller.board.width, controller.board.height)
         )
         pane = pane {
-            background = Color.rgb(227,227,227).asBackground()
+            background = Color.rgb(227, 227, 227).asBackground()
 
             vbox {
                 spacing = 5.0
@@ -106,10 +103,9 @@ class BoardView : View() {
                     spacing = 5.0
                     padding = Insets(0.0, 0.0, 0.0, 15.0)
                     button("Config") {
-                        hide()
                         action { configView.openWindow() }
                     }
-                    button("Show graph!") {action { PopulationGraphView().openWindow() } }
+                    button("Show graph!") { action { PopulationGraphView().openWindow() } }
                     label("Delay:")
                     delaySlider = slider {
                         min = 1.0
@@ -140,7 +136,7 @@ class BoardView : View() {
         root.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.onMousePressedEventHandler)
         root.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.onMouseDraggedEventHandler)
         root.addEventFilter(ScrollEvent.ANY, sceneGestures.onScrollEventHandler)
-        primaryStage.widthProperty().addListener{obs, oldVal, newVal -> pane.prefWidth = newVal.toDouble()}
+        primaryStage.widthProperty().addListener { obs, oldVal, newVal -> pane.prefWidth = newVal.toDouble() }
         delaySlider.valueProperty()
             .addListener(ChangeListener() { _: ObservableValue<out Number>?, _: Number, number1: Number ->
                 fire(NOTIFY_DELAY_CHANGE(number1.toLong()))
@@ -226,13 +222,19 @@ class BoardView : View() {
 
     private fun updateView(state: BoardState) {
         clearBoard()
+        val laterDraw = mutableListOf<Species>()
         state.agents.forEach { guy ->
             when (guy) {
-                is Prey -> draw(guy)
                 is Grass -> draw(guy)
-                is Predator -> draw(guy)
+                else -> laterDraw.add(guy)
             }
 
+        }
+        laterDraw.forEach {
+            when (it) {
+                is Prey -> draw(it)
+                is Predator -> draw(it)
+            }
         }
 
     }
