@@ -27,19 +27,19 @@ class Area(boardState: BoardState) {
         println("======================================")
         println("Step: $step, species: ${countAlive()}")
 
-        val alive = species
 
-        alive.forEach { a ->
-            numberOfSpecies[a.getType()] = numberOfSpecies.getOrElse(a.getType(), { 0 }) + 1
+        Benchmark.measure("Move:") { species.forEach { s -> s.move(this) } }
+        Benchmark.measure("Fill chunk manager") {
+            species.forEach {
+                numberOfSpecies[it.getType()] = numberOfSpecies.getOrElse(it.getType(), { 0 }) + 1
+                chunkManager.addSpecies(it)
+            }
         }
-
-        Benchmark.measure("Move:") { alive.forEach { s -> s.move(this) } }
-        Benchmark.measure("Fill chunk manager") { alive.forEach(chunkManager::addSpecies) }
-        Benchmark.measure("Consume:") { alive.parallelStream().forEach { s -> s.consume(this) } }
-        Benchmark.measure("Die:") { alive.forEach { s -> s.performDieActions() } }
-        Benchmark.measure("Reproduce:") { alive.forEach { s -> s.reproduce(this) } }
-        Benchmark.measure("Others:") { alive.forEach { s -> s.performOtherActions() } }
-        Benchmark.measure("Remove dead agents") { species.removeIf { !it.energyTransferParameter.alive } }
+        Benchmark.measure("Consume:") { species.parallelStream().forEach { s -> s.consume(this) } }
+        Benchmark.measure("Die:") { species.forEach { s -> s.performDieActions() } }
+        Benchmark.measure("Reproduce:") { species.forEach { s -> s.reproduce(this) } }
+        Benchmark.measure("Others:") { species.forEach { s -> s.performOtherActions() } }
+        Benchmark.measure("Remove dead agents") { this.species.removeIf { !it.energyTransferParameter.alive } }
 
         addReproducedSpecies()
         numberOfSpecies.clear()

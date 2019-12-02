@@ -44,7 +44,7 @@ class DefaultSpecies {
             reproduceRange = 60.0,
             reproduceMultiplyEnergy = 2.5,
             reproduceAddEnergy = 100.0,
-            maxNumberOfSpecies = 15_000,
+            maxNumberOfSpecies = 1_000_000_000,
 
             //guiParameter
             size = 3.0
