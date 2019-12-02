@@ -44,10 +44,10 @@ class DefaultSpecies {
             reproduceRange = 60.0,
             reproduceMultiplyEnergy = 2.5,
             reproduceAddEnergy = 100.0,
-            maxNumberOfSpecies = 100_000,
+            maxNumberOfSpecies = 15_000,
 
             //guiParameter
-            size = 2.0
+            size = 3.0
         )
 
         val preyParameters: SpeciesParameter = SpeciesParameter(
@@ -86,7 +86,7 @@ class DefaultSpecies {
             maxNumberOfSpecies = 1_000_000,
 
             //guiParameter
-            size = 4.0
+            size = 8.0
         )
 
         val predatorParameters: SpeciesParameter = SpeciesParameter(

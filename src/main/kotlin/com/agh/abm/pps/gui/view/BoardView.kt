@@ -197,7 +197,8 @@ class BoardView : View() {
             o.movementParameter.currentPosition.x,
             o.movementParameter.currentPosition.y,
             o.guiParameter.size,
-            Color.BLACK
+            Color.rgb(245, 178, 7)
+//            Color.BLACK
         )
         drawViewRange(
             o.movementParameter.currentPosition.x,
@@ -207,13 +208,20 @@ class BoardView : View() {
     }
 
     private fun draw(o: Grass) {
-        gc.fill = Color.GREEN
-        gc.fillRect(
+        drawCircle(
             o.movementParameter.currentPosition.x,
             o.movementParameter.currentPosition.y,
             o.guiParameter.size,
-            o.guiParameter.size
+            Color.rgb(96, 128, 56).deriveColor(1.0, 1.0, 1.0, .5)
+//            Color.BLACK
         )
+//        gc.fill = Color.rgb(96, 128, 56)
+//        gc.fillRect(
+//            o.movementParameter.currentPosition.x,
+//            o.movementParameter.currentPosition.y,
+//            o.guiParameter.size,
+//            o.guiParameter.size
+//        )
     }
 
     private fun clearBoard() {

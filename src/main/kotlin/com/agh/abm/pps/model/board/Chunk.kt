@@ -1,6 +1,7 @@
 package com.agh.abm.pps.model.board
 
 import com.agh.abm.pps.model.species.Species
+import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.util.geometric.Vector
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -35,6 +36,7 @@ class ChunkManager(
         if (index < chunks.size - 1 && index > 0) {
             chunks[index].species.add(s)
             s.chunk = chunks[index]
+            chunks[index].countSpecies(s.getType())
         }
     }
 
@@ -47,6 +49,7 @@ class ChunkManager(
     fun clear() {
         for (c in chunks) {
             c.species.clear()
+            c.speciesNumber.clear()
         }
     }
 
@@ -61,11 +64,11 @@ class Chunk(
     private val manager: ChunkManager
 ) {
     val species: MutableList<Species> = mutableListOf()
+    val speciesNumber: MutableMap<SpeciesType, Int> = mutableMapOf()
 
     fun ensureRange(p: Vector, range: Double): List<Species> {
         val species = mutableListOf<Species>()
         species.addAll(this.species)
-
         val top = ceil((range - p.y + pos.y) / height).toInt()
         val bottom = ceil((range + p.y - pos.y - height) / height).toInt()
         val left = ceil((range - p.x + pos.x) / width).toInt()
@@ -78,6 +81,19 @@ class Chunk(
         }
         return species
     }
+
+    fun getNumber(t: SpeciesType): Int {
+        return speciesNumber[t] ?: 100
+    }
+
+    fun countSpecies(t: SpeciesType) {
+        if (speciesNumber.containsKey(t)) {
+            speciesNumber[t] = speciesNumber[t]!! + 1
+        } else {
+            speciesNumber[t] = 1
+        }
+    }
+
 }
 
 
