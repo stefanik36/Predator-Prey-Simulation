@@ -27,8 +27,8 @@ class DefaultSpecies {
 
             //energyTransferParameter
             minEnergy = 0.0,
-            maxEnergy = 500.0,
-            energy = 500.0,
+            maxEnergy = 350.0,
+            energy = 350.0,
             alive = true,
 
             //movementParameter
@@ -41,7 +41,7 @@ class DefaultSpecies {
             reproduceCost = 100.0,
             reproduceProbability = 0.3,
             maxNumberOfOffspring = 3,
-            reproduceRange = 60.0,
+            reproduceRange = 30.0,
             reproduceMultiplyEnergy = 2.5,
             reproduceAddEnergy = 100.0,
             maxNumberOfSpecies = 1_000_000_000,
@@ -98,14 +98,14 @@ class DefaultSpecies {
             dieStrategies = listOf(TooLowEnergyDieStrategy()),
 
             //consumeParameter
-            maxConsumption = 450.0,
+            maxConsumption = 400.0,
             restEnergyConsumption = 10.0,
             consumeRange = 15.0,
             canConsume = listOf(SpeciesType.PREY),
 
             //energyTransferParameter
             minEnergy = 0.0,
-            maxEnergy = 800.0,
+            maxEnergy = 600.0,
             energy = 100.0,
             alive = true,
 
@@ -117,7 +117,7 @@ class DefaultSpecies {
             //reproduceParameter
             reproduceThreshold = 300.0,
             reproduceCost = 100.0,
-            reproduceProbability = 0.7,
+            reproduceProbability = 0.5,
             maxNumberOfOffspring = 5,
             reproduceRange = 15.0,
             reproduceMultiplyEnergy = 0.1,

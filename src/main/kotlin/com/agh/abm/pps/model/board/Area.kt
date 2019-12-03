@@ -7,7 +7,7 @@ import com.agh.abm.pps.util.Benchmark
 import com.agh.abm.pps.util.geometric.PositionRestriction
 
 class Area(boardState: BoardState) {
-    val species = boardState.agents
+    val species = mutableListOf<Species>()
     var reproducedSpecies: MutableList<Species> = mutableListOf()
     var step: Int = 0
     var numberOfSpecies: MutableMap<SpeciesType, Int> = mutableMapOf()

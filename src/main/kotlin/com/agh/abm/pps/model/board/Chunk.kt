@@ -28,16 +28,22 @@ class ChunkManager(
             }
     }
 
+    @Synchronized
     fun addSpecies(s: Species) {
         val pos = s.movementParameter.currentPosition
         val x = floor(pos.x / chunkWidth)
         val y = floor(pos.y / chunkHeight)
         val index = (y * chunksInWidth + x).toInt()
         if (index < chunks.size - 1 && index > 0) {
-            chunks[index].species.add(s)
             s.chunk = chunks[index]
-            chunks[index].countSpecies(s.getType())
+           rr(index, s)
         }
+    }
+
+    @Synchronized
+    private  fun rr(index: Int, s: Species){
+        chunks[index].species.add(s)
+        chunks[index].countSpecies(s.getType())
     }
 
     fun getOffsetNeighbor(current: Int, xOffset: Int, yOffset: Int): Chunk? {

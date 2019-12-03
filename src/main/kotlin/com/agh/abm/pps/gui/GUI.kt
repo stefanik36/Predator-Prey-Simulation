@@ -10,7 +10,7 @@ data class BoardState(
     val width: Double,
     val height: Double,
     val chunkSize: Double,
-    val agents: MutableList<Species> = mutableListOf()
+    var agents: List<Species> = listOf()
 )
 
 object EXIT : FXEvent()
