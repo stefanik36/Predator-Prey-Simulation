@@ -1,6 +1,7 @@
 package com.agh.abm.pps.gui.view
 
 import com.agh.abm.pps.gui.data.SpeciesConfData
+import com.agh.abm.pps.strategy.die_strategy.DieStrategyType
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
 import com.agh.abm.pps.strategy.movement.MovementStrategyType
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategyType
@@ -13,6 +14,7 @@ import javafx.scene.control.TableView
 import javafx.scene.control.TextField
 import tornadofx.*
 import java.io.File
+import java.io.FileWriter
 
 class ConfigView : View() {
 
@@ -40,6 +42,7 @@ class ConfigView : View() {
     private var movementStrategyCombo: ComboBox<MovementStrategyType> by singleAssign()
     private var energyTransferStrategyCombo: ComboBox<EnergyTransferStrategyType> by singleAssign()
     private var reproduceStrategyCombo: ComboBox<ReproduceStrategyType> by singleAssign()
+    private var dieStrategyCombo: ComboBox<DieStrategyType> by singleAssign()
 
     private var minEnergyField: TextField by singleAssign()
     private var maxEnergyField: TextField by singleAssign()
@@ -47,6 +50,10 @@ class ConfigView : View() {
     private var maxConsumptionField: TextField by singleAssign()
     private var sizeField: TextField by singleAssign()
     private var reproduceRangeField: TextField by singleAssign()
+    private var reproduceAddEnergyField: TextField by singleAssign()
+    private var reproduceMultiplyEnergyField: TextField by singleAssign()
+    private var reproduceMaxNumberOfSpeciesField: TextField by singleAssign()
+
     private var maxNumOfOffField: TextField by singleAssign()
     private var reproduceProbabilityField: TextField by singleAssign()
     private var reproduceCostField: TextField by singleAssign()
@@ -61,6 +68,7 @@ class ConfigView : View() {
     private var tableViewField: TableView<SpeciesConfData> by singleAssign()
 
     override val root = borderpane {
+        prefHeight = 700.0
         center {
             tableViewField = tableview(species) {
                 column("Type", SpeciesConfData::type)
@@ -71,74 +79,91 @@ class ConfigView : View() {
             }
         }
         right {
-            form {
-                fieldset("Strategy:") {
-                    field("Movement strategy") {
-                        movementStrategyCombo = combobox(values = MovementStrategyType.values().toList()) { }
+            scrollpane {
+                pannableProperty().set(true)
+                fitToWidthProperty().set(true)
+                paddingAll = 10.0
+                form {
+                    fieldset("Strategy:") {
+                        field("Movement strategy") {
+                            movementStrategyCombo = combobox(values = MovementStrategyType.values().toList()) { }
+                        }
+                        field("Energy transfer strategy") {
+                            energyTransferStrategyCombo =
+                                combobox(values = EnergyTransferStrategyType.values().toList()) { }
+                        }
+                        field("Reproduce strategy") {
+                            reproduceStrategyCombo = combobox(values = ReproduceStrategyType.values().toList()) { }
+                        }
+                        field("Die strategy") {
+                            dieStrategyCombo = combobox(values = DieStrategyType.values().toList()) { }
+                        }
                     }
-                    field("Energy transfer strategy") {
-                        energyTransferStrategyCombo =
-                            combobox(values = EnergyTransferStrategyType.values().toList()) { }
+                    fieldset("Energy:") {
+                        field("Min energy") {
+                            minEnergyField = textfield {}
+                        }
+                        field("Max energy") {
+                            maxEnergyField = textfield { }
+                        }
+                        field("Energy") {
+                            energyField = textfield { }
+                        }
                     }
-                    field("Reproduce strategy") {
-                        reproduceStrategyCombo = combobox(values = ReproduceStrategyType.values().toList()) { }
-                    }
-                }
-                fieldset("Energy:") {
-                    field("Min energy") {
-                        minEnergyField = textfield {}
-                    }
-                    field("Max energy") {
-                        maxEnergyField = textfield { }
-                    }
-                    field("Energy") {
-                        energyField = textfield { }
-                    }
-                }
-                fieldset("Consume:") {
+                    fieldset("Consume:") {
 
 
-                    field("Max consumption") {
-                        maxConsumptionField = textfield { }
+                        field("Max consumption") {
+                            maxConsumptionField = textfield { }
+                        }
+                        field("Energy consume") {
+                            energyConsumeField = textfield { }
+                        }
+                        field("Consume range") {
+                            consumeRangeField = textfield { }
+                        }
                     }
-                    field("Energy consume") {
-                        energyConsumeField = textfield { }
+                    fieldset("Move:") {
+                        field("Move cost") {
+                            moveCostField = textfield { }
+                        }
+                        field("Move max distance") {
+                            moveMaxDistanceField = textfield { }
+                        }
                     }
-                    field("Consume range") {
-                        consumeRangeField = textfield { }
+                    fieldset("Reproduce:") {
+                        field("Reproduce threshold") {
+                            reproduceThresholdField = textfield { }
+                        }
+                        field("Reproduce cost") {
+                            reproduceCostField = textfield { }
+                        }
+                        field("Reproduce probability") {
+                            reproduceProbabilityField = textfield { }
+                        }
+                        field("Max number of offspring") {
+                            maxNumOfOffField = textfield { }
+                        }
+                        field("Reproduce range") {
+                            reproduceRangeField = textfield { }
+                        }
+                        field("Reproduce multiply energy") {
+                            reproduceMultiplyEnergyField = textfield { }
+                        }
+                        field("Reproduce add species") {
+                            reproduceAddEnergyField = textfield { }
+                        }
+                        field("Max number of species") {
+                            reproduceMaxNumberOfSpeciesField = textfield { }
+                        }
                     }
-                }
-                fieldset("Move:") {
-                    field("Move cost") {
-                        moveCostField = textfield { }
-                    }
-                    field("Move max distance") {
-                        moveMaxDistanceField = textfield { }
-                    }
-                }
-                fieldset("Reproduce:") {
-                    field("Reproduce threshold") {
-                        reproduceThresholdField = textfield { }
-                    }
-                    field("Reproduce cost") {
-                        reproduceCostField = textfield { }
-                    }
-                    field("Reproduce probability") {
-                        reproduceProbabilityField = textfield { }
-                    }
-                    field("Max number of offspring") {
-                        maxNumOfOffField = textfield { }
-                    }
-                    field("Reproduce range") {
-                        reproduceRangeField = textfield { }
-                    }
-                }
-                fieldset("Others") {
-                    field("Size") {
-                        sizeField = textfield { }
-                    }
+                    fieldset("Others") {
+                        field("Size") {
+                            sizeField = textfield { }
+                        }
 //                    button("Save").action {
 //                    }
+                    }
                 }
             }
         }
@@ -154,6 +179,7 @@ class ConfigView : View() {
             movementStrategyProperty.unbindBidirectional(movementStrategyCombo.valueProperty())
             reproduceStrategyProperty.unbindBidirectional(reproduceStrategyCombo.valueProperty())
             energyTransferStrategyProperty.unbindBidirectional(energyTransferStrategyCombo.valueProperty())
+            dieStrategyProperty.unbindBidirectional(dieStrategyCombo.valueProperty())
             minEnergyField.textProperty().unbindBidirectional(minEnergyProperty)
             maxEnergyField.textProperty().unbindBidirectional(maxEnergyProperty)
             energyField.textProperty().unbindBidirectional(energyProperty)
@@ -167,12 +193,16 @@ class ConfigView : View() {
             reproduceProbabilityField.textProperty().unbindBidirectional(reproduceProbabilityProperty)
             maxNumOfOffField.textProperty().unbindBidirectional(maxNumberOfOffspringProperty)
             reproduceRangeField.textProperty().unbindBidirectional(reproduceRangeProperty)
+            reproduceMultiplyEnergyField.textProperty().unbindBidirectional(reproduceMultiplyEnergyProperty)
+            reproduceAddEnergyField.textProperty().unbindBidirectional(reproduceAddEnergyProperty)
+            reproduceMaxNumberOfSpeciesField.textProperty().unbindBidirectional(maxNumberOfSpeciesProperty)
             sizeField.textProperty().unbindBidirectional(sizeProperty)
         }
 
         movementStrategyCombo.bind(it.movementStrategyProperty)
         reproduceStrategyCombo.bind(it.reproduceStrategyProperty)
         energyTransferStrategyCombo.bind(it.energyTransferStrategyProperty)
+        dieStrategyCombo.bind(it.dieStrategyProperty)
         minEnergyField.bind(it.minEnergyProperty)
         maxEnergyField.bind(it.maxEnergyProperty)
         energyField.bind(it.energyProperty)
@@ -186,14 +216,17 @@ class ConfigView : View() {
         reproduceProbabilityField.bind(it.reproduceProbabilityProperty)
         maxNumOfOffField.bind(it.maxNumberOfOffspringProperty)
         reproduceRangeField.bind(it.reproduceRangeProperty)
+        reproduceMultiplyEnergyField.bind(it.reproduceMultiplyEnergyProperty)
+        reproduceAddEnergyField.bind(it.reproduceAddEnergyProperty)
+        reproduceMaxNumberOfSpeciesField.bind(it.maxNumberOfSpeciesProperty)
         sizeField.bind(it.sizeProperty)
 
         prevSelection = it
     }
 
     override fun onUndock() {
-//        val fw = FileWriter(File(filePath))
-//        fw.write(ObjectMapper().writeValueAsString(species.toList()))
-//        fw.close()
+        val fw = FileWriter(File(filePath))
+        fw.write(ObjectMapper().writeValueAsString(species.toList()))
+        fw.close()
     }
 }

@@ -12,4 +12,6 @@ enum class DieStrategyType(name: String, val strategy: DieStrategy) {
 
 interface DieStrategy {
     fun checkIfShouldDie(energyTransferParameter: EnergyTransferParameter): Boolean
+
+    fun getType(): DieStrategyType
 }

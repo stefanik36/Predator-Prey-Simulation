@@ -14,7 +14,8 @@ fun main() {
 }
 
 class SimulationController : Controller() {
-    private var isAlive = true
+    private var isAlive = false
+    private var newSpecies = mutableListOf<Species>()
     private var delay: Long = 1
     val board: BoardState = BoardState(2000.0, 2000.0, 50.0)
     lateinit var area: Area
@@ -51,7 +52,15 @@ class SimulationController : Controller() {
         subscribe<START> { t ->
             delay = t.delay
             isAlive = true
-            runAsync(daemon = false) { while (isAlive) loop() }
+            runAsync(daemon = false) {
+                while (isAlive) {
+                    loop()
+                    if (newSpecies.size > 0) {
+                        area.species.addAll(newSpecies)
+                        newSpecies.clear()
+                    }
+                }
+            }
         }
         subscribe<NOTIFY_DELAY_CHANGE> { t -> delay = t.delay }
         setupSimulation()
@@ -77,15 +86,19 @@ class SimulationController : Controller() {
         val toX = if (x + range < board.width) x + range else board.width
         val fromY = if (y - range > 0) y - range else 0.0
         val toY = if (y + range < board.height) y + range else board.height
-
         for (i in 1..numb.toInt()) {
             val ix = Random.nextDouble(fromX, toX)
             val iy = Random.nextDouble(fromY, toY)
-            area.species.add(fac(ix, iy))
+            if (isAlive) {
+                newSpecies.add(fac(ix, iy))
+            } else {
+                area.species.add(fac(ix, iy))
+            }
+
         }
     }
 
-    fun updateBoard(){
+    fun updateBoard() {
         board.agents = area.species.toList()
         fire(UPDATE_BOARDVIEW)
     }
