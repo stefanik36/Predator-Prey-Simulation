@@ -106,12 +106,12 @@ class DefaultSpecies {
             //energyTransferParameter
             minEnergy = 0.0,
             maxEnergy = 600.0,
-            energy = 100.0,
+            energy = 300.0,
             alive = true,
 
             //movementParameter
             currentPosition = VectorFactory.zero(),
-            moveCost = 50.0,
+            moveCost = 10.0,
             moveMaxDistance = 40.0,
 
             //reproduceParameter

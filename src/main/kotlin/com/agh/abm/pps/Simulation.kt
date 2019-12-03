@@ -16,7 +16,7 @@ fun main() {
 class SimulationController : Controller() {
     private var isAlive = true
     private var delay: Long = 1
-    val board: BoardState = BoardState(2000.0, 2000.0, 30.0)
+    val board: BoardState = BoardState(2000.0, 2000.0, 50.0)
     lateinit var area: Area
 
     /////////////////SETUP\\\\\\\\\\\\\\\\\\\

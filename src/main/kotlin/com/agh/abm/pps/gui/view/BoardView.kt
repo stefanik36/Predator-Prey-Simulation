@@ -2,17 +2,13 @@ package com.agh.abm.pps.gui.view
 
 import com.agh.abm.pps.SimulationController
 import com.agh.abm.pps.gui.*
-import com.agh.abm.pps.gui.gesture.DragContext
-import com.agh.abm.pps.gui.layout.PannableCanvas
-import com.agh.abm.pps.gui.gesture.SceneGestures
+import com.agh.abm.pps.gui.layout.ZoomCanvas
 import com.agh.abm.pps.model.species.*
 import com.agh.abm.pps.util.Benchmark
-import javafx.animation.AnimationTimer
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.canvas.Canvas
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
@@ -27,7 +23,7 @@ import tornadofx.*
 class BoardView : View() {
 
     //    private var pannableCanvas: PannableCanvas by singleAssign()
-    private var canv: Canvas by singleAssign()
+    private var canv: ZoomCanvas by singleAssign()
     private val gc: GraphicsContext
 
     private var typeSelect: ComboBox<SpeciesType> by singleAssign()
@@ -40,7 +36,6 @@ class BoardView : View() {
     private val configView: ConfigView by inject()
 
     private var pane: Pane by singleAssign()
-    private var zoom = 1.0
     override val root = group {
         //        pannableCanvas = opcr(
 //            this,
@@ -85,7 +80,7 @@ class BoardView : View() {
                         padding = Insets(0.0, 0.0, 0.0, 0.0)
                         min = 1.0
                         max = 500.0
-                        value = 1.0
+                        value = 500.0
                         isShowTickLabels = true
                         isShowTickMarks = true
                         majorTickUnit = 500.0
@@ -95,7 +90,7 @@ class BoardView : View() {
                         padding = Insets(0.0, 0.0, 0.0, 0.0)
                         min = 1.0
                         max = 500.0
-                        value = 1.0
+                        value = 500.0
                         isShowTickLabels = true
                         isShowTickMarks = true
                         majorTickUnit = 500.0
@@ -125,55 +120,43 @@ class BoardView : View() {
                     }
                 }
 
-                canv = canvas(900.0, 900.0)
+                canv = opcr(
+                    this,
+                    ZoomCanvas(900.0, 900.0, controller.board)
+                )
             }
-//            canv = canvas(controller.board.width, controller.board.height)
         }
     }
 
-    private val sceneDragContext = DragContext()
-    private var tX: Double = 0.0
-    private var tY: Double = 0.0
-    private var needToUpdateScreen = 0
-
     init {
-        subscribe<UPDATE_BOARDVIEW> { needToUpdateScreen++ }
-//        canv = pannableCanvas.canvas
+        subscribe<UPDATE_BOARDVIEW> { canv.requestUpdate() }
         gc = canv.graphicsContext2D
 
-//        val sceneGestures = SceneGestures(pannableCanvas)
-        root.addEventFilter(MouseEvent.MOUSE_PRESSED, EventHandler {
-            if (!it.isSecondaryButtonDown)
-                return@EventHandler
-
-            sceneDragContext.mouseAnchorX = it.sceneX
-            sceneDragContext.mouseAnchorY = it.sceneY
-
-            sceneDragContext.translateAnchorX = tX
-            sceneDragContext.translateAnchorY = tY
-        })
-        root.addEventFilter(MouseEvent.MOUSE_DRAGGED, EventHandler {
-            if (!it.isSecondaryButtonDown)
-                return@EventHandler
-
-            tX = sceneDragContext.translateAnchorX + it.sceneX - sceneDragContext.mouseAnchorX
-            tY = sceneDragContext.translateAnchorY + it.sceneY - sceneDragContext.mouseAnchorY
-//            updateView(controller.board)
-            needToUpdateScreen++
-            it.consume()
-        })
-        root.addEventFilter(ScrollEvent.ANY) {
-            val delta = 1.2
+        root.addEventFilter(MouseEvent.MOUSE_PRESSED, canv.gestures.onMousePressedEventHandler)
+        root.addEventFilter(MouseEvent.MOUSE_DRAGGED, canv.gestures.onMouseDraggedEventHandler)
+        root.addEventFilter(ScrollEvent.ANY, canv.gestures.onScrollEventHandler)
 
 
-            if (it.deltaY < 0)
-                zoom /= delta
-            else
-                zoom *= delta
+        canv.updateBoardFunc = {
+            Benchmark.measure("Draw board ") {
+                val laterDraw = mutableListOf<Species>()
+                controller.board.agents.forEach { guy ->
+                    when (guy) {
+                        is Grass -> draw(guy)
+                        else -> laterDraw.add(guy)
+                    }
 
-            needToUpdateScreen++
-            it.consume()
+                }
+                laterDraw.forEach {
+                    when (it) {
+                        is Prey -> draw(it)
+                        is Predator -> draw(it)
+                    }
+                }
+            }
         }
+
+
         primaryStage.widthProperty().addListener { obs, oldVal, newVal -> pane.prefWidth = newVal.toDouble() }
         delaySlider.valueProperty()
             .addListener(ChangeListener() { _: ObservableValue<out Number>?, _: Number, number1: Number ->
@@ -185,14 +168,15 @@ class BoardView : View() {
         canv.onMouseClicked = EventHandler { e ->
             when (e.button) {
                 MouseButton.PRIMARY -> {
+                    val realXY = canv.getRealXY(e)
                     controller.addGuy(
-                        (e.x - tX) / zoom,
-                        (e.y - tY) / zoom,
+                        realXY.first,
+                        realXY.second,
                         configView.species.first { it.type == typeSelect.selectionModel.selectedItem },
                         spawnNumSlider.value,
                         spawnAreaSizeSlider.value
                     )
-                    println("${e.x} || ${e.y}")
+//                    println("${e.x} || ${e.y}")
                 }
 //                MouseButton.SECONDARY -> controller.removeGuy(e.x, e.y)
                 MouseButton.MIDDLE -> when (typeSelect.selectionModel.selectedIndex) {
@@ -204,22 +188,8 @@ class BoardView : View() {
                 }
             }
         }
-
-//        fire(UPDATE_BOARDVIEW)
-        val a = object : AnimationTimer() {
-            var x = 0
-            override fun handle(p0: Long) {
-                if (x > 2 && needToUpdateScreen > 0) {
-                    updateView(controller.board)
-                    needToUpdateScreen = 0
-                    x = 0
-                } else {
-                    x++
-                }
-            }
-        }
-        a.start()
     }
+
 
     private fun drawCircle(x: Double, y: Double, size: Double, color: Color) {
         gc.fill = color
@@ -254,7 +224,6 @@ class BoardView : View() {
             o.movementParameter.currentPosition.y,
             o.guiParameter.size,
             Color.rgb(245, 178, 7)
-//            Color.BLACK
         )
         drawViewRange(
             o.movementParameter.currentPosition.x,
@@ -269,47 +238,9 @@ class BoardView : View() {
             o.movementParameter.currentPosition.y,
             o.guiParameter.size,
             Color.rgb(96, 128, 56).deriveColor(1.0, 1.0, 1.0, .5)
-//            Color.BLACK
         )
-//        gc.fill = Color.rgb(96, 128, 56)
-//        gc.fillRect(
-//            o.movementParameter.currentPosition.x,
-//            o.movementParameter.currentPosition.y,
-//            o.guiParameter.size,
-//            o.guiParameter.size
-//        )
     }
 
-    private fun clearBoard() {
-        gc.clearRect(-1000.0, -1000.0, controller.board.width + 2000, controller.board.height + 2000)
-    }
-
-    private fun updateView(state: BoardState) {
-
-        Benchmark.measure("Draw board ") {
-
-            clearBoard()
-
-            println("zoom: $zoom | tX: $tX | tY $tY")
-            gc.setTransform(zoom, 0.0, 0.0, zoom, tX, tY)
-            gc.strokeRect(0.0, 0.0, controller.board.width, controller.board.height)
-
-            val laterDraw = mutableListOf<Species>()
-            state.agents.forEach { guy ->
-                when (guy) {
-                    is Grass -> draw(guy)
-                    else -> laterDraw.add(guy)
-                }
-
-            }
-            laterDraw.forEach {
-                when (it) {
-                    is Prey -> draw(it)
-                    is Predator -> draw(it)
-                }
-            }
-        }
-    }
 
     override fun onUndock() {
         fire(EXIT)
