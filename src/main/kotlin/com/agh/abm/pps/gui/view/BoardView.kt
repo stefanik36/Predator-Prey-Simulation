@@ -2,7 +2,7 @@ package com.agh.abm.pps.gui.view
 
 import com.agh.abm.pps.SimulationController
 import com.agh.abm.pps.gui.*
-import com.agh.abm.pps.gui.layout.ZoomCanvas
+import com.agh.abm.pps.gui.layout.BoardCanvas
 import com.agh.abm.pps.model.species.*
 import com.agh.abm.pps.util.Benchmark
 import javafx.beans.value.ObservableValue
@@ -23,7 +23,7 @@ import tornadofx.*
 class BoardView : View() {
 
     //    private var pannableCanvas: PannableCanvas by singleAssign()
-    private var canv: ZoomCanvas by singleAssign()
+    private var canv: BoardCanvas by singleAssign()
     private val gc: GraphicsContext
 
     private var typeSelect: ComboBox<SpeciesType> by singleAssign()
@@ -122,7 +122,7 @@ class BoardView : View() {
 
                 canv = opcr(
                     this,
-                    ZoomCanvas(900.0, 900.0, controller.board)
+                    BoardCanvas(900.0, 900.0, controller.board)
                 )
             }
         }

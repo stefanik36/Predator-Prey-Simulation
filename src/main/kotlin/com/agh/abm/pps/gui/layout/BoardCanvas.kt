@@ -1,14 +1,14 @@
 package com.agh.abm.pps.gui.layout
 
 import com.agh.abm.pps.gui.BoardState
-import com.agh.abm.pps.gui.gesture.SceneGestures
+import com.agh.abm.pps.gui.gesture.BoardGestures
 import javafx.animation.AnimationTimer
 import javafx.scene.canvas.Canvas
 import javafx.scene.input.MouseEvent
 
-class ZoomCanvas(width: Double, height: Double, val board: BoardState) : Canvas(width, height) {
+class BoardCanvas(width: Double, height: Double, val board: BoardState) : Canvas(width, height) {
 
-    val gestures = SceneGestures(this)
+    val gestures = BoardGestures(this)
     private var needToUpdate = 0
     var updateBoardFunc: () -> Unit = {}
 

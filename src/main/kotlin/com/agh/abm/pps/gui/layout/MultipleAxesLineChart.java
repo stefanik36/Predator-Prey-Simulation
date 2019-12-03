@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+@Deprecated
 public class MultipleAxesLineChart extends StackPane {
 
     private final LineChart baseChart;

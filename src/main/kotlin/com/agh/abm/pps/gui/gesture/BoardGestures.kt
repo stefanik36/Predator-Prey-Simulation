@@ -1,15 +1,13 @@
 package com.agh.abm.pps.gui.gesture
 
-import com.agh.abm.pps.gui.layout.PannableCanvas
-import com.agh.abm.pps.gui.layout.ZoomCanvas
+import com.agh.abm.pps.gui.layout.BoardCanvas
 import javafx.event.EventHandler
-import javafx.scene.canvas.Canvas
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ScrollEvent
 
-class SceneGestures(canvas: ZoomCanvas) {
+class BoardGestures(canvas: BoardCanvas) {
 
-    private val sceneDragContext = DragContext()
+    private val sceneDragContext = BoardDragContext()
 
 
     // right mouse button => panning

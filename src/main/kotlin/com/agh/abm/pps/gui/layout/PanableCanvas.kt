@@ -8,6 +8,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 
+@Deprecated("To remove")
 internal class PannableCanvas(width: Double, height: Double) : Pane() {
 
     val canvas = Canvas(width, height)
