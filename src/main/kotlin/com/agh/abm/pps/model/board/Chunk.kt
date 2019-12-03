@@ -33,7 +33,7 @@ class ChunkManager(
         val x = floor(pos.x / chunkWidth)
         val y = floor(pos.y / chunkHeight)
         val index = (y * chunksInWidth + x).toInt()
-        if (index < chunks.size - 1 && index > 0) {
+        if (index < chunks.size && index >= 0) {
             chunks[index].species.add(s)
             s.chunk = chunks[index]
             chunks[index].countSpecies(s.getType())
