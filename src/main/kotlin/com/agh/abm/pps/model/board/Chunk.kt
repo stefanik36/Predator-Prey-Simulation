@@ -27,15 +27,15 @@ class ChunkManager(
                 Chunk(Vector(x * chunkWidth, y * chunkHeight), chunkWidth, chunkHeight, it, this)
             }
     }
-
+  
     fun addSpecies(s: Species) {
         val pos = s.movementParameter.currentPosition
         val x = floor(pos.x / chunkWidth)
         val y = floor(pos.y / chunkHeight)
         val index = (y * chunksInWidth + x).toInt()
         if (index < chunks.size && index >= 0) {
-            chunks[index].species.add(s)
             s.chunk = chunks[index]
+            chunks[index].species.add(s)
             chunks[index].countSpecies(s.getType())
         }
     }

@@ -2,6 +2,8 @@ package com.agh.abm.pps.gui.data
 
 import com.agh.abm.pps.model.parameter.*
 import com.agh.abm.pps.model.species.*
+import com.agh.abm.pps.strategy.die_strategy.DieStrategy
+import com.agh.abm.pps.strategy.die_strategy.DieStrategyType
 import com.agh.abm.pps.strategy.die_strategy.TooLowEnergyDieStrategy
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
 import com.agh.abm.pps.strategy.movement.MovementStrategyType
@@ -11,11 +13,13 @@ import com.agh.abm.pps.util.geometric.Vector
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.*
+import javafx.collections.ObservableList
+import javafx.scene.control.MultipleSelectionModel
 
 import tornadofx.getValue
+import tornadofx.observable
+import tornadofx.observableList
 import tornadofx.setValue
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -23,12 +27,15 @@ class SpeciesConfData(
     movementStrategy: MovementStrategyType,
     energyTransferStrategy: EnergyTransferStrategyType,
     reproduceStrategy: ReproduceStrategyType,
+//    TODO make dieStrategy more flexible
+    dieStrategy: DieStrategyType,
     minEnergy: Double,
     maxEnergy: Double,
     inEnergy: Double,
     maxConsumption: Double,
     restEnergyConsumption: Double,
     consumeRange: Double,
+    canConsume: List<SpeciesType>,
     moveCost: Double,
     moveMaxDistance: Double,
     reproduceThreshold: Double,
@@ -36,6 +43,9 @@ class SpeciesConfData(
     reproduceProbability: Double,
     maxNumberOfOffspring: Int,
     reproduceRange: Double,
+    reproduceMultiplyEnergy: Double,
+    reproduceAddEnergy: Double,
+    maxNumberOfSpecies: Int,
     size: Double,
     var type: SpeciesType
 ) {
@@ -50,6 +60,10 @@ class SpeciesConfData(
     @JsonIgnore
     val reproduceStrategyProperty = SimpleObjectProperty(this, "reproduceStrategy", reproduceStrategy)
     var reproduceStrategy: ReproduceStrategyType by reproduceStrategyProperty
+
+    @JsonIgnore
+    val dieStrategyProperty = SimpleObjectProperty(this, "dieStrategy", dieStrategy)
+    var dieStrategy: DieStrategyType by dieStrategyProperty
 
     @JsonIgnore
     val minEnergyProperty = SimpleDoubleProperty(this, "minEnergy", minEnergy)
@@ -72,8 +86,13 @@ class SpeciesConfData(
     var restEnergyConsumption: Double by restEnergyConsumptionProperty
 
     @JsonIgnore
-    val consumeRangeProperty = SimpleDoubleProperty(this, "consumeRangeProperty", consumeRange)
+    val consumeRangeProperty = SimpleDoubleProperty(this, "consumeRange", consumeRange)
     var consumeRange: Double by consumeRangeProperty
+
+    @JsonIgnore
+    val canConsumeProperty = SimpleListProperty<SpeciesType>(this, "canConsume", canConsume.observable())
+    val canConsume: List<SpeciesType> by canConsumeProperty
+
 
     @JsonIgnore
     val moveCostProperty = SimpleDoubleProperty(this, "moveCost", moveCost)
@@ -105,6 +124,23 @@ class SpeciesConfData(
     var reproduceRange: Double by reproduceRangeProperty
 
     @JsonIgnore
+    val reproduceMultiplyEnergyProperty = SimpleDoubleProperty(this, "reproduceMultiplyEnergy", reproduceMultiplyEnergy)
+    var reproduceMultiplyEnergy: Double by reproduceMultiplyEnergyProperty
+
+    @JsonIgnore
+    val reproduceAddEnergyProperty = SimpleDoubleProperty(this, "reproduceAddEnergy", reproduceAddEnergy)
+    var reproduceAddEnergy: Double by reproduceAddEnergyProperty
+
+
+    @JsonIgnore
+    val maxNumberOfSpeciesProperty = SimpleIntegerProperty(this, "maxNumberOfSpecies", maxNumberOfSpecies)
+    var maxNumberOfSpecies: Int by maxNumberOfSpeciesProperty
+
+
+
+
+
+    @JsonIgnore
     val sizeProperty = SimpleDoubleProperty(this, "size", size)
     var size: Double by sizeProperty
 
@@ -114,12 +150,12 @@ class SpeciesConfData(
                 movementStrategy = movementStrategy.strategy,
                 energyTransferStrategy = energyTransferStrategy.strategy,
                 reproduceStrategy = reproduceStrategy.strategy,
-                dieStrategies = listOf(TooLowEnergyDieStrategy()),
+                dieStrategies = listOf(dieStrategy.strategy),
                 consumeParameter = ConsumeParameter(
                     maxConsumption,
                     restEnergyConsumption,
                     consumeRange,
-                    DefaultSpecies.grassParameters.canConsume//TODO parametrize from GUI
+                    canConsume
                 ),
                 energyTransferParameter = EnergyTransferParameter(
                     minEnergy,
@@ -134,9 +170,9 @@ class SpeciesConfData(
                     reproduceProbability,
                     maxNumberOfOffspring,
                     reproduceRange,
-                    DefaultSpecies.grassParameters.reproduceMultiplyEnergy,//TODO parametrize from GUI
-                    DefaultSpecies.grassParameters.reproduceAddEnergy,//TODO parametrize from GUI
-                    DefaultSpecies.grassParameters.maxNumberOfSpecies//TODO parametrize from GUI
+                    reproduceMultiplyEnergy,
+                    reproduceAddEnergy,
+                    maxNumberOfSpecies
                 ),
                 guiParameter = GuiParameter(size)
             )
@@ -144,12 +180,12 @@ class SpeciesConfData(
                 movementStrategy = movementStrategy.strategy,
                 energyTransferStrategy = energyTransferStrategy.strategy,
                 reproduceStrategy = reproduceStrategy.strategy,
-                dieStrategies = listOf(TooLowEnergyDieStrategy()),
+                dieStrategies = listOf(dieStrategy.strategy),
                 consumeParameter = ConsumeParameter(
                     maxConsumption,
                     restEnergyConsumption,
                     consumeRange,
-                    DefaultSpecies.preyParameters.canConsume//TODO parametrize from GUI
+                    canConsume
                 ),
                 energyTransferParameter = EnergyTransferParameter(
                     minEnergy, maxEnergy, energy, DefaultSpecies.predatorParameters.alive
@@ -161,9 +197,9 @@ class SpeciesConfData(
                     reproduceProbability,
                     maxNumberOfOffspring,
                     reproduceRange,
-                    reproduceMultiplyEnergy = DefaultSpecies.preyParameters.reproduceMultiplyEnergy,//TODO parametrize from GUI
-                    reproduceAddEnergy = DefaultSpecies.preyParameters.reproduceAddEnergy,//TODO parametrize from GUI
-                    maxNumberOfSpecies = DefaultSpecies.preyParameters.maxNumberOfSpecies//TODO parametrize from GUI
+                    reproduceMultiplyEnergy,
+                    reproduceAddEnergy,
+                    maxNumberOfSpecies
                 ),
                 guiParameter = GuiParameter(size)
             )
@@ -172,12 +208,12 @@ class SpeciesConfData(
                     movementStrategy = movementStrategy.strategy,
                     energyTransferStrategy = energyTransferStrategy.strategy,
                     reproduceStrategy = reproduceStrategy.strategy,
-                    dieStrategies = listOf(TooLowEnergyDieStrategy()),
+                    dieStrategies = listOf(dieStrategy.strategy),
                     consumeParameter = ConsumeParameter(
                         maxConsumption,
                         restEnergyConsumption,
                         consumeRange,
-                        DefaultSpecies.predatorParameters.canConsume//TODO parametrize from GUI
+                        canConsume
                     ),
                     energyTransferParameter = EnergyTransferParameter(
                         minEnergy, maxEnergy, energy, DefaultSpecies.predatorParameters.alive
@@ -189,9 +225,9 @@ class SpeciesConfData(
                         reproduceProbability,
                         maxNumberOfOffspring,
                         reproduceRange,
-                        DefaultSpecies.predatorParameters.reproduceMultiplyEnergy,//TODO parametrize from GUI
-                        DefaultSpecies.predatorParameters.reproduceAddEnergy,//TODO parametrize from GUI
-                        DefaultSpecies.predatorParameters.maxNumberOfSpecies//TODO parametrize from GUI
+                        reproduceMultiplyEnergy,
+                        reproduceAddEnergy,
+                        maxNumberOfSpecies
                     ),
                     guiParameter = GuiParameter(size)
                 )
@@ -209,12 +245,14 @@ class SpeciesConfData(
                 movementStrategy = speciesParameter.movementStrategy.getType()
                 , energyTransferStrategy = speciesParameter.energyTransferStrategy.getType()
                 , reproduceStrategy = speciesParameter.reproduceStrategy.getType()
+                , dieStrategy = speciesParameter.dieStrategies.first().getType()
                 , minEnergy = speciesParameter.minEnergy
                 , maxEnergy = speciesParameter.maxEnergy
                 , inEnergy = speciesParameter.energy
                 , maxConsumption = speciesParameter.maxConsumption
                 , restEnergyConsumption = speciesParameter.restEnergyConsumption
                 , consumeRange = speciesParameter.consumeRange
+                , canConsume =  speciesParameter.canConsume
                 , moveCost = speciesParameter.moveCost
                 , moveMaxDistance = speciesParameter.moveMaxDistance
                 , reproduceThreshold = speciesParameter.reproduceThreshold
@@ -222,6 +260,9 @@ class SpeciesConfData(
                 , reproduceProbability = speciesParameter.reproduceProbability
                 , maxNumberOfOffspring = speciesParameter.maxNumberOfOffspring
                 , reproduceRange = speciesParameter.reproduceRange
+                , reproduceMultiplyEnergy = speciesParameter.reproduceMultiplyEnergy
+                , reproduceAddEnergy = speciesParameter.reproduceAddEnergy
+                , maxNumberOfSpecies = speciesParameter.maxNumberOfSpecies
                 , size = speciesParameter.size
                 , type = speciesParameter.type
             )
@@ -233,12 +274,14 @@ class SpeciesConfData(
                 movementStrategy = o.movementStrategy.getType()
                 , energyTransferStrategy = o.energyTransferStrategy.getType()
                 , reproduceStrategy = o.reproduceStrategy.getType()
+                , dieStrategy =  o.dieStrategies.first().getType()
                 , minEnergy = o.energyTransferParameter.minEnergy
                 , maxEnergy = o.energyTransferParameter.maxEnergy
                 , inEnergy = o.energyTransferParameter.energy
                 , maxConsumption = o.consumeParameter.maxConsumption
                 , restEnergyConsumption = o.consumeParameter.restEnergyConsumption
                 , consumeRange = o.consumeParameter.consumeRange
+                , canConsume = o.consumeParameter.canConsume
                 , moveCost = o.movementParameter.moveCost
                 , moveMaxDistance = o.movementParameter.moveMaxDistance
                 , reproduceThreshold = o.reproduceParameter.reproduceThreshold
@@ -246,6 +289,9 @@ class SpeciesConfData(
                 , reproduceProbability = o.reproduceParameter.reproduceProbability
                 , maxNumberOfOffspring = o.reproduceParameter.maxNumberOfOffspring
                 , reproduceRange = o.reproduceParameter.reproduceRange
+                , reproduceMultiplyEnergy = o.reproduceParameter.reproduceMultiplyEnergy
+                , reproduceAddEnergy = o.reproduceParameter.reproduceAddEnergy
+                , maxNumberOfSpecies = o.reproduceParameter.maxNumberOfSpecies
                 , size = o.guiParameter.size
                 , type = o.getType()
             )

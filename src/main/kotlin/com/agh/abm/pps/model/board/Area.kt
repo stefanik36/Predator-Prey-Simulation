@@ -5,9 +5,12 @@ import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.util.Benchmark
 import com.agh.abm.pps.util.geometric.PositionRestriction
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.withContext
+
 
 class Area(boardState: BoardState) {
-    val species = boardState.agents
+    val species = mutableListOf<Species>()
     var reproducedSpecies: MutableList<Species> = mutableListOf()
     var step: Int = 0
     var numberOfSpecies: MutableMap<SpeciesType, Int> = mutableMapOf()
@@ -21,32 +24,28 @@ class Area(boardState: BoardState) {
         maxY = boardState.height
     )
 
-
     fun nextStep() {
 
         println("======================================")
         println("Step: $step, species: ${countAlive()}")
-
-
-        Benchmark.measure("Move:") { species.forEach { s -> s.move(this) } }
-        Benchmark.measure("Fill chunk manager") {
-            species.forEach {
-                numberOfSpecies[it.getType()] = numberOfSpecies.getOrElse(it.getType(), { 0 }) + 1
-                chunkManager.addSpecies(it)
+            Benchmark.measure("Move:") { species.forEach { s -> s.move(this@Area) } }
+            Benchmark.measure("Fill chunk manager") {
+                species.forEach {
+                    numberOfSpecies[it.getType()] = numberOfSpecies.getOrElse(it.getType(), { 0 }) + 1
+                    chunkManager.addSpecies(it)
+                }
             }
-        }
-        Benchmark.measure("Consume:") { species.parallelStream().forEach { s -> s.consume(this) } }
-        Benchmark.measure("Die:") { species.forEach { s -> s.performDieActions() } }
-        Benchmark.measure("Reproduce:") { species.forEach { s -> s.reproduce(this) } }
-        Benchmark.measure("Others:") { species.forEach { s -> s.performOtherActions() } }
-        Benchmark.measure("Remove dead agents") { this.species.removeIf { !it.energyTransferParameter.alive } }
+            Benchmark.measure("Consume:") { species.parallelStream().forEach { s -> s.consume(this@Area) } }
+            Benchmark.measure("Die:") { species.forEach { s -> s.performDieActions() } }
+            Benchmark.measure("Reproduce:") { species.forEach { s -> s.reproduce(this@Area) } }
+            Benchmark.measure("Others:") { species.forEach { s -> s.performOtherActions() } }
+            Benchmark.measure("Remove dead agents") { species.removeIf { !it.energyTransferParameter.alive } }
 
-        addReproducedSpecies()
-        numberOfSpecies.clear()
-        chunkManager.clear()
+            addReproducedSpecies()
+            numberOfSpecies.clear()
+            chunkManager.clear()
 
-        step++
-
+            step++
 //        println(getOverview())
     }
 

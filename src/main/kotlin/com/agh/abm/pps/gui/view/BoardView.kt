@@ -2,14 +2,13 @@ package com.agh.abm.pps.gui.view
 
 import com.agh.abm.pps.SimulationController
 import com.agh.abm.pps.gui.*
-import com.agh.abm.pps.gui.layout.PannableCanvas
-import com.agh.abm.pps.gui.gesture.SceneGestures
+import com.agh.abm.pps.gui.layout.BoardCanvas
 import com.agh.abm.pps.model.species.*
+import com.agh.abm.pps.util.Benchmark
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.canvas.Canvas
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
@@ -23,8 +22,8 @@ import tornadofx.*
 
 class BoardView : View() {
 
-    private var pannableCanvas: PannableCanvas by singleAssign()
-    private val canv: Canvas
+    //    private var pannableCanvas: PannableCanvas by singleAssign()
+    private var canv: BoardCanvas by singleAssign()
     private val gc: GraphicsContext
 
     private var typeSelect: ComboBox<SpeciesType> by singleAssign()
@@ -37,14 +36,13 @@ class BoardView : View() {
     private val configView: ConfigView by inject()
 
     private var pane: Pane by singleAssign()
-
     override val root = group {
-        pannableCanvas = opcr(
-            this,
-            PannableCanvas(controller.board.width, controller.board.height)
-        )
+        //        pannableCanvas = opcr(
+//            this,
+//            PannableCanvas(controller.board.width, controller.board.height)
+//        )
         pane = pane {
-            background = Color.rgb(227, 227, 227).asBackground()
+            //            background = Color.rgb(227, 227, 227).asBackground()
 
             vbox {
                 spacing = 5.0
@@ -82,7 +80,7 @@ class BoardView : View() {
                         padding = Insets(0.0, 0.0, 0.0, 0.0)
                         min = 1.0
                         max = 500.0
-                        value = 1.0
+                        value = 500.0
                         isShowTickLabels = true
                         isShowTickMarks = true
                         majorTickUnit = 500.0
@@ -92,7 +90,7 @@ class BoardView : View() {
                         padding = Insets(0.0, 0.0, 0.0, 0.0)
                         min = 1.0
                         max = 500.0
-                        value = 1.0
+                        value = 500.0
                         isShowTickLabels = true
                         isShowTickMarks = true
                         majorTickUnit = 500.0
@@ -122,35 +120,64 @@ class BoardView : View() {
                     }
                 }
 
+                canv = opcr(
+                    this,
+                    BoardCanvas(900.0, 900.0, controller.board)
+                )
             }
-//            canv = canvas(controller.board.width, controller.board.height)
         }
     }
 
     init {
-        subscribe<UPDATE_BOARDVIEW> { updateView(controller.board) }
-        canv = pannableCanvas.canvas
+        subscribe<UPDATE_BOARDVIEW> { canv.requestUpdate() }
         gc = canv.graphicsContext2D
 
-        val sceneGestures = SceneGestures(pannableCanvas)
-        root.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.onMousePressedEventHandler)
-        root.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.onMouseDraggedEventHandler)
-        root.addEventFilter(ScrollEvent.ANY, sceneGestures.onScrollEventHandler)
+        root.addEventFilter(MouseEvent.MOUSE_PRESSED, canv.gestures.onMousePressedEventHandler)
+        root.addEventFilter(MouseEvent.MOUSE_DRAGGED, canv.gestures.onMouseDraggedEventHandler)
+        root.addEventFilter(ScrollEvent.ANY, canv.gestures.onScrollEventHandler)
+
+
+        canv.updateBoardFunc = {
+            Benchmark.measure("Draw board ") {
+                val laterDraw = mutableListOf<Species>()
+                controller.board.agents.forEach { guy ->
+                    when (guy) {
+                        is Grass -> draw(guy)
+                        else -> laterDraw.add(guy)
+                    }
+
+                }
+                laterDraw.forEach {
+                    when (it) {
+                        is Prey -> draw(it)
+                        is Predator -> draw(it)
+                    }
+                }
+            }
+        }
+
+
         primaryStage.widthProperty().addListener { obs, oldVal, newVal -> pane.prefWidth = newVal.toDouble() }
         delaySlider.valueProperty()
             .addListener(ChangeListener() { _: ObservableValue<out Number>?, _: Number, number1: Number ->
                 fire(NOTIFY_DELAY_CHANGE(number1.toLong()))
             })
 
+
+
         canv.onMouseClicked = EventHandler { e ->
             when (e.button) {
-                MouseButton.PRIMARY -> controller.addGuy(
-                    e.x,
-                    e.y,
-                    configView.species.first { it.type == typeSelect.selectionModel.selectedItem },
-                    spawnNumSlider.value,
-                    spawnAreaSizeSlider.value
-                )
+                MouseButton.PRIMARY -> {
+                    val realXY = canv.getRealXY(e)
+                    controller.addGuy(
+                        realXY.first,
+                        realXY.second,
+                        configView.species.first { it.type == typeSelect.selectionModel.selectedItem },
+                        spawnNumSlider.value,
+                        spawnAreaSizeSlider.value
+                    )
+//                    println("${e.x} || ${e.y}")
+                }
 //                MouseButton.SECONDARY -> controller.removeGuy(e.x, e.y)
                 MouseButton.MIDDLE -> when (typeSelect.selectionModel.selectedIndex) {
 //                    TODO fix for more com.agh.abm.pps.model.species types
@@ -161,9 +188,8 @@ class BoardView : View() {
                 }
             }
         }
-
-        fire(UPDATE_BOARDVIEW)
     }
+
 
     private fun drawCircle(x: Double, y: Double, size: Double, color: Color) {
         gc.fill = color
@@ -198,7 +224,6 @@ class BoardView : View() {
             o.movementParameter.currentPosition.y,
             o.guiParameter.size,
             Color.rgb(245, 178, 7)
-//            Color.BLACK
         )
         drawViewRange(
             o.movementParameter.currentPosition.x,
@@ -213,39 +238,9 @@ class BoardView : View() {
             o.movementParameter.currentPosition.y,
             o.guiParameter.size,
             Color.rgb(96, 128, 56).deriveColor(1.0, 1.0, 1.0, .5)
-//            Color.BLACK
         )
-//        gc.fill = Color.rgb(96, 128, 56)
-//        gc.fillRect(
-//            o.movementParameter.currentPosition.x,
-//            o.movementParameter.currentPosition.y,
-//            o.guiParameter.size,
-//            o.guiParameter.size
-//        )
     }
 
-    private fun clearBoard() {
-        gc.clearRect(0.0, 0.0, controller.board.width, controller.board.height)
-    }
-
-    private fun updateView(state: BoardState) {
-        clearBoard()
-        val laterDraw = mutableListOf<Species>()
-        state.agents.forEach { guy ->
-            when (guy) {
-                is Grass -> draw(guy)
-                else -> laterDraw.add(guy)
-            }
-
-        }
-        laterDraw.forEach {
-            when (it) {
-                is Prey -> draw(it)
-                is Predator -> draw(it)
-            }
-        }
-
-    }
 
     override fun onUndock() {
         fire(EXIT)

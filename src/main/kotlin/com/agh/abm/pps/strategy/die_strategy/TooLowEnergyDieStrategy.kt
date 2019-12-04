@@ -6,7 +6,12 @@ import com.agh.abm.pps.model.species.Species
 
 class TooLowEnergyDieStrategy : DieStrategy {
 
+
     override fun checkIfShouldDie(energyTransferParameter: EnergyTransferParameter): Boolean {
         return energyTransferParameter.energy <= energyTransferParameter.minEnergy
+    }
+
+    override fun getType(): DieStrategyType {
+        return DieStrategyType.TO_LOW_ENERGY
     }
 }
