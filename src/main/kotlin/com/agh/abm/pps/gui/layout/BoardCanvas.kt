@@ -9,7 +9,7 @@ import javafx.scene.input.MouseEvent
 class BoardCanvas(width: Double, height: Double, val board: BoardState) : Canvas(width, height) {
 
     val gestures = BoardGestures(this)
-    private var needToUpdate = 0
+    private var needToUpdate = 1
     var updateBoardFunc: () -> Unit = {}
 
     var zoom = 1.0

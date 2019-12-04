@@ -42,7 +42,7 @@ class BoardGestures(canvas: BoardCanvas) {
     // note: pivot value must be untransformed, i. e. without scaling
     val onScrollEventHandler: EventHandler<ScrollEvent> = EventHandler {
         val delta = 1.2
-        val change = 50.0
+        val change = 60.0
 
         if (it.deltaY < 0) {
             canvas.zoom /= delta

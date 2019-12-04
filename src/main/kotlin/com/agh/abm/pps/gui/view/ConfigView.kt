@@ -1,6 +1,8 @@
 package com.agh.abm.pps.gui.view
 
 import com.agh.abm.pps.gui.data.SpeciesConfData
+import com.agh.abm.pps.model.species.Species
+import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.strategy.die_strategy.DieStrategyType
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
 import com.agh.abm.pps.strategy.movement.MovementStrategyType
@@ -8,10 +10,12 @@ import com.agh.abm.pps.strategy.reproduce.ReproduceStrategyType
 import com.agh.abm.pps.util.default_species.DefaultSpecies
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import javafx.beans.value.ChangeListener
+import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
-import javafx.scene.control.ComboBox
-import javafx.scene.control.TableView
-import javafx.scene.control.TextField
+import javafx.geometry.Pos
+import javafx.scene.Node
+import javafx.scene.control.*
 import tornadofx.*
 import java.io.File
 import java.io.FileWriter
@@ -60,12 +64,16 @@ class ConfigView : View() {
     private var reproduceThresholdField: TextField by singleAssign()
     private var moveMaxDistanceField: TextField by singleAssign()
     private var consumeRangeField: TextField by singleAssign()
+    private var canConsumeListView: ListView<SpeciesType> by singleAssign()
+    private var canConsumeSaveBtn: Button by singleAssign()
     private var moveCostField: TextField by singleAssign()
     private var energyConsumeField: TextField by singleAssign()
 
     private var prevSelection: SpeciesConfData? = null
 
     private var tableViewField: TableView<SpeciesConfData> by singleAssign()
+
+    private var tList: ObservableList<SpeciesType> = species.map { it.type }.observable()
 
     override val root = borderpane {
         prefHeight = 700.0
@@ -96,7 +104,7 @@ class ConfigView : View() {
                             reproduceStrategyCombo = combobox(values = ReproduceStrategyType.values().toList()) { }
                         }
                         field("Die strategy") {
-                            dieStrategyCombo = combobox(values = DieStrategyType.values().toList()) { }
+                            dieStrategyCombo = combobox(values = DieStrategyType.values().toList()) {}
                         }
                     }
                     fieldset("Energy:") {
@@ -121,6 +129,20 @@ class ConfigView : View() {
                         }
                         field("Consume range") {
                             consumeRangeField = textfield { }
+                        }
+                        field("Can consume") {
+                            prefHeight = 100.0
+                            canConsumeListView = listview(tList) {
+                                //                                selectionModel
+                                selectionModel.selectionMode = SelectionMode.MULTIPLE
+
+                                prefWidth = 100.0
+                                prefHeight = 100.0
+                            }
+
+                            canConsumeSaveBtn = button("Save") {
+                            }
+
                         }
                     }
                     fieldset("Move:") {
@@ -162,6 +184,7 @@ class ConfigView : View() {
                             sizeField = textfield { }
                         }
 //                    button("Save").action {
+//                        println(tList.toString())
 //                    }
                     }
                 }
@@ -197,6 +220,7 @@ class ConfigView : View() {
             reproduceAddEnergyField.textProperty().unbindBidirectional(reproduceAddEnergyProperty)
             reproduceMaxNumberOfSpeciesField.textProperty().unbindBidirectional(maxNumberOfSpeciesProperty)
             sizeField.textProperty().unbindBidirectional(sizeProperty)
+            canConsumeListView.selectionModel.clearSelection()
         }
 
         movementStrategyCombo.bind(it.movementStrategyProperty)
@@ -220,6 +244,23 @@ class ConfigView : View() {
         reproduceAddEnergyField.bind(it.reproduceAddEnergyProperty)
         reproduceMaxNumberOfSpeciesField.bind(it.maxNumberOfSpeciesProperty)
         sizeField.bind(it.sizeProperty)
+        canConsumeListView.selectWhere { x -> x in it.canConsume }
+        canConsumeSaveBtn.action {
+            it.canConsumeProperty.clear()
+            it.canConsumeProperty.addAll(canConsumeListView.selectionModel.selectedItems)
+        }
+
+//        canConsumeListView.selectionModel.selectedItemProperty().addListener(ChangeListener<SpeciesType>{observable, oldVal, newVal ->
+//            if(newVal == null){
+//                it.canConsumeProperty.clear()
+//            }
+//            else{
+//                if(newVal !in it.canConsumeProperty){
+//                    it.canConsumeProperty.add(newVal)
+//                }
+//            }
+//            println("$oldVal || $newVal")
+//        })
 
         prevSelection = it
     }

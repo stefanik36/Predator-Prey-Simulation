@@ -13,11 +13,13 @@ import com.agh.abm.pps.util.geometric.Vector
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.*
+import javafx.collections.ObservableList
+import javafx.scene.control.MultipleSelectionModel
 
 import tornadofx.getValue
+import tornadofx.observable
+import tornadofx.observableList
 import tornadofx.setValue
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,6 +35,7 @@ class SpeciesConfData(
     maxConsumption: Double,
     restEnergyConsumption: Double,
     consumeRange: Double,
+    canConsume: List<SpeciesType>,
     moveCost: Double,
     moveMaxDistance: Double,
     reproduceThreshold: Double,
@@ -83,8 +86,13 @@ class SpeciesConfData(
     var restEnergyConsumption: Double by restEnergyConsumptionProperty
 
     @JsonIgnore
-    val consumeRangeProperty = SimpleDoubleProperty(this, "consumeRangeProperty", consumeRange)
+    val consumeRangeProperty = SimpleDoubleProperty(this, "consumeRange", consumeRange)
     var consumeRange: Double by consumeRangeProperty
+
+    @JsonIgnore
+    val canConsumeProperty = SimpleListProperty<SpeciesType>(this, "canConsume", canConsume.observable())
+    val canConsume: List<SpeciesType> by canConsumeProperty
+
 
     @JsonIgnore
     val moveCostProperty = SimpleDoubleProperty(this, "moveCost", moveCost)
@@ -147,7 +155,7 @@ class SpeciesConfData(
                     maxConsumption,
                     restEnergyConsumption,
                     consumeRange,
-                    DefaultSpecies.grassParameters.canConsume//TODO parametrize from GUI
+                    canConsume
                 ),
                 energyTransferParameter = EnergyTransferParameter(
                     minEnergy,
@@ -177,7 +185,7 @@ class SpeciesConfData(
                     maxConsumption,
                     restEnergyConsumption,
                     consumeRange,
-                    DefaultSpecies.preyParameters.canConsume//TODO parametrize from GUI
+                    canConsume
                 ),
                 energyTransferParameter = EnergyTransferParameter(
                     minEnergy, maxEnergy, energy, DefaultSpecies.predatorParameters.alive
@@ -205,7 +213,7 @@ class SpeciesConfData(
                         maxConsumption,
                         restEnergyConsumption,
                         consumeRange,
-                        DefaultSpecies.predatorParameters.canConsume//TODO parametrize from GUI
+                        canConsume
                     ),
                     energyTransferParameter = EnergyTransferParameter(
                         minEnergy, maxEnergy, energy, DefaultSpecies.predatorParameters.alive
@@ -244,6 +252,7 @@ class SpeciesConfData(
                 , maxConsumption = speciesParameter.maxConsumption
                 , restEnergyConsumption = speciesParameter.restEnergyConsumption
                 , consumeRange = speciesParameter.consumeRange
+                , canConsume =  speciesParameter.canConsume
                 , moveCost = speciesParameter.moveCost
                 , moveMaxDistance = speciesParameter.moveMaxDistance
                 , reproduceThreshold = speciesParameter.reproduceThreshold
@@ -272,6 +281,7 @@ class SpeciesConfData(
                 , maxConsumption = o.consumeParameter.maxConsumption
                 , restEnergyConsumption = o.consumeParameter.restEnergyConsumption
                 , consumeRange = o.consumeParameter.consumeRange
+                , canConsume = o.consumeParameter.canConsume
                 , moveCost = o.movementParameter.moveCost
                 , moveMaxDistance = o.movementParameter.moveMaxDistance
                 , reproduceThreshold = o.reproduceParameter.reproduceThreshold
