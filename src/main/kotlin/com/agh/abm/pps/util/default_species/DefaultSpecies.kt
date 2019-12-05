@@ -45,7 +45,7 @@ class DefaultSpecies {
             reproduceMultiplyEnergy = 2.5,
             reproduceAddEnergy = 100.0,
             maxNumberOfSpecies = 1_000_000_000,
-            reproduceDensityLimit = 30,
+            reproduceDensityLimit = 40,
             //guiParameter
             size = 3.0
         )

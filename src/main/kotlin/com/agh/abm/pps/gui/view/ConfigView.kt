@@ -266,8 +266,8 @@ class ConfigView : View() {
     }
 
     override fun onUndock() {
-        val fw = FileWriter(File(filePath))
-        fw.write(ObjectMapper().writeValueAsString(species.toList()))
-        fw.close()
+//        val fw = FileWriter(File(filePath))
+//        fw.write(ObjectMapper().writeValueAsString(species.toList()))
+//        fw.close()
     }
 }
