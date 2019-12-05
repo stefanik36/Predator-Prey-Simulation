@@ -65,12 +65,12 @@ abstract class Species(
     }
 
     fun reproduce(area: Area) {
-        if(chunk != null && chunk!!.getNumber(getType()) > 30) return
+        val nullablePair = reproduceStrategy.reproduce(this, area)
 
-        if (energyTransferParameter.energy >= reproduceParameter.reproduceThreshold) {
-            val (newSpecies, cost) = reproduceStrategy.reproduce(this, area)
+        nullablePair?.let {
+            val (newSpecies, cost) = it
             area.add(newSpecies)
-            energyTransferParameter.energy -= cost;
+            energyTransferParameter.energy -= cost
         }
     }
 

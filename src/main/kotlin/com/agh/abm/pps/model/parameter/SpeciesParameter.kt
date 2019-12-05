@@ -41,6 +41,7 @@ data class SpeciesParameter(
     var reproduceMultiplyEnergy: Double,
     var reproduceAddEnergy: Double,
     var maxNumberOfSpecies: Int,
+    var reproduceDensityLimit: Int,
 
     // guiParameter: GuiParameter
     var size: Double

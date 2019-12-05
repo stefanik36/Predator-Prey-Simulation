@@ -14,7 +14,7 @@ enum class ReproduceStrategyType(name: String, val strategy: ReproduceStrategy) 
 }
 
 interface ReproduceStrategy {
-    fun reproduce(species: Species,area: Area): Pair<List<Species>, Double>
+    fun reproduce(species: Species,area: Area): Pair<List<Species>, Double>?
 
     fun getType(): ReproduceStrategyType
 }

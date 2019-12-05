@@ -16,25 +16,13 @@ class ParametrizedProbabilityReproduceStrategy() : ReproduceStrategy {
         this.random = random;
     }
 
-    override fun reproduce(species: Species, area: Area): Pair<List<Species>, Double> {
+    override fun reproduce(species: Species, area: Area): Pair<List<Species>, Double>? {
         val reproduceParameter = species.reproduceParameter
 
-        if (random.nextDouble() > reproduceParameter.reproduceProbability) {
-            return Pair(listOf(), 0.0)
-        }
-        if (reproduceParameter.maxNumberOfSpecies < area.countSpecies(species.getType())) {
-            return Pair(listOf(), 0.0)
-        }
-
-
-//        val reproduceConditions = listOf(
-//            random.nextDouble() <= reproduceParameter.reproduceProbability,
-//            reproduceParameter.maxNumberOfSpecies >= area.countSpecies(species.getType())
-//        )
-//
-//        if (!reproduceConditions.all { it }) {
-//            return Pair(listOf(), 0.0)
-//        }
+        if (species.chunk != null && species.chunk!!.getNumber(species.getType()) > species.reproduceParameter.reproduceDensityLimit) return null
+        if (species.energyTransferParameter.energy < reproduceParameter.reproduceThreshold) return null
+        if (random.nextDouble() > reproduceParameter.reproduceProbability) return null
+        if (reproduceParameter.maxNumberOfSpecies < area.countSpecies(species.getType())) return null
 
         val numberOfOffspring =
             if (reproduceParameter.maxNumberOfOffspring == 1) 1
@@ -50,7 +38,7 @@ class ParametrizedProbabilityReproduceStrategy() : ReproduceStrategy {
                 val offspringEnergy = computeEnergy(reproduceParameter)
                 species.generate(offspringPosition, offspringEnergy)
             }
-        val cost = offspringList.map { reproduceParameter.reproduceCost }.sum()
+        val cost = reproduceParameter.reproduceCost * offspringList.size
 
         return Pair(offspringList, cost)
     }

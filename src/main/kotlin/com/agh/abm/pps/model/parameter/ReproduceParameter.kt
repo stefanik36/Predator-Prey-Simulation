@@ -8,6 +8,6 @@ data class ReproduceParameter(
     var reproduceRange: Double,
     var reproduceMultiplyEnergy: Double,
     var reproduceAddEnergy: Double,
-    var maxNumberOfSpecies: Int
-) {
-}
+    var maxNumberOfSpecies: Int,
+    val reproduceDensityLimit: Int
+)

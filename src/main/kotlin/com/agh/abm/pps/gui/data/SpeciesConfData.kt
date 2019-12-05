@@ -137,9 +137,6 @@ class SpeciesConfData(
     var maxNumberOfSpecies: Int by maxNumberOfSpeciesProperty
 
 
-
-
-
     @JsonIgnore
     val sizeProperty = SimpleDoubleProperty(this, "size", size)
     var size: Double by sizeProperty
@@ -172,7 +169,8 @@ class SpeciesConfData(
                     reproduceRange,
                     reproduceMultiplyEnergy,
                     reproduceAddEnergy,
-                    maxNumberOfSpecies
+                    maxNumberOfSpecies,
+                    DefaultSpecies.grassParameters.reproduceDensityLimit //TODO add to gui
                 ),
                 guiParameter = GuiParameter(size)
             )
@@ -199,7 +197,8 @@ class SpeciesConfData(
                     reproduceRange,
                     reproduceMultiplyEnergy,
                     reproduceAddEnergy,
-                    maxNumberOfSpecies
+                    maxNumberOfSpecies,
+                    DefaultSpecies.preyParameters.reproduceDensityLimit//TODO add to gui
                 ),
                 guiParameter = GuiParameter(size)
             )
@@ -227,7 +226,8 @@ class SpeciesConfData(
                         reproduceRange,
                         reproduceMultiplyEnergy,
                         reproduceAddEnergy,
-                        maxNumberOfSpecies
+                        maxNumberOfSpecies,
+                        DefaultSpecies.predatorParameters.reproduceDensityLimit//TODO add to gui
                     ),
                     guiParameter = GuiParameter(size)
                 )
@@ -252,7 +252,7 @@ class SpeciesConfData(
                 , maxConsumption = speciesParameter.maxConsumption
                 , restEnergyConsumption = speciesParameter.restEnergyConsumption
                 , consumeRange = speciesParameter.consumeRange
-                , canConsume =  speciesParameter.canConsume
+                , canConsume = speciesParameter.canConsume
                 , moveCost = speciesParameter.moveCost
                 , moveMaxDistance = speciesParameter.moveMaxDistance
                 , reproduceThreshold = speciesParameter.reproduceThreshold
@@ -274,7 +274,7 @@ class SpeciesConfData(
                 movementStrategy = o.movementStrategy.getType()
                 , energyTransferStrategy = o.energyTransferStrategy.getType()
                 , reproduceStrategy = o.reproduceStrategy.getType()
-                , dieStrategy =  o.dieStrategies.first().getType()
+                , dieStrategy = o.dieStrategies.first().getType()
                 , minEnergy = o.energyTransferParameter.minEnergy
                 , maxEnergy = o.energyTransferParameter.maxEnergy
                 , inEnergy = o.energyTransferParameter.energy

@@ -54,7 +54,8 @@ class SpeciesFactory {
                     reproduceRange = DefaultSpecies.grassParameters.reproduceRange,
                     reproduceMultiplyEnergy = DefaultSpecies.grassParameters.reproduceMultiplyEnergy,
                     reproduceAddEnergy = DefaultSpecies.grassParameters.reproduceAddEnergy,
-                    maxNumberOfSpecies = DefaultSpecies.grassParameters.maxNumberOfSpecies
+                    maxNumberOfSpecies = DefaultSpecies.grassParameters.maxNumberOfSpecies,
+                    reproduceDensityLimit = DefaultSpecies.grassParameters.reproduceDensityLimit
                 ),
                 guiParameter = GuiParameter(
                     size = DefaultSpecies.grassParameters.size
@@ -115,7 +116,8 @@ class SpeciesFactory {
                     reproduceRange = DefaultSpecies.preyParameters.reproduceRange,
                     reproduceMultiplyEnergy = DefaultSpecies.preyParameters.reproduceMultiplyEnergy,
                     reproduceAddEnergy = DefaultSpecies.preyParameters.reproduceAddEnergy,
-                    maxNumberOfSpecies = DefaultSpecies.preyParameters.maxNumberOfSpecies
+                    maxNumberOfSpecies = DefaultSpecies.preyParameters.maxNumberOfSpecies,
+                    reproduceDensityLimit = DefaultSpecies.preyParameters.reproduceDensityLimit
                 ),
                 guiParameter = GuiParameter(
                     size = DefaultSpecies.preyParameters.size
@@ -198,7 +200,8 @@ class SpeciesFactory {
                     reproduceRange = DefaultSpecies.predatorParameters.reproduceRange,
                     reproduceMultiplyEnergy = DefaultSpecies.predatorParameters.reproduceMultiplyEnergy,
                     reproduceAddEnergy = DefaultSpecies.predatorParameters.reproduceAddEnergy,
-                    maxNumberOfSpecies = DefaultSpecies.predatorParameters.maxNumberOfSpecies
+                    maxNumberOfSpecies = DefaultSpecies.predatorParameters.maxNumberOfSpecies,
+                    reproduceDensityLimit = DefaultSpecies.predatorParameters.reproduceDensityLimit
                 ),
                 guiParameter = GuiParameter(
                     size = DefaultSpecies.predatorParameters.size
