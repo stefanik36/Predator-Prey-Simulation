@@ -2,9 +2,7 @@ package com.agh.abm.pps.gui.data
 
 import com.agh.abm.pps.model.parameter.*
 import com.agh.abm.pps.model.species.*
-import com.agh.abm.pps.strategy.die_strategy.DieStrategy
 import com.agh.abm.pps.strategy.die_strategy.DieStrategyType
-import com.agh.abm.pps.strategy.die_strategy.TooLowEnergyDieStrategy
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
 import com.agh.abm.pps.strategy.movement.MovementStrategyType
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategyType
@@ -14,12 +12,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import javafx.beans.property.*
-import javafx.collections.ObservableList
-import javafx.scene.control.MultipleSelectionModel
 
 import tornadofx.getValue
 import tornadofx.observable
-import tornadofx.observableList
 import tornadofx.setValue
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -45,6 +40,7 @@ class SpeciesConfData(
     reproduceRange: Double,
     reproduceMultiplyEnergy: Double,
     reproduceAddEnergy: Double,
+    reproduceDensityLimit: Int,
     maxNumberOfSpecies: Int,
     size: Double,
     var type: SpeciesType
@@ -114,6 +110,11 @@ class SpeciesConfData(
     val reproduceProbabilityProperty = SimpleDoubleProperty(this, "reproduceProbability", reproduceProbability)
     var reproduceProbability: Double by reproduceProbabilityProperty
 
+    @JsonIgnore
+    val reproduceDensityLimitProperty = SimpleIntegerProperty(this, "reproduceDensityLimit", reproduceDensityLimit)
+    var reproduceDensityLimit: Int by reproduceDensityLimitProperty
+
+
 
     @JsonIgnore
     val maxNumberOfOffspringProperty = SimpleIntegerProperty(this, "maxNumberOfOffspring", maxNumberOfOffspring)
@@ -170,7 +171,7 @@ class SpeciesConfData(
                     reproduceMultiplyEnergy,
                     reproduceAddEnergy,
                     maxNumberOfSpecies,
-                    DefaultSpecies.grassParameters.reproduceDensityLimit //TODO add to gui
+                    reproduceDensityLimit
                 ),
                 guiParameter = GuiParameter(size)
             )
@@ -198,7 +199,7 @@ class SpeciesConfData(
                     reproduceMultiplyEnergy,
                     reproduceAddEnergy,
                     maxNumberOfSpecies,
-                    DefaultSpecies.preyParameters.reproduceDensityLimit//TODO add to gui
+                    reproduceDensityLimit
                 ),
                 guiParameter = GuiParameter(size)
             )
@@ -227,7 +228,7 @@ class SpeciesConfData(
                         reproduceMultiplyEnergy,
                         reproduceAddEnergy,
                         maxNumberOfSpecies,
-                        DefaultSpecies.predatorParameters.reproduceDensityLimit//TODO add to gui
+                        reproduceDensityLimit
                     ),
                     guiParameter = GuiParameter(size)
                 )
@@ -258,6 +259,7 @@ class SpeciesConfData(
                 , reproduceThreshold = speciesParameter.reproduceThreshold
                 , reproduceCost = speciesParameter.reproduceCost
                 , reproduceProbability = speciesParameter.reproduceProbability
+                , reproduceDensityLimit = speciesParameter.reproduceDensityLimit
                 , maxNumberOfOffspring = speciesParameter.maxNumberOfOffspring
                 , reproduceRange = speciesParameter.reproduceRange
                 , reproduceMultiplyEnergy = speciesParameter.reproduceMultiplyEnergy
@@ -287,6 +289,7 @@ class SpeciesConfData(
                 , reproduceThreshold = o.reproduceParameter.reproduceThreshold
                 , reproduceCost = o.reproduceParameter.reproduceCost
                 , reproduceProbability = o.reproduceParameter.reproduceProbability
+                , reproduceDensityLimit = o.reproduceParameter.reproduceDensityLimit
                 , maxNumberOfOffspring = o.reproduceParameter.maxNumberOfOffspring
                 , reproduceRange = o.reproduceParameter.reproduceRange
                 , reproduceMultiplyEnergy = o.reproduceParameter.reproduceMultiplyEnergy

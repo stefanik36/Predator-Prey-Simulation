@@ -4,14 +4,21 @@ import com.agh.abm.pps.gui.style.Styles
 import com.agh.abm.pps.gui.view.BoardView
 import com.agh.abm.pps.gui.view.LaunchSettingsView
 import com.agh.abm.pps.model.species.*
+import com.fasterxml.jackson.annotation.JsonIgnore
+import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.SimpleIntegerProperty
 import tornadofx.*
 
 data class BoardState(
-    val width: Double,
-    val height: Double,
-    val chunkSize: Double,
+    var width: Double,
+    var  height: Double,
+    var chunkSize: Double,
+    @JsonIgnore
     var agents: List<Species> = listOf()
 )
+
+
+
 
 object EXIT : FXEvent()
 class START(val delay: Long) : FXEvent()

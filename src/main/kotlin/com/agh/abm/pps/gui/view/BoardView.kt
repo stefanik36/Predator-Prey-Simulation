@@ -129,6 +129,7 @@ class BoardView : View() {
     }
 
     init {
+        configView.force()
         subscribe<UPDATE_BOARDVIEW> { canv.requestUpdate() }
         gc = canv.graphicsContext2D
 

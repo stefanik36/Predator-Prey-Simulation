@@ -39,7 +39,7 @@ class SimulationController : Controller() {
                 NOTIFY_POPULATION_GRAPH(
                     alivePredNum = board.agents.filterIsInstance<Predator>().count(),
                     alivePreyNum = board.agents.filterIsInstance<Prey>().count(),
-                    aliveGrassNum = 0
+                    aliveGrassNum = board.agents.filterIsInstance<Grass>().count()
                 )
             )
         }
@@ -105,6 +105,12 @@ class SimulationController : Controller() {
 
     fun clearBoard() {
         area.species.clear()
+        updateBoard()
+    }
+
+    fun reload(){
+        setupSimulation()
+        area.species.addAll(board.agents.toMutableList())
         updateBoard()
     }
 

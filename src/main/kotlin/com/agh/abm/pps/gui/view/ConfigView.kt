@@ -1,7 +1,8 @@
 package com.agh.abm.pps.gui.view
 
+import com.agh.abm.pps.SimulationController
+import com.agh.abm.pps.gui.BoardState
 import com.agh.abm.pps.gui.data.SpeciesConfData
-import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.strategy.die_strategy.DieStrategyType
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
@@ -10,11 +11,7 @@ import com.agh.abm.pps.strategy.reproduce.ReproduceStrategyType
 import com.agh.abm.pps.util.default_species.DefaultSpecies
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
-import javafx.geometry.Pos
-import javafx.scene.Node
 import javafx.scene.control.*
 import tornadofx.*
 import java.io.File
@@ -22,8 +19,10 @@ import java.io.FileWriter
 
 class ConfigView : View() {
 
-    private val filePath = "src/main/resources/models/JD"
+    private val filePath = "src/main/resources/models/species"
+    private val boardPath = "src/main/resources/models/board"
     var species: ObservableList<SpeciesConfData>
+    private val controller: SimulationController by inject()
 
     init {
         val file = File(filePath)
@@ -41,6 +40,17 @@ class ConfigView : View() {
                 , SpeciesConfData.fromParameters(DefaultSpecies.predatorParameters)
             ).observable()
         }
+
+        val bFile = File(boardPath)
+        if(bFile.exists()){
+            val mapper = ObjectMapper()
+            mapper.registerModule(KotlinModule())
+            val nBoard = mapper.readValue(bFile, BoardState::class.java)
+            controller.board.chunkSize = nBoard.chunkSize
+            controller.board.width = nBoard.width
+            controller.board.height = nBoard.height
+            controller.reload()
+        }
     }
 
     private var movementStrategyCombo: ComboBox<MovementStrategyType> by singleAssign()
@@ -57,6 +67,7 @@ class ConfigView : View() {
     private var reproduceAddEnergyField: TextField by singleAssign()
     private var reproduceMultiplyEnergyField: TextField by singleAssign()
     private var reproduceMaxNumberOfSpeciesField: TextField by singleAssign()
+    private var reproduceDensityLimitField: TextField by singleAssign()
 
     private var maxNumOfOffField: TextField by singleAssign()
     private var reproduceProbabilityField: TextField by singleAssign()
@@ -74,6 +85,11 @@ class ConfigView : View() {
     private var tableViewField: TableView<SpeciesConfData> by singleAssign()
 
     private var tList: ObservableList<SpeciesType> = species.map { it.type }.observable()
+
+    private var boardWidthField: TextField by singleAssign()
+    private var boardHeightField: TextField by singleAssign()
+    private var chunkSizeField: TextField by singleAssign()
+    private var saveToFileField: CheckBox by singleAssign()
 
     override val root = borderpane {
         prefHeight = 700.0
@@ -175,6 +191,9 @@ class ConfigView : View() {
                         field("Reproduce add species") {
                             reproduceAddEnergyField = textfield { }
                         }
+                        field("Reproduce density limit") {
+                            reproduceDensityLimitField = textfield { }
+                        }
                         field("Max number of species") {
                             reproduceMaxNumberOfSpeciesField = textfield { }
                         }
@@ -183,9 +202,29 @@ class ConfigView : View() {
                         field("Size") {
                             sizeField = textfield { }
                         }
-//                    button("Save").action {
-//                        println(tList.toString())
-//                    }
+                    }
+                    fieldset("Area") {
+                        field("Area width") {
+                            boardWidthField = textfield { text = controller.board.width.toString() }
+                        }
+                        field("Area height") {
+                            boardHeightField = textfield { text = controller.board.height.toString()}
+                        }
+                        field("Chunk size") {
+                            chunkSizeField = textfield { text = controller.board.chunkSize.toString()}
+                        }
+                        button("Reload area") {
+                            action {
+                                val b = controller.board
+                                b.width = boardWidthField.text.toDouble()
+                                b.height = boardHeightField.text.toDouble()
+                                b.chunkSize = chunkSizeField.text.toDouble()
+                                controller.reload()
+                            }
+                        }
+                    }
+                    fieldset("Save") {
+                        saveToFileField = checkbox("Autosave") { selectedProperty().value = false }
                     }
                 }
             }
@@ -195,6 +234,8 @@ class ConfigView : View() {
     init {
         tableViewField.selectionModel.selectFirst()
     }
+
+    fun force(){}
 
     private fun editSpecies(it: SpeciesConfData) {
 
@@ -218,6 +259,7 @@ class ConfigView : View() {
             reproduceRangeField.textProperty().unbindBidirectional(reproduceRangeProperty)
             reproduceMultiplyEnergyField.textProperty().unbindBidirectional(reproduceMultiplyEnergyProperty)
             reproduceAddEnergyField.textProperty().unbindBidirectional(reproduceAddEnergyProperty)
+            reproduceDensityLimitField.textProperty().unbindBidirectional(reproduceDensityLimit)
             reproduceMaxNumberOfSpeciesField.textProperty().unbindBidirectional(maxNumberOfSpeciesProperty)
             sizeField.textProperty().unbindBidirectional(sizeProperty)
             canConsumeListView.selectionModel.clearSelection()
@@ -242,6 +284,7 @@ class ConfigView : View() {
         reproduceRangeField.bind(it.reproduceRangeProperty)
         reproduceMultiplyEnergyField.bind(it.reproduceMultiplyEnergyProperty)
         reproduceAddEnergyField.bind(it.reproduceAddEnergyProperty)
+        reproduceDensityLimitField.bind(it.reproduceDensityLimitProperty)
         reproduceMaxNumberOfSpeciesField.bind(it.maxNumberOfSpeciesProperty)
         sizeField.bind(it.sizeProperty)
         canConsumeListView.selectWhere { x -> x in it.canConsume }
@@ -249,25 +292,18 @@ class ConfigView : View() {
             it.canConsumeProperty.clear()
             it.canConsumeProperty.addAll(canConsumeListView.selectionModel.selectedItems)
         }
-
-//        canConsumeListView.selectionModel.selectedItemProperty().addListener(ChangeListener<SpeciesType>{observable, oldVal, newVal ->
-//            if(newVal == null){
-//                it.canConsumeProperty.clear()
-//            }
-//            else{
-//                if(newVal !in it.canConsumeProperty){
-//                    it.canConsumeProperty.add(newVal)
-//                }
-//            }
-//            println("$oldVal || $newVal")
-//        })
-
         prevSelection = it
     }
 
     override fun onUndock() {
-//        val fw = FileWriter(File(filePath))
-//        fw.write(ObjectMapper().writeValueAsString(species.toList()))
-//        fw.close()
+        if(!saveToFileField.isSelected) return
+
+        val fw = FileWriter(File(filePath))
+        fw.write(ObjectMapper().writeValueAsString(species.toList()))
+        fw.close()
+
+        val fwBoard = FileWriter(File(boardPath))
+        fwBoard.write(ObjectMapper().writeValueAsString(controller.board))
+        fwBoard.close()
     }
 }
