@@ -1,6 +1,9 @@
 package com.agh.abm.pps.util.geometric
 
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class Vector(val x: Double, val y: Double) {
 
@@ -19,6 +22,10 @@ class Vector(val x: Double, val y: Double) {
     }
 
     companion object {
+        fun fromCoordinates(x: Double, y: Double): Vector {
+            return Vector(x, y)
+        }
+
         fun fromAngleAndDistance(angle: Double, distance: Double): Vector {
             val x = distance * cos(angle)
             val y = distance * sin(angle)

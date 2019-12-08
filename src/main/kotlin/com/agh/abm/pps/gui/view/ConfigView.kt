@@ -3,7 +3,6 @@ package com.agh.abm.pps.gui.view
 import com.agh.abm.pps.SimulationController
 import com.agh.abm.pps.gui.BoardState
 import com.agh.abm.pps.gui.data.SpeciesConfData
-import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.strategy.die_strategy.DieStrategyType
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
 import com.agh.abm.pps.strategy.movement.MovementStrategyType
@@ -36,13 +35,14 @@ class ConfigView : View() {
         } else {
             listOf(
                 SpeciesConfData.fromParameters(DefaultSpecies.grassParameters)
+                , SpeciesConfData.fromParameters(DefaultSpecies.bushParameters)
                 , SpeciesConfData.fromParameters(DefaultSpecies.preyParameters)
                 , SpeciesConfData.fromParameters(DefaultSpecies.predatorParameters)
             ).observable()
         }
 
         val bFile = File(boardPath)
-        if(bFile.exists()){
+        if (bFile.exists()) {
             val mapper = ObjectMapper()
             mapper.registerModule(KotlinModule())
             val nBoard = mapper.readValue(bFile, BoardState::class.java)
@@ -75,7 +75,7 @@ class ConfigView : View() {
     private var reproduceThresholdField: TextField by singleAssign()
     private var moveMaxDistanceField: TextField by singleAssign()
     private var consumeRangeField: TextField by singleAssign()
-    private var canConsumeListView: ListView<SpeciesType> by singleAssign()
+    private var canConsumeListView: ListView<String> by singleAssign()
     private var canConsumeSaveBtn: Button by singleAssign()
     private var moveCostField: TextField by singleAssign()
     private var energyConsumeField: TextField by singleAssign()
@@ -84,7 +84,7 @@ class ConfigView : View() {
 
     private var tableViewField: TableView<SpeciesConfData> by singleAssign()
 
-    private var tList: ObservableList<SpeciesType> = species.map { it.type }.observable()
+    private var tList: ObservableList<String> = species.map { it.type }.observable()
 
     private var boardWidthField: TextField by singleAssign()
     private var boardHeightField: TextField by singleAssign()
@@ -208,10 +208,10 @@ class ConfigView : View() {
                             boardWidthField = textfield { text = controller.board.width.toString() }
                         }
                         field("Area height") {
-                            boardHeightField = textfield { text = controller.board.height.toString()}
+                            boardHeightField = textfield { text = controller.board.height.toString() }
                         }
                         field("Chunk size") {
-                            chunkSizeField = textfield { text = controller.board.chunkSize.toString()}
+                            chunkSizeField = textfield { text = controller.board.chunkSize.toString() }
                         }
                         button("Reload area") {
                             action {
@@ -235,7 +235,7 @@ class ConfigView : View() {
         tableViewField.selectionModel.selectFirst()
     }
 
-    fun force(){}
+    fun force() {}
 
     private fun editSpecies(it: SpeciesConfData) {
 
@@ -296,7 +296,7 @@ class ConfigView : View() {
     }
 
     override fun onUndock() {
-        if(!saveToFileField.isSelected) return
+        if (!saveToFileField.isSelected) return
 
         val fw = FileWriter(File(filePath))
         fw.write(ObjectMapper().writeValueAsString(species.toList()))

@@ -5,13 +5,14 @@ import com.agh.abm.pps.model.board.Chunk
 import com.agh.abm.pps.model.parameter.*
 import com.agh.abm.pps.strategy.die_strategy.DieStrategy
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategy
-import com.agh.abm.pps.util.geometric.Vector
 import com.agh.abm.pps.strategy.movement.MovementStrategy
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategy
+import com.agh.abm.pps.util.geometric.Vector
 import kotlin.math.max
-import kotlin.math.min
 
-abstract class Species(
+class Species(
+    val speciesName: String,
+
     val movementStrategy: MovementStrategy,
     val energyTransferStrategy: EnergyTransferStrategy,
     val reproduceStrategy: ReproduceStrategy,
@@ -23,12 +24,13 @@ abstract class Species(
     val reproduceParameter: ReproduceParameter,
 
     val guiParameter: GuiParameter
-
 ) {
 
     var chunk: Chunk? = null
 
-    abstract fun getType(): SpeciesType
+    fun getType(): String {
+        return speciesName
+    }
 
     fun move(area: Area) {
         val nextPosition = movementStrategy.getNextPosition(movementParameter, area)
@@ -40,34 +42,22 @@ abstract class Species(
         energyTransferParameter.energy -= consumedEnergy
     }
 
-    open fun consume(area: Area) {
-        if (chunk == null) return
-        val food = chunk!!.ensureRange(movementParameter.currentPosition, consumeParameter.consumeRange)
-            .asSequence()
-            .filter { s -> s.energyTransferParameter.alive }
-            .filter { s -> this.canEat(s) }
-            .filter { s -> this.isInConsumeRange(s) }
-            .toList()
-
-
-        val transferredEnergy = energyTransferStrategy.transfer(food, consumeParameter)
-        energyTransferParameter.energy =
-            min(energyTransferParameter.energy + transferredEnergy, energyTransferParameter.maxEnergy)
-
+    fun consume() {
+        val transferredEnergy = energyTransferStrategy.transfer(this)
+        transferredEnergy?.let { energyTransferParameter.energy = energyTransferParameter.energy + it }
     }
 
     fun performDieActions() {
         val shouldDie = dieStrategies.any { ds -> ds.checkIfShouldDie(energyTransferParameter) }
         if (shouldDie) {
             die()
-            return
         }
     }
 
     fun reproduce(area: Area) {
-        val nullablePair = reproduceStrategy.reproduce(this, area)
+        val offspringListAndCost = reproduceStrategy.reproduce(this, area)
 
-        nullablePair?.let {
+        offspringListAndCost?.let {
             val (newSpecies, cost) = it
             area.add(newSpecies)
             energyTransferParameter.energy -= cost
@@ -77,7 +67,6 @@ abstract class Species(
     fun performOtherActions() {
         energyTransferParameter.energy -= consumeParameter.restEnergyConsumption
     }
-
 
     private fun die() {
         energyTransferParameter.alive = false
@@ -90,12 +79,25 @@ abstract class Species(
         return takenEnergy
     }
 
-    abstract fun generate(currentPosition: Vector, inEnergy: Double): Species
+    fun generate(currentPosition: Vector, inEnergy: Double): Species {
+        return Species(
+            speciesName,
+            movementStrategy,
+            energyTransferStrategy,
+            reproduceStrategy,
+            dieStrategies,
+            consumeParameter.copy(),
+            energyTransferParameter.copy().also { it.energy = inEnergy },
+            movementParameter.copy().also { it.currentPosition = currentPosition },
+            reproduceParameter.copy(),
+            guiParameter.copy()
+        )
+    }
 
-    private fun canEat(species: Species): Boolean =
+    fun canConsume(species: Species): Boolean =
         species.getType() in this.consumeParameter.canConsume
 
-    private fun isInConsumeRange(species: Species): Boolean =
+    fun isInConsumeRange(species: Species): Boolean =
         species.movementParameter.currentPosition.distance(this.movementParameter.currentPosition) <= this.consumeParameter.consumeRange
 
     fun getOverview(): String {

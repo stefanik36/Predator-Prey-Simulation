@@ -1,7 +1,6 @@
 package com.agh.abm.pps.model.board
 
 import com.agh.abm.pps.model.species.Species
-import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.util.geometric.Vector
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -14,7 +13,7 @@ class ChunkManager(
     private val chunkHeight: Double
 ) {
 
-    private val chunks: Array<Chunk>
+    val chunks: Array<Chunk>
     private val chunksInWidth = width / chunkWidth
     private val chunksInHeight = height / chunkHeight
 
@@ -27,7 +26,7 @@ class ChunkManager(
                 Chunk(Vector(x * chunkWidth, y * chunkHeight), chunkWidth, chunkHeight, it, this)
             }
     }
-  
+
     fun addSpecies(s: Species) {
         val pos = s.movementParameter.currentPosition
         val x = floor(pos.x / chunkWidth)
@@ -64,7 +63,7 @@ class Chunk(
     private val manager: ChunkManager
 ) {
     val species: MutableList<Species> = mutableListOf()
-    val speciesNumber: MutableMap<SpeciesType, Int> = mutableMapOf()
+    val speciesNumber: MutableMap<String, Int> = mutableMapOf()
 
     fun ensureRange(p: Vector, range: Double): List<Species> {
         val species = mutableListOf<Species>()
@@ -82,11 +81,11 @@ class Chunk(
         return species
     }
 
-    fun getNumber(t: SpeciesType): Int {
+    fun getNumber(t: String): Int {
         return speciesNumber[t] ?: 100
     }
 
-    fun countSpecies(t: SpeciesType) {
+    fun countSpecies(t: String) {
         if (speciesNumber.containsKey(t)) {
             speciesNumber[t] = speciesNumber[t]!! + 1
         } else {

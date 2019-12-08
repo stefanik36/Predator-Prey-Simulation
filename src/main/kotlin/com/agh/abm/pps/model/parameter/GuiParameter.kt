@@ -1,8 +1,10 @@
 package com.agh.abm.pps.model.parameter
 
-import com.agh.abm.pps.model.species.SpeciesType
+import javafx.scene.paint.Color
+
 
 data class GuiParameter(
-    var size: Double
+    var size: Double,
+    var color: Color
 ) {
 }

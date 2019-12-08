@@ -1,18 +1,20 @@
 package com.agh.abm.pps.gui.data
 
+import com.agh.abm.pps.model.board.Area
 import com.agh.abm.pps.model.parameter.*
-import com.agh.abm.pps.model.species.*
+import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.strategy.die_strategy.DieStrategyType
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
 import com.agh.abm.pps.strategy.movement.MovementStrategyType
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategyType
-import com.agh.abm.pps.util.default_species.DefaultSpecies
 import com.agh.abm.pps.util.geometric.Vector
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
-import javafx.beans.property.*
-
+import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleListProperty
+import javafx.beans.property.SimpleObjectProperty
 import tornadofx.getValue
 import tornadofx.observable
 import tornadofx.setValue
@@ -30,7 +32,7 @@ class SpeciesConfData(
     maxConsumption: Double,
     restEnergyConsumption: Double,
     consumeRange: Double,
-    canConsume: List<SpeciesType>,
+    canConsume: MutableList<String>,
     moveCost: Double,
     moveMaxDistance: Double,
     reproduceThreshold: Double,
@@ -43,7 +45,7 @@ class SpeciesConfData(
     reproduceDensityLimit: Int,
     maxNumberOfSpecies: Int,
     size: Double,
-    var type: SpeciesType
+    var type: String
 ) {
     @JsonIgnore
     val movementStrategyProperty = SimpleObjectProperty(this, "movementStrategy", movementStrategy)
@@ -73,6 +75,8 @@ class SpeciesConfData(
     val energyProperty = SimpleDoubleProperty(this, "energy", inEnergy)
     var energy: Double by energyProperty
 
+    var alive: Boolean = true
+
     @JsonIgnore
     val maxConsumptionProperty = SimpleDoubleProperty(this, "maxConsumption", maxConsumption)
     var maxConsumption: Double by maxConsumptionProperty
@@ -86,8 +90,8 @@ class SpeciesConfData(
     var consumeRange: Double by consumeRangeProperty
 
     @JsonIgnore
-    val canConsumeProperty = SimpleListProperty<SpeciesType>(this, "canConsume", canConsume.observable())
-    val canConsume: List<SpeciesType> by canConsumeProperty
+    val canConsumeProperty = SimpleListProperty<String>(this, "canConsume", canConsume.observable())
+    val canConsume: MutableList<String> by canConsumeProperty
 
 
     @JsonIgnore
@@ -113,7 +117,6 @@ class SpeciesConfData(
     @JsonIgnore
     val reproduceDensityLimitProperty = SimpleIntegerProperty(this, "reproduceDensityLimit", reproduceDensityLimit)
     var reproduceDensityLimit: Int by reproduceDensityLimitProperty
-
 
 
     @JsonIgnore
@@ -142,97 +145,44 @@ class SpeciesConfData(
     val sizeProperty = SimpleDoubleProperty(this, "size", size)
     var size: Double by sizeProperty
 
-    fun createSpecies(pos: Vector): Species {
-        return when (type) {
-            SpeciesType.GRASS -> Grass(
-                movementStrategy = movementStrategy.strategy,
-                energyTransferStrategy = energyTransferStrategy.strategy,
-                reproduceStrategy = reproduceStrategy.strategy,
-                dieStrategies = listOf(dieStrategy.strategy),
-                consumeParameter = ConsumeParameter(
-                    maxConsumption,
-                    restEnergyConsumption,
-                    consumeRange,
-                    canConsume
-                ),
-                energyTransferParameter = EnergyTransferParameter(
-                    minEnergy,
-                    maxEnergy,
-                    energy,
-                    DefaultSpecies.grassParameters.alive
-                ),
-                movementParameter = MovementParameter(pos, moveCost, moveMaxDistance),
-                reproduceParameter = ReproduceParameter(
-                    reproduceThreshold,
-                    reproduceCost,
-                    reproduceProbability,
-                    maxNumberOfOffspring,
-                    reproduceRange,
-                    reproduceMultiplyEnergy,
-                    reproduceAddEnergy,
-                    maxNumberOfSpecies,
-                    reproduceDensityLimit
-                ),
-                guiParameter = GuiParameter(size)
+    fun createSpecies(area: Area, pos: Vector): Species {
+        val color = area.speciesTypes[type]?.color ?: throw UnsupportedOperationException() //TODO parametrize in gui
+
+        return Species(
+            speciesName = type,
+            movementStrategy = movementStrategy.strategy,
+            energyTransferStrategy = energyTransferStrategy.strategy,
+            reproduceStrategy = reproduceStrategy.strategy,
+            dieStrategies = listOf(dieStrategy.strategy),
+            consumeParameter = ConsumeParameter(
+                maxConsumption,
+                restEnergyConsumption,
+                consumeRange,
+                canConsume
+            ),
+            energyTransferParameter = EnergyTransferParameter(
+                minEnergy,
+                maxEnergy,
+                energy,
+                alive
+            ),
+            movementParameter = MovementParameter(pos, moveCost, moveMaxDistance),
+            reproduceParameter = ReproduceParameter(
+                reproduceThreshold,
+                reproduceCost,
+                reproduceProbability,
+                maxNumberOfOffspring,
+                reproduceRange,
+                reproduceMultiplyEnergy,
+                reproduceAddEnergy,
+                maxNumberOfSpecies,
+                reproduceDensityLimit
+            ),
+            guiParameter = GuiParameter(
+                size = size,
+                color = color
             )
-            SpeciesType.PREY -> Prey(
-                movementStrategy = movementStrategy.strategy,
-                energyTransferStrategy = energyTransferStrategy.strategy,
-                reproduceStrategy = reproduceStrategy.strategy,
-                dieStrategies = listOf(dieStrategy.strategy),
-                consumeParameter = ConsumeParameter(
-                    maxConsumption,
-                    restEnergyConsumption,
-                    consumeRange,
-                    canConsume
-                ),
-                energyTransferParameter = EnergyTransferParameter(
-                    minEnergy, maxEnergy, energy, DefaultSpecies.predatorParameters.alive
-                ),
-                movementParameter = MovementParameter(pos, moveCost, moveMaxDistance),
-                reproduceParameter = ReproduceParameter(
-                    reproduceThreshold,
-                    reproduceCost,
-                    reproduceProbability,
-                    maxNumberOfOffspring,
-                    reproduceRange,
-                    reproduceMultiplyEnergy,
-                    reproduceAddEnergy,
-                    maxNumberOfSpecies,
-                    reproduceDensityLimit
-                ),
-                guiParameter = GuiParameter(size)
-            )
-            SpeciesType.PREDATOR ->
-                Predator(
-                    movementStrategy = movementStrategy.strategy,
-                    energyTransferStrategy = energyTransferStrategy.strategy,
-                    reproduceStrategy = reproduceStrategy.strategy,
-                    dieStrategies = listOf(dieStrategy.strategy),
-                    consumeParameter = ConsumeParameter(
-                        maxConsumption,
-                        restEnergyConsumption,
-                        consumeRange,
-                        canConsume
-                    ),
-                    energyTransferParameter = EnergyTransferParameter(
-                        minEnergy, maxEnergy, energy, DefaultSpecies.predatorParameters.alive
-                    ),
-                    movementParameter = MovementParameter(pos, moveCost, moveMaxDistance),
-                    reproduceParameter = ReproduceParameter(
-                        reproduceThreshold,
-                        reproduceCost,
-                        reproduceProbability,
-                        maxNumberOfOffspring,
-                        reproduceRange,
-                        reproduceMultiplyEnergy,
-                        reproduceAddEnergy,
-                        maxNumberOfSpecies,
-                        reproduceDensityLimit
-                    ),
-                    guiParameter = GuiParameter(size)
-                )
-        }
+        )
     }
 
     fun toJson(): String {

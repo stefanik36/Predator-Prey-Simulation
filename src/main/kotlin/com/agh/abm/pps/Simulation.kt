@@ -3,10 +3,11 @@ package com.agh.abm.pps
 import com.agh.abm.pps.gui.*
 import com.agh.abm.pps.gui.data.SpeciesConfData
 import com.agh.abm.pps.model.board.Area
-import com.agh.abm.pps.model.species.*
-import com.agh.abm.pps.util.geometric.Vector
+import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.util.Benchmark
-import tornadofx.*
+import com.agh.abm.pps.util.geometric.Vector
+import tornadofx.Controller
+import tornadofx.launch
 import kotlin.random.Random
 
 fun main() {
@@ -17,7 +18,7 @@ class SimulationController : Controller() {
     private var isAlive = false
     private var newSpecies = mutableListOf<Species>()
     private var delay: Long = 1
-    val board: BoardState = BoardState(1000.0, 1000.0, 50.0)
+    val board: BoardState = BoardState(999.0, 999.0, 50.0)
     lateinit var area: Area
 
     /////////////////SETUP\\\\\\\\\\\\\\\\\\\
@@ -37,10 +38,10 @@ class SimulationController : Controller() {
             fire(UPDATE_BOARDVIEW)
             fire(
                 NOTIFY_POPULATION_GRAPH(
-                    alivePredNum = board.agents.filterIsInstance<Predator>().count(),
-                    alivePreyNum = board.agents.filterIsInstance<Prey>().count(),
-                    aliveGrassNum = board.agents.filterIsInstance<Grass>().count()
-                )
+                    aliveGrassNum = board.agents.filter { it.speciesName == "GRASS" }.count(),//TODO get from area.speciesTypes.values
+                    alivePreyNum = board.agents.filter { it.speciesName == "PREY" }.count(),
+                    alivePredNum = board.agents.filter { it.speciesName == "PREDATOR" }.count()
+                    )
             )
         }
         Thread.sleep(if (flexibleDelay > 0) flexibleDelay else 1)
@@ -67,7 +68,7 @@ class SimulationController : Controller() {
     }
 
     fun addGuy(x: Double, y: Double, conf: SpeciesConfData, number: Double, areaSize: Double) {
-        initSpecies(x, y, areaSize, number) { ix, iy -> conf.createSpecies(Vector(ix, iy)) }
+        initSpecies(x, y, areaSize, number) { ix, iy -> conf.createSpecies(area, Vector(ix, iy)) }
         updateBoard()
     }
 
@@ -108,7 +109,7 @@ class SimulationController : Controller() {
         updateBoard()
     }
 
-    fun reload(){
+    fun reload() {
         setupSimulation()
         area.species.addAll(board.agents.toMutableList())
         updateBoard()

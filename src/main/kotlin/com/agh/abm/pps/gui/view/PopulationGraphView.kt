@@ -8,7 +8,7 @@ import tornadofx.*
 
 class PopulationGraphView : View() {
 
-    var preySeries: XYChart.Series<String, Number> by singleAssign()
+    var preySeries: XYChart.Series<String, Number> by singleAssign() //TODO variable number of species
     var predatorSeries: XYChart.Series<String, Number> by singleAssign()
     var grassSeries: XYChart.Series<String, Number> by singleAssign()
     var posi = 0

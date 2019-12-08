@@ -1,6 +1,5 @@
 package com.agh.abm.pps.util.factory
 
-import com.agh.abm.pps.util.geometric.PositionRestriction
 import com.agh.abm.pps.util.geometric.Vector
 import kotlin.random.Random
 
@@ -16,7 +15,7 @@ class VectorFactory {
         }
 
         fun zero(): Vector {
-            return Vector.fromAngleAndDistance(0.0, 0.0)
+            return Vector.fromCoordinates(0.0, 0.0)
         }
 
     }

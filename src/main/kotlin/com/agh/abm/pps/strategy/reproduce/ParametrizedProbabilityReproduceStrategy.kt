@@ -19,6 +19,10 @@ class ParametrizedProbabilityReproduceStrategy() : ReproduceStrategy {
     override fun reproduce(species: Species, area: Area): Pair<List<Species>, Double>? {
         val reproduceParameter = species.reproduceParameter
 
+        if (species.chunk == null) {
+            println("${species.chunk} ${species.getOverview()}")
+        }
+
         if (species.chunk != null && species.chunk!!.getNumber(species.getType()) > species.reproduceParameter.reproduceDensityLimit) return null
         if (species.energyTransferParameter.energy < reproduceParameter.reproduceThreshold) return null
         if (random.nextDouble() > reproduceParameter.reproduceProbability) return null

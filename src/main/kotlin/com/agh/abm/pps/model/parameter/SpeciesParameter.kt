@@ -1,14 +1,14 @@
 package com.agh.abm.pps.model.parameter
 
-import com.agh.abm.pps.model.species.SpeciesType
 import com.agh.abm.pps.strategy.die_strategy.DieStrategy
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategy
 import com.agh.abm.pps.strategy.movement.MovementStrategy
 import com.agh.abm.pps.strategy.reproduce.ReproduceStrategy
 import com.agh.abm.pps.util.geometric.Vector
+import javafx.scene.paint.Color
 
 data class SpeciesParameter(
-    var type: SpeciesType,
+    var type: String,
 
     var movementStrategy: MovementStrategy,
     var energyTransferStrategy: EnergyTransferStrategy,
@@ -19,7 +19,7 @@ data class SpeciesParameter(
     var maxConsumption: Double,
     var restEnergyConsumption: Double,
     var consumeRange: Double,
-    var canConsume: List<SpeciesType>,
+    var canConsume: MutableList<String>,
 
     // energyTransferParameter: EnergyTransferParameter
     var minEnergy: Double,
@@ -44,6 +44,7 @@ data class SpeciesParameter(
     var reproduceDensityLimit: Int,
 
     // guiParameter: GuiParameter
-    var size: Double
+    var size: Double,
+    var color: Color
 
 )

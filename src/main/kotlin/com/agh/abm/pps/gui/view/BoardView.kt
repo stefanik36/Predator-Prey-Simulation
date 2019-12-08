@@ -1,9 +1,12 @@
 package com.agh.abm.pps.gui.view
 
 import com.agh.abm.pps.SimulationController
-import com.agh.abm.pps.gui.*
+import com.agh.abm.pps.gui.EXIT
+import com.agh.abm.pps.gui.NOTIFY_DELAY_CHANGE
+import com.agh.abm.pps.gui.START
+import com.agh.abm.pps.gui.UPDATE_BOARDVIEW
 import com.agh.abm.pps.gui.layout.BoardCanvas
-import com.agh.abm.pps.model.species.*
+import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.util.Benchmark
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
@@ -26,7 +29,7 @@ class BoardView : View() {
     private var canv: BoardCanvas by singleAssign()
     private val gc: GraphicsContext
 
-    private var typeSelect: ComboBox<SpeciesType> by singleAssign()
+    private var typeSelect: ComboBox<String> by singleAssign()
     private var spawnNumSlider: Slider by singleAssign()
     private var spawnAreaSizeSlider: Slider by singleAssign()
     private var delaySlider: Slider by singleAssign()
@@ -67,10 +70,11 @@ class BoardView : View() {
                     }
 
                     typeSelect = combobox(
-                        values = listOf(
-                            SpeciesType.PREDATOR,
-                            SpeciesType.PREY,
-                            SpeciesType.GRASS
+                        values = listOf( //TODO get from area.speciesTypes.values
+                            "GRASS",
+                            "BUSH",
+                            "PREY",
+                            "PREDATOR"
                         )
                     ) {
                         selectionModel.select(0)
@@ -142,18 +146,12 @@ class BoardView : View() {
             Benchmark.measure("Draw board ") {
                 val laterDraw = mutableListOf<Species>()
                 controller.board.agents.forEach { guy ->
-                    when (guy) {
-                        is Grass -> draw(guy)
+                    when (guy.speciesName) {
+                        "GRASS" -> draw(guy)
                         else -> laterDraw.add(guy)
                     }
-
                 }
-                laterDraw.forEach {
-                    when (it) {
-                        is Prey -> draw(it)
-                        is Predator -> draw(it)
-                    }
-                }
+                laterDraw.forEach { draw(it) }
             }
         }
 
@@ -205,26 +203,12 @@ class BoardView : View() {
     }
 
 
-    private fun draw(o: Predator) {
+    private fun draw(o: Species) {
         drawCircle(
             o.movementParameter.currentPosition.x,
             o.movementParameter.currentPosition.y,
             o.guiParameter.size,
-            Color.RED
-        )//TODO add color to guiParameter
-        drawViewRange(
-            o.movementParameter.currentPosition.x,
-            o.movementParameter.currentPosition.y,
-            o.consumeParameter.consumeRange
-        )
-    }
-
-    private fun draw(o: Prey) {
-        drawCircle(
-            o.movementParameter.currentPosition.x,
-            o.movementParameter.currentPosition.y,
-            o.guiParameter.size,
-            Color.rgb(245, 178, 7)
+            o.guiParameter.color
         )
         drawViewRange(
             o.movementParameter.currentPosition.x,
@@ -232,16 +216,6 @@ class BoardView : View() {
             o.consumeParameter.consumeRange
         )
     }
-
-    private fun draw(o: Grass) {
-        drawCircle(
-            o.movementParameter.currentPosition.x,
-            o.movementParameter.currentPosition.y,
-            o.guiParameter.size,
-            Color.rgb(96, 128, 56).deriveColor(1.0, 1.0, 1.0, .5)
-        )
-    }
-
 
     override fun onUndock() {
         fire(EXIT)
