@@ -19,6 +19,7 @@ object EXIT : FXEvent()
 class START(val delay: Long) : FXEvent()
 object UPDATE_BOARDVIEW : FXEvent()
 class NOTIFY_POPULATION_GRAPH(val alivePredNum: Int, val alivePreyNum: Int, val aliveGrassNum: Int) : FXEvent()
+class NOTIFY_POPULATION_GRAPH_MAP(val alive: Map<String, Int>) : FXEvent()
 class NOTIFY_DELAY_CHANGE(val delay: Long) : FXEvent()
 
 class REFRESH_SELECTED_TYPE(val index: Int) : FXEvent()

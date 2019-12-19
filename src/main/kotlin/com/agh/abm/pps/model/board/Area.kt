@@ -30,7 +30,7 @@ class Area(boardState: BoardState) {
         Benchmark.measure("Move:") { species.forEach { s -> s.move(this@Area) } }
         Benchmark.measure("Fill chunk manager") {
             species.forEach {
-                numberOfSpecies[it.getType()] = numberOfSpecies.getOrElse(it.getType(), { 0 }) + 1
+                numberOfSpecies[it.getType()] = numberOfSpecies.getOrDefault(it.getType(), 0) + 1
                 chunkManager.addSpecies(it)
             }
         }

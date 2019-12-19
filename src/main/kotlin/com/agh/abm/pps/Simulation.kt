@@ -37,10 +37,8 @@ class SimulationController : Controller() {
             }
             fire(UPDATE_BOARDVIEW)
             fire(
-                NOTIFY_POPULATION_GRAPH(
-                    aliveGrassNum = board.agents.filter { it.speciesName == "GRASS" }.count(),//TODO get from area.speciesTypes.values
-                    alivePreyNum = board.agents.filter { it.speciesName == "PREY" }.count(),
-                    alivePredNum = board.agents.filter { it.speciesName == "PREDATOR" }.count()
+                NOTIFY_POPULATION_GRAPH_MAP(
+                    board.agents.asSequence().groupBy { it.getType() }.map {Pair(it.key, it.value.size)}.toMap()
                 )
             )
         }
