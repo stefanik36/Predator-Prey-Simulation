@@ -12,6 +12,45 @@ import javafx.scene.paint.Color
 
 class DefaultSpecies {
     companion object {
+        val defaultParameters: SpeciesParameter = SpeciesParameter(
+            type = "DYNAMIC",
+            movementStrategy = NoMovementStrategy(),
+            energyTransferStrategy = NoEnergyTransferStrategy(),
+            reproduceStrategy = ParametrizedProbabilityReproduceStrategy(),
+            dieStrategies = listOf(TooLowEnergyDieStrategy()),
+
+            //consumeParameter
+            maxConsumption = 0.0,
+            restEnergyConsumption = 30.0,
+            consumeRange = 0.0,
+            canConsume = mutableListOf(),
+
+            //energyTransferParameter
+            minEnergy = 0.0,
+            maxEnergy = 350.0,
+            energy = 350.0,
+            alive = true,
+
+            //movementParameter
+            currentPosition = VectorFactory.zero(),
+            moveCost = 0.0,
+            moveMaxDistance = 1.0,
+
+            //reproduceParameter
+            reproduceThreshold = 220.0,
+            reproduceCost = 100.0,
+            reproduceProbability = 0.3,
+            maxNumberOfOffspring = 3,
+            reproduceRange = 30.0,
+            reproduceMultiplyEnergy = 2.5,
+            reproduceAddEnergy = 100.0,
+            maxNumberOfSpecies = 1_000_000_000,
+            reproduceDensityLimit = 40,
+            //guiParameter
+            size = 3.0,
+            color = Color.rgb(0, 0, 0)
+        )
+
         val grassParameters: SpeciesParameter = SpeciesParameter(
             type = "GRASS",
             movementStrategy = NoMovementStrategy(),

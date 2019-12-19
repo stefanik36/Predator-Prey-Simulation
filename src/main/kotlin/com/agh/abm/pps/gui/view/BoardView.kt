@@ -1,10 +1,7 @@
 package com.agh.abm.pps.gui.view
 
 import com.agh.abm.pps.SimulationController
-import com.agh.abm.pps.gui.EXIT
-import com.agh.abm.pps.gui.NOTIFY_DELAY_CHANGE
-import com.agh.abm.pps.gui.START
-import com.agh.abm.pps.gui.UPDATE_BOARDVIEW
+import com.agh.abm.pps.gui.*
 import com.agh.abm.pps.gui.layout.BoardCanvas
 import com.agh.abm.pps.model.species.Species
 import com.agh.abm.pps.util.Benchmark
@@ -25,7 +22,6 @@ import tornadofx.*
 
 class BoardView : View() {
 
-    //    private var pannableCanvas: PannableCanvas by singleAssign()
     private var canv: BoardCanvas by singleAssign()
     private val gc: GraphicsContext
 
@@ -40,13 +36,7 @@ class BoardView : View() {
 
     private var pane: Pane by singleAssign()
     override val root = group {
-        //        pannableCanvas = opcr(
-//            this,
-//            PannableCanvas(controller.board.width, controller.board.height)
-//        )
         pane = pane {
-            //            background = Color.rgb(227, 227, 227).asBackground()
-
             vbox {
                 spacing = 5.0
                 hbox {
@@ -70,12 +60,7 @@ class BoardView : View() {
                     }
 
                     typeSelect = combobox(
-                        values = listOf( //TODO get from area.speciesTypes.values
-                            "GRASS",
-                            "BUSH",
-                            "PREY",
-                            "PREDATOR"
-                        )
+                        values = configView.species.map { it.type }
                     ) {
                         selectionModel.select(0)
                     }
@@ -135,6 +120,8 @@ class BoardView : View() {
     init {
         configView.force()
         subscribe<UPDATE_BOARDVIEW> { canv.requestUpdate() }
+        subscribe<REFRESH_SELECTED_TYPE> { typeSelect.selectionModel.select(it.index) }
+        typeSelect.items = configView.speciesTypes
         gc = canv.graphicsContext2D
 
         root.addEventFilter(MouseEvent.MOUSE_PRESSED, canv.gestures.onMousePressedEventHandler)
@@ -175,14 +162,13 @@ class BoardView : View() {
                         spawnNumSlider.value,
                         spawnAreaSizeSlider.value
                     )
-//                    println("${e.x} || ${e.y}")
                 }
-//                MouseButton.SECONDARY -> controller.removeGuy(e.x, e.y)
-                MouseButton.MIDDLE -> when (typeSelect.selectionModel.selectedIndex) {
-//                    TODO fix for more com.agh.abm.pps.model.species types
-                    2 -> typeSelect.selectionModel.selectFirst()
-                    else -> typeSelect.selectionModel.selectNext()
-                }
+                MouseButton.MIDDLE ->
+                    if (typeSelect.selectionModel.selectedIndex < configView.species.size - 1) {
+                        typeSelect.selectionModel.selectNext()
+                    } else {
+                        typeSelect.selectionModel.selectFirst()
+                    }
                 else -> {
                 }
             }

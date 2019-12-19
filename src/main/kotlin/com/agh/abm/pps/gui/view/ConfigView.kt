@@ -2,6 +2,7 @@ package com.agh.abm.pps.gui.view
 
 import com.agh.abm.pps.SimulationController
 import com.agh.abm.pps.gui.BoardState
+import com.agh.abm.pps.gui.REFRESH_SELECTED_TYPE
 import com.agh.abm.pps.gui.data.SpeciesConfData
 import com.agh.abm.pps.strategy.die_strategy.DieStrategyType
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
@@ -21,6 +22,9 @@ class ConfigView : View() {
     private val filePath = "src/main/resources/models/species"
     private val boardPath = "src/main/resources/models/board"
     var species: ObservableList<SpeciesConfData>
+
+    var speciesTypes: ObservableList<String>
+
     private val controller: SimulationController by inject()
 
     init {
@@ -31,15 +35,17 @@ class ConfigView : View() {
             (mapper.readValue(
                 file,
                 mapper.typeFactory.constructCollectionType(List::class.java, SpeciesConfData::class.java)
-            ) as List<SpeciesConfData>).observable()
+            ) as MutableList<SpeciesConfData>).observable()
         } else {
-            listOf(
+            mutableListOf(
                 SpeciesConfData.fromParameters(DefaultSpecies.grassParameters)
                 , SpeciesConfData.fromParameters(DefaultSpecies.bushParameters)
                 , SpeciesConfData.fromParameters(DefaultSpecies.preyParameters)
                 , SpeciesConfData.fromParameters(DefaultSpecies.predatorParameters)
             ).observable()
         }
+
+        speciesTypes = species.map { it.type }.observable()
 
         val bFile = File(boardPath)
         if (bFile.exists()) {
@@ -84,21 +90,48 @@ class ConfigView : View() {
 
     private var tableViewField: TableView<SpeciesConfData> by singleAssign()
 
-    private var tList: ObservableList<String> = species.map { it.type }.observable()
 
     private var boardWidthField: TextField by singleAssign()
     private var boardHeightField: TextField by singleAssign()
     private var chunkSizeField: TextField by singleAssign()
     private var saveToFileField: CheckBox by singleAssign()
 
+    private var colorPickerField: ColorPicker by singleAssign()
+
+    private var typeField: TextField by singleAssign()
+    private var newItemTypeField: TextField by singleAssign()
+
+    private val vHeight: Double = 700.0
+
     override val root = borderpane {
-        prefHeight = 700.0
+        prefHeight = vHeight
         center {
-            tableViewField = tableview(species) {
-                column("Type", SpeciesConfData::type)
-                column("Name", SpeciesConfData::type)
-                selectionModel.selectedItemProperty().onChange {
-                    editSpecies(it!!)
+
+            vbox {
+
+                tableViewField = tableview(species) {
+                    prefHeight = vHeight - 20
+                    column("Type", SpeciesConfData::type) {
+                        prefWidth = 250.0
+                    }
+                    selectionModel.selectedItemProperty().onChange {
+                        editSpecies(it!!)
+                    }
+                    selectionModel.selectedIndexProperty().onChange { fire(REFRESH_SELECTED_TYPE(it)) }
+                }
+                hbox {
+                    newItemTypeField = textfield { }
+                    spacing = 5.0
+                    button("Add") {
+                        action {
+                            addNewSpecies()
+                        }
+                    }
+                    button("Remove") {
+                        action {
+                            removeSelectedSpecies()
+                        }
+                    }
                 }
             }
         }
@@ -147,13 +180,13 @@ class ConfigView : View() {
                             consumeRangeField = textfield { }
                         }
                         field("Can consume") {
-                            prefHeight = 100.0
-                            canConsumeListView = listview(tList) {
+                            maxHeight = 400.0
+                            canConsumeListView = listview(speciesTypes) {
                                 //                                selectionModel
                                 selectionModel.selectionMode = SelectionMode.MULTIPLE
 
                                 prefWidth = 100.0
-                                prefHeight = 100.0
+                                prefHeight = 300.0
                             }
 
                             canConsumeSaveBtn = button("Save") {
@@ -199,8 +232,18 @@ class ConfigView : View() {
                         }
                     }
                     fieldset("Others") {
+
+                        field("Type") {
+                            typeField = textfield {
+                                textProperty().addListener { _, _, _ -> tableViewField.refresh() }
+                            }
+                        }
+
                         field("Size") {
                             sizeField = textfield { }
+                        }
+                        field("Color") {
+                            colorPickerField = colorpicker { }
                         }
                     }
                     fieldset("Area") {
@@ -259,9 +302,11 @@ class ConfigView : View() {
             reproduceRangeField.textProperty().unbindBidirectional(reproduceRangeProperty)
             reproduceMultiplyEnergyField.textProperty().unbindBidirectional(reproduceMultiplyEnergyProperty)
             reproduceAddEnergyField.textProperty().unbindBidirectional(reproduceAddEnergyProperty)
-            reproduceDensityLimitField.textProperty().unbindBidirectional(reproduceDensityLimit)
+            reproduceDensityLimitField.textProperty().unbindBidirectional(reproduceDensityLimitProperty)
             reproduceMaxNumberOfSpeciesField.textProperty().unbindBidirectional(maxNumberOfSpeciesProperty)
+            typeField.textProperty().unbindBidirectional(typeProperty)
             sizeField.textProperty().unbindBidirectional(sizeProperty)
+            colorPickerField.valueProperty().unbindBidirectional(colorProperty)
             canConsumeListView.selectionModel.clearSelection()
         }
 
@@ -286,13 +331,28 @@ class ConfigView : View() {
         reproduceAddEnergyField.bind(it.reproduceAddEnergyProperty)
         reproduceDensityLimitField.bind(it.reproduceDensityLimitProperty)
         reproduceMaxNumberOfSpeciesField.bind(it.maxNumberOfSpeciesProperty)
+        typeField.bind(it.typeProperty)
         sizeField.bind(it.sizeProperty)
+        colorPickerField.bind(it.colorProperty)
         canConsumeListView.selectWhere { x -> x in it.canConsume }
         canConsumeSaveBtn.action {
             it.canConsumeProperty.clear()
             it.canConsumeProperty.addAll(canConsumeListView.selectionModel.selectedItems)
         }
         prevSelection = it
+    }
+
+
+    private fun addNewSpecies() {
+        val p = DefaultSpecies.defaultParameters
+        p.type = newItemTypeField.text
+        species.add(SpeciesConfData.fromParameters(p))
+        speciesTypes.add(DefaultSpecies.defaultParameters.type)
+    }
+
+    private fun removeSelectedSpecies() {
+        speciesTypes.remove(tableViewField.selectionModel.selectedItem.type)
+        species.remove(tableViewField.selectionModel.selectedItem)
     }
 
     override fun onUndock() {

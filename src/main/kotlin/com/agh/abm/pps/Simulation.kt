@@ -41,7 +41,7 @@ class SimulationController : Controller() {
                     aliveGrassNum = board.agents.filter { it.speciesName == "GRASS" }.count(),//TODO get from area.speciesTypes.values
                     alivePreyNum = board.agents.filter { it.speciesName == "PREY" }.count(),
                     alivePredNum = board.agents.filter { it.speciesName == "PREDATOR" }.count()
-                    )
+                )
             )
         }
         Thread.sleep(if (flexibleDelay > 0) flexibleDelay else 1)
@@ -83,6 +83,7 @@ class SimulationController : Controller() {
 //    }
 
     private fun initSpecies(x: Double, y: Double, range: Double, numb: Double, fac: (Double, Double) -> Species) {
+        if (x < 0 || y < 0 || x > board.width || y > board.height) return
         val fromX = if (x - range > 0) x - range else 0.0
         val toX = if (x + range < board.width) x + range else board.width
         val fromY = if (y - range > 0) y - range else 0.0

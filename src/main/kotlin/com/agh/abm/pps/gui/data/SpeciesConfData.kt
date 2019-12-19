@@ -11,10 +11,8 @@ import com.agh.abm.pps.util.geometric.Vector
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.property.SimpleListProperty
-import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.*
+import javafx.scene.paint.Color
 import tornadofx.getValue
 import tornadofx.observable
 import tornadofx.setValue
@@ -45,7 +43,8 @@ class SpeciesConfData(
     reproduceDensityLimit: Int,
     maxNumberOfSpecies: Int,
     size: Double,
-    var type: String
+    color: Color,
+    type: String
 ) {
     @JsonIgnore
     val movementStrategyProperty = SimpleObjectProperty(this, "movementStrategy", movementStrategy)
@@ -140,13 +139,22 @@ class SpeciesConfData(
     val maxNumberOfSpeciesProperty = SimpleIntegerProperty(this, "maxNumberOfSpecies", maxNumberOfSpecies)
     var maxNumberOfSpecies: Int by maxNumberOfSpeciesProperty
 
+    @JsonIgnore
+    val typeProperty = SimpleStringProperty(this, "type", type)
+    var type: String by typeProperty
+
+
+    @JsonIgnore
+    val colorProperty = SimpleObjectProperty(this, "color", color)
+    var color: Color by colorProperty
+
 
     @JsonIgnore
     val sizeProperty = SimpleDoubleProperty(this, "size", size)
     var size: Double by sizeProperty
 
     fun createSpecies(area: Area, pos: Vector): Species {
-        val color = area.speciesTypes[type]?.color ?: throw UnsupportedOperationException() //TODO parametrize in gui
+//        val color = area.speciesTypes[type]?.color ?: throw UnsupportedOperationException() //TODO parametrize in gui
 
         return Species(
             speciesName = type,
@@ -216,6 +224,7 @@ class SpeciesConfData(
                 , reproduceAddEnergy = speciesParameter.reproduceAddEnergy
                 , maxNumberOfSpecies = speciesParameter.maxNumberOfSpecies
                 , size = speciesParameter.size
+                , color = speciesParameter.color
                 , type = speciesParameter.type
             )
         }
@@ -246,6 +255,7 @@ class SpeciesConfData(
                 , reproduceAddEnergy = o.reproduceParameter.reproduceAddEnergy
                 , maxNumberOfSpecies = o.reproduceParameter.maxNumberOfSpecies
                 , size = o.guiParameter.size
+                , color = o.guiParameter.color
                 , type = o.getType()
             )
         }

@@ -21,5 +21,8 @@ object UPDATE_BOARDVIEW : FXEvent()
 class NOTIFY_POPULATION_GRAPH(val alivePredNum: Int, val alivePreyNum: Int, val aliveGrassNum: Int) : FXEvent()
 class NOTIFY_DELAY_CHANGE(val delay: Long) : FXEvent()
 
+class REFRESH_SELECTED_TYPE(val index: Int) : FXEvent()
+
+
 class GUI : App(BoardView::class, Styles::class)
 

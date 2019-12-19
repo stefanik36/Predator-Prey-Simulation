@@ -9,12 +9,6 @@ import com.agh.abm.pps.util.geometric.PositionRestriction
 
 
 class Area(boardState: BoardState) {
-    val speciesTypes: MutableMap<String, SpeciesParameter> = mutableMapOf(
-        Pair("GRASS", DefaultSpecies.grassParameters),
-        Pair("BUSH", DefaultSpecies.bushParameters),
-        Pair("PREY", DefaultSpecies.preyParameters),
-        Pair("PREDATOR", DefaultSpecies.predatorParameters)
-    )
 
     val species = mutableListOf<Species>()
     var reproducedSpecies: MutableList<Species> = mutableListOf()
@@ -34,12 +28,10 @@ class Area(boardState: BoardState) {
         println("======================================")
         println("Step: $step, species: ${countAlive()}")
         Benchmark.measure("Move:") { species.forEach { s -> s.move(this@Area) } }
-        Benchmark.measure("Fill chunk manager") { species.forEach { chunkManager.addSpecies(it) } }
-        Benchmark.measure("Count species") {
-            speciesTypes.forEach { st ->
-                chunkManager.chunks.forEach { ch ->
-                    numberOfSpecies[st.key] = (numberOfSpecies[st.key] ?: 0) + (ch.speciesNumber[st.key] ?: 0)
-                }
+        Benchmark.measure("Fill chunk manager") {
+            species.forEach {
+                numberOfSpecies[it.getType()] = numberOfSpecies.getOrElse(it.getType(), { 0 }) + 1
+                chunkManager.addSpecies(it)
             }
         }
         Benchmark.measure("Consume:") { species.parallelStream().forEach { s -> s.consume() } }
