@@ -157,26 +157,26 @@ class ConfigView : View() {
                         }
                     }
                     fieldset("Energy:") {
-                        field("Min energy") {
+                        field("Min energy [energy]") {
                             minEnergyField = textfield {}
                         }
-                        field("Max energy") {
+                        field("Max energy [energy]") {
                             maxEnergyField = textfield { }
                         }
-                        field("Energy") {
+                        field("Energy [energy]") {
                             energyField = textfield { }
                         }
                     }
                     fieldset("Consume:") {
 
 
-                        field("Max consumption") {
+                        field("Max consumption [energy]") {
                             maxConsumptionField = textfield { }
                         }
-                        field("Energy consume") {
+                        field("Energy consume [energy]") {
                             energyConsumeField = textfield { }
                         }
-                        field("Consume range") {
+                        field("Consume range [400 km]") {
                             consumeRangeField = textfield { }
                         }
                         field("Can consume") {
@@ -195,33 +195,33 @@ class ConfigView : View() {
                         }
                     }
                     fieldset("Move:") {
-                        field("Move cost") {
+                        field("Move cost [energy]") {
                             moveCostField = textfield { }
                         }
-                        field("Move max distance") {
+                        field("Move max distance [400 km]") {
                             moveMaxDistanceField = textfield { }
                         }
                     }
                     fieldset("Reproduce:") {
-                        field("Reproduce threshold") {
+                        field("Reproduce threshold [energy]") {
                             reproduceThresholdField = textfield { }
                         }
-                        field("Reproduce cost") {
+                        field("Reproduce cost [energy]") {
                             reproduceCostField = textfield { }
                         }
-                        field("Reproduce probability") {
+                        field("Reproduce probability [100 %]") {
                             reproduceProbabilityField = textfield { }
                         }
                         field("Max number of offspring") {
                             maxNumOfOffField = textfield { }
                         }
-                        field("Reproduce range") {
+                        field("Reproduce range [400 km]") {
                             reproduceRangeField = textfield { }
                         }
                         field("Reproduce multiply energy") {
                             reproduceMultiplyEnergyField = textfield { }
                         }
-                        field("Reproduce add species") {
+                        field("Reproduce add species [energy]") {
                             reproduceAddEnergyField = textfield { }
                         }
                         field("Reproduce density limit") {
@@ -247,13 +247,13 @@ class ConfigView : View() {
                         }
                     }
                     fieldset("Area") {
-                        field("Area width") {
+                        field("Area width [400 km]") {
                             boardWidthField = textfield { text = controller.board.width.toString() }
                         }
-                        field("Area height") {
+                        field("Area height [400 km]") {
                             boardHeightField = textfield { text = controller.board.height.toString() }
                         }
-                        field("Chunk size") {
+                        field("Chunk size [400 km]") {
                             chunkSizeField = textfield { text = controller.board.chunkSize.toString() }
                         }
                         button("Reload area") {
