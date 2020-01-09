@@ -10,6 +10,34 @@ import com.agh.abm.pps.strategy.reproduce.ParametrizedProbabilityReproduceStrate
 import com.agh.abm.pps.util.factory.VectorFactory
 import javafx.scene.paint.Color
 
+
+/**
+ * ----------------------------------------------------
+ * 1 epoch                     = 0.2           year (73 days)
+ * 1 energy                    = 1             energy
+ * 1 distance                  = 400           km
+ * 1 probability               = 100           %
+ * 1 density * chunkSize ^ 2   = 1_000_000     km / species
+ * -----------------------------------------------------
+ *
+ * maxConsumption              - energy
+ * restEnergyConsumption       - energy
+ * consumeRange                - distance
+ *
+ * minEnergy                   - energy
+ * maxEnergy                   - energy
+ * energy                      - energy
+ *
+ * moveCost                    - energy
+ * moveMaxDistance             - distance
+ *
+ * reproduceThreshold          - energy
+ * reproduceCost               - energy
+ * reproduceProbability        - probability
+ * reproduceRange              - distance
+ * reproduceAddEnergy          - energy
+ * reproduceDensityLimit       - density * chunkSize ^ 2
+ */
 class DefaultSpecies {
     companion object {
         val defaultParameters: SpeciesParameter = SpeciesParameter(
@@ -130,7 +158,7 @@ class DefaultSpecies {
         )
 
         val preyParameters: SpeciesParameter = SpeciesParameter(
-            type = "PREY",
+            type = "HARE",
 
             movementStrategy = RandomMovementStrategy(),
             energyTransferStrategy = GetFromAllEnergyTransferStrategy(),
@@ -171,7 +199,7 @@ class DefaultSpecies {
         )
 
         val predatorParameters: SpeciesParameter = SpeciesParameter(
-            type = "PREDATOR",
+            type = "LYNX",
 
             movementStrategy = RandomMovementStrategy(),
             energyTransferStrategy = GetFromAllEnergyTransferStrategy(),
@@ -182,7 +210,7 @@ class DefaultSpecies {
             maxConsumption = 400.0,
             restEnergyConsumption = 10.0,
             consumeRange = 15.0,
-            canConsume = mutableListOf("PREY"),
+            canConsume = mutableListOf("HARE"),
 
             //energyTransferParameter
             minEnergy = 0.0,
