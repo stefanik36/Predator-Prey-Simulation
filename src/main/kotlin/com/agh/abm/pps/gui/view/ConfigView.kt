@@ -3,6 +3,8 @@ package com.agh.abm.pps.gui.view
 import com.agh.abm.pps.SimulationController
 import com.agh.abm.pps.gui.BoardState
 import com.agh.abm.pps.gui.REFRESH_SELECTED_TYPE
+import com.agh.abm.pps.gui.data.ColorDeserializer
+import com.agh.abm.pps.gui.data.ColorSerializer
 import com.agh.abm.pps.gui.data.SpeciesConfData
 import com.agh.abm.pps.strategy.die_strategy.DieStrategyType
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
@@ -12,15 +14,20 @@ import com.agh.abm.pps.util.default_species.DefaultSpecies
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import javafx.collections.ObservableList
+import javafx.scene.Node
 import javafx.scene.control.*
+import javafx.scene.layout.BorderPane
+import javafx.scene.paint.Color
+import javafx.stage.FileChooser
 import tornadofx.*
 import java.io.File
 import java.io.FileWriter
 
 class ConfigView : View() {
 
-    private val filePath = "src/main/resources/models/species"
-    private val boardPath = "src/main/resources/models/board"
+    private val filePath = "src/main/resources/models/auto_species.conf"
+    private val boardPath = "src/main/resources/models/auto_board.conf"
+    private val rawPath = "src/main/resources/models"
     var species: ObservableList<SpeciesConfData>
 
     var speciesTypes: ObservableList<String>
@@ -28,24 +35,13 @@ class ConfigView : View() {
     private val controller: SimulationController by inject()
 
     init {
-        val file = File(filePath)
-        species = if (file.exists()) {
-            val mapper = ObjectMapper()
-            mapper.registerModule(KotlinModule())
-            (mapper.readValue(
-                file,
-                mapper.typeFactory.constructCollectionType(List::class.java, SpeciesConfData::class.java)
-            ) as MutableList<SpeciesConfData>).observable()
-        } else {
-            mutableListOf(
-                SpeciesConfData.fromParameters(DefaultSpecies.grassParameters)
-                , SpeciesConfData.fromParameters(DefaultSpecies.bushParameters)
-                , SpeciesConfData.fromParameters(DefaultSpecies.preyParameters)
-                , SpeciesConfData.fromParameters(DefaultSpecies.predatorParameters)
-            ).observable()
+        species = try {
+            loadSpecies(filePath)
+        } catch (e: Exception){
+            defaultSpecies()
         }
-
         speciesTypes = species.map { it.type }.observable()
+
 
         val bFile = File(boardPath)
         if (bFile.exists()) {
@@ -55,6 +51,7 @@ class ConfigView : View() {
             controller.board.chunkSize = nBoard.chunkSize
             controller.board.width = nBoard.width
             controller.board.height = nBoard.height
+            controller.board.autosave = nBoard.autosave
             controller.reload()
         }
     }
@@ -94,180 +91,239 @@ class ConfigView : View() {
     private var boardWidthField: TextField by singleAssign()
     private var boardHeightField: TextField by singleAssign()
     private var chunkSizeField: TextField by singleAssign()
-    private var saveToFileField: CheckBox by singleAssign()
+    private var saveToFileField: CheckMenuItem by singleAssign()
 
     private var colorPickerField: ColorPicker by singleAssign()
 
     private var typeField: TextField by singleAssign()
     private var newItemTypeField: TextField by singleAssign()
 
+    private var bp: BorderPane by singleAssign()
+
     private val vHeight: Double = 700.0
+    private var bpChildrenTml: List<Node>?= null
+    override val root = vbox {
+        menubar {
+            menu("File"){
 
-    override val root = borderpane {
-        prefHeight = vHeight
-        center {
-
-            vbox {
-
-                tableViewField = tableview(species) {
-                    prefHeight = vHeight - 20
-                    column("Type", SpeciesConfData::type) {
-                        prefWidth = 250.0
-                    }
-                    selectionModel.selectedItemProperty().onChange {
-                        editSpecies(it!!)
-                    }
-                    selectionModel.selectedIndexProperty().onChange { fire(REFRESH_SELECTED_TYPE(it)) }
-                }
-                hbox {
-                    newItemTypeField = textfield { }
-                    spacing = 5.0
-                    button("Add") {
-                        action {
-                            addNewSpecies()
+                item("Load"){
+                    action {
+                        val extFilter = FileChooser.ExtensionFilter("Species files (*.conf)", "*.conf")
+                        val dir = chooseFile("Select file", arrayOf(extFilter), FileChooserMode.Single){
+                            initialDirectory = File(rawPath)
+                        }
+                        dir.firstOrNull()?.let {
+                            species.clear()
+                            speciesTypes.clear()
+                            species.addAll(loadSpecies(it))
+                            speciesTypes.addAll(species.map{it.type})
+                            tableViewField.selectionModel.selectFirst()
                         }
                     }
-                    button("Remove") {
-                        action {
-                            removeSelectedSpecies()
+                }
+                item("Save as"){
+                    action {
+                        val extFilter = FileChooser.ExtensionFilter("Species files (*.conf)", "*.conf")
+                        val dir = chooseFile("Select file", arrayOf(extFilter), FileChooserMode.Save){
+                            initialDirectory = File(rawPath)
+                        }
+                        dir.firstOrNull()?.let{
+                            saveSpecies(it)
+                        }
+                    }
+                }
+                saveToFileField = checkmenuitem("Autosave"){
+                    isSelected = controller.board.autosave
+                    action {
+                        controller.board.autosave = isSelected
+                    }
+                }
+                separator()
+                item("Clear"){
+                    action{
+                        clearAutoFiles()
+                    }
+                }
+            }
+//            menu("Edit"){
+//                item("Species").action {
+//                    if(bpChildrenTml != null){
+//                        bp.children.clear()
+//                        bp.children.addAll(bpChildrenTml!!)
+//                    }
+//                }
+//
+//                item("Board").action {
+//                    print("JD")
+//                    bpChildrenTml = bp.children.toList()
+//                    bp.children.clear()
+//                }
+//            }
+        }
+        bp = borderpane {
+            prefHeight = vHeight
+            center {
+
+                vbox {
+
+                    tableViewField = tableview(species) {
+                        prefHeight = vHeight - 20
+                        column("Type", SpeciesConfData::type) {
+                            prefWidth = 250.0
+                        }
+                        selectionModel.selectedItemProperty().onChange {
+                            if(it != null)
+                                editSpecies(it)
+                        }
+                        selectionModel.selectedIndexProperty().onChange { fire(REFRESH_SELECTED_TYPE(it)) }
+                    }
+                    hbox {
+                        newItemTypeField = textfield { }
+                        spacing = 5.0
+                        button("Add") {
+                            action {
+                                addNewSpecies()
+                            }
+                        }
+                        button("Remove") {
+                            action {
+                                removeSelectedSpecies()
+                            }
                         }
                     }
                 }
             }
-        }
-        right {
-            scrollpane {
-                pannableProperty().set(true)
-                fitToWidthProperty().set(true)
-                paddingAll = 10.0
-                form {
-                    fieldset("Strategy:") {
-                        field("Movement strategy") {
-                            movementStrategyCombo = combobox(values = MovementStrategyType.values().toList()) { }
-                        }
-                        field("Energy transfer strategy") {
-                            energyTransferStrategyCombo =
-                                combobox(values = EnergyTransferStrategyType.values().toList()) { }
-                        }
-                        field("Reproduce strategy") {
-                            reproduceStrategyCombo = combobox(values = ReproduceStrategyType.values().toList()) { }
-                        }
-                        field("Die strategy") {
-                            dieStrategyCombo = combobox(values = DieStrategyType.values().toList()) {}
-                        }
-                    }
-                    fieldset("Energy:") {
-                        field("Min energy [energy]") {
-                            minEnergyField = textfield {}
-                        }
-                        field("Max energy [energy]") {
-                            maxEnergyField = textfield { }
-                        }
-                        field("Energy [energy]") {
-                            energyField = textfield { }
-                        }
-                    }
-                    fieldset("Consume:") {
-
-
-                        field("Max consumption [energy]") {
-                            maxConsumptionField = textfield { }
-                        }
-                        field("Energy consume [energy]") {
-                            energyConsumeField = textfield { }
-                        }
-                        field("Consume range [400 km]") {
-                            consumeRangeField = textfield { }
-                        }
-                        field("Can consume") {
-                            maxHeight = 400.0
-                            canConsumeListView = listview(speciesTypes) {
-                                //                                selectionModel
-                                selectionModel.selectionMode = SelectionMode.MULTIPLE
-
-                                prefWidth = 100.0
-                                prefHeight = 300.0
+            right {
+                scrollpane {
+                    pannableProperty().set(true)
+                    fitToWidthProperty().set(true)
+                    paddingAll = 10.0
+                    form {
+                        fieldset("Strategy:") {
+                            field("Movement strategy") {
+                                movementStrategyCombo = combobox(values = MovementStrategyType.values().toList()) { }
                             }
-
-                            canConsumeSaveBtn = button("Save") {
+                            field("Energy transfer strategy") {
+                                energyTransferStrategyCombo =
+                                    combobox(values = EnergyTransferStrategyType.values().toList()) { }
                             }
-
-                        }
-                    }
-                    fieldset("Move:") {
-                        field("Move cost [energy]") {
-                            moveCostField = textfield { }
-                        }
-                        field("Move max distance [400 km]") {
-                            moveMaxDistanceField = textfield { }
-                        }
-                    }
-                    fieldset("Reproduce:") {
-                        field("Reproduce threshold [energy]") {
-                            reproduceThresholdField = textfield { }
-                        }
-                        field("Reproduce cost [energy]") {
-                            reproduceCostField = textfield { }
-                        }
-                        field("Reproduce probability [100 %]") {
-                            reproduceProbabilityField = textfield { }
-                        }
-                        field("Max number of offspring") {
-                            maxNumOfOffField = textfield { }
-                        }
-                        field("Reproduce range [400 km]") {
-                            reproduceRangeField = textfield { }
-                        }
-                        field("Reproduce multiply energy") {
-                            reproduceMultiplyEnergyField = textfield { }
-                        }
-                        field("Reproduce add species [energy]") {
-                            reproduceAddEnergyField = textfield { }
-                        }
-                        field("Reproduce density limit") {
-                            reproduceDensityLimitField = textfield { }
-                        }
-                        field("Max number of species") {
-                            reproduceMaxNumberOfSpeciesField = textfield { }
-                        }
-                    }
-                    fieldset("Others") {
-
-                        field("Type") {
-                            typeField = textfield {
-                                textProperty().addListener { _, _, _ -> tableViewField.refresh() }
+                            field("Reproduce strategy") {
+                                reproduceStrategyCombo = combobox(values = ReproduceStrategyType.values().toList()) { }
+                            }
+                            field("Die strategy") {
+                                dieStrategyCombo = combobox(values = DieStrategyType.values().toList()) {}
                             }
                         }
-
-                        field("Size") {
-                            sizeField = textfield { }
-                        }
-                        field("Color") {
-                            colorPickerField = colorpicker { }
-                        }
-                    }
-                    fieldset("Area") {
-                        field("Area width [400 km]") {
-                            boardWidthField = textfield { text = controller.board.width.toString() }
-                        }
-                        field("Area height [400 km]") {
-                            boardHeightField = textfield { text = controller.board.height.toString() }
-                        }
-                        field("Chunk size [400 km]") {
-                            chunkSizeField = textfield { text = controller.board.chunkSize.toString() }
-                        }
-                        button("Reload area") {
-                            action {
-                                val b = controller.board
-                                b.width = boardWidthField.text.toDouble()
-                                b.height = boardHeightField.text.toDouble()
-                                b.chunkSize = chunkSizeField.text.toDouble()
-                                controller.reload()
+                        fieldset("Energy:") {
+                            field("Min energy [energy]") {
+                                minEnergyField = textfield {}
+                            }
+                            field("Max energy [energy]") {
+                                maxEnergyField = textfield { }
+                            }
+                            field("Energy [energy]") {
+                                energyField = textfield { }
                             }
                         }
-                    }
-                    fieldset("Save") {
-                        saveToFileField = checkbox("Autosave") { selectedProperty().value = false }
+                        fieldset("Consume:") {
+
+
+                            field("Max consumption [energy]") {
+                                maxConsumptionField = textfield { }
+                            }
+                            field("Energy consume [energy]") {
+                                energyConsumeField = textfield { }
+                            }
+                            field("Consume range [400 km]") {
+                                consumeRangeField = textfield { }
+                            }
+                            field("Can consume") {
+                                maxHeight = 400.0
+                                canConsumeListView = listview(speciesTypes) {
+                                    //                                selectionModel
+                                    selectionModel.selectionMode = SelectionMode.MULTIPLE
+
+                                    prefWidth = 100.0
+                                    prefHeight = 300.0
+                                }
+
+                                canConsumeSaveBtn = button("Save") {
+                                }
+
+                            }
+                        }
+                        fieldset("Move:") {
+                            field("Move cost [energy]") {
+                                moveCostField = textfield { }
+                            }
+                            field("Move max distance [400 km]") {
+                                moveMaxDistanceField = textfield { }
+                            }
+                        }
+                        fieldset("Reproduce:") {
+                            field("Reproduce threshold [energy]") {
+                                reproduceThresholdField = textfield { }
+                            }
+                            field("Reproduce cost [energy]") {
+                                reproduceCostField = textfield { }
+                            }
+                            field("Reproduce probability [100 %]") {
+                                reproduceProbabilityField = textfield { }
+                            }
+                            field("Max number of offspring") {
+                                maxNumOfOffField = textfield { }
+                            }
+                            field("Reproduce range [400 km]") {
+                                reproduceRangeField = textfield { }
+                            }
+                            field("Reproduce multiply energy") {
+                                reproduceMultiplyEnergyField = textfield { }
+                            }
+                            field("Reproduce add species [energy]") {
+                                reproduceAddEnergyField = textfield { }
+                            }
+                            field("Reproduce density limit") {
+                                reproduceDensityLimitField = textfield { }
+                            }
+                            field("Max number of species") {
+                                reproduceMaxNumberOfSpeciesField = textfield { }
+                            }
+                        }
+                        fieldset("Others") {
+
+                            field("Type") {
+                                typeField = textfield {
+                                    textProperty().addListener { _, _, _ -> tableViewField.refresh() }
+                                }
+                            }
+
+                            field("Size") {
+                                sizeField = textfield { }
+                            }
+                            field("Color") {
+                                colorPickerField = colorpicker { }
+                            }
+                        }
+                        fieldset("Area") {
+                            field("Area width [400 km]") {
+                                boardWidthField = textfield { text = controller.board.width.toString() }
+                            }
+                            field("Area height [400 km]") {
+                                boardHeightField = textfield { text = controller.board.height.toString() }
+                            }
+                            field("Chunk size [400 km]") {
+                                chunkSizeField = textfield { text = controller.board.chunkSize.toString() }
+                            }
+                            button("Reload area") {
+                                action {
+                                    val b = controller.board
+                                    b.width = boardWidthField.text.toDouble()
+                                    b.height = boardHeightField.text.toDouble()
+                                    b.chunkSize = chunkSizeField.text.toDouble()
+                                    controller.reload()
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -357,13 +413,55 @@ class ConfigView : View() {
 
     override fun onUndock() {
         if (!saveToFileField.isSelected) return
-
-        val fw = FileWriter(File(filePath))
-        fw.write(ObjectMapper().writeValueAsString(species.toList()))
-        fw.close()
+        saveSpecies(filePath)
 
         val fwBoard = FileWriter(File(boardPath))
         fwBoard.write(ObjectMapper().writeValueAsString(controller.board))
         fwBoard.close()
     }
+
+
+    private fun saveSpecies(path: String){
+        return saveSpecies(File(path))
+    }
+
+    private fun saveSpecies(file: File){
+        val fw = FileWriter(file)
+        fw.write(ObjectMapper().writeValueAsString(species.toList()))
+        fw.close()
+    }
+
+    private fun loadSpecies(path: String): ObservableList<SpeciesConfData>{
+        return loadSpecies(File(path))
+    }
+
+    private fun loadSpecies(file: File): ObservableList<SpeciesConfData>{
+        return if (file.exists()) {
+            val mapper = ObjectMapper()
+            val module = KotlinModule()
+            module.addDeserializer(Color::class.java, ColorDeserializer())
+            mapper.registerModule(module)
+            (mapper.readValue(
+                file,
+                mapper.typeFactory.constructCollectionType(List::class.java, SpeciesConfData::class.java)
+            ) as MutableList<SpeciesConfData>).observable()
+        } else {
+            throw Exception("Given file don't exist")
+        }
+    }
+
+    private fun clearAutoFiles(){
+        File(filePath).delete()
+        File(boardPath).delete()
+    }
+
+    private fun defaultSpecies(): ObservableList<SpeciesConfData>{
+        return mutableListOf(
+            SpeciesConfData.fromParameters(DefaultSpecies.grassParameters)
+            , SpeciesConfData.fromParameters(DefaultSpecies.bushParameters)
+            , SpeciesConfData.fromParameters(DefaultSpecies.preyParameters)
+            , SpeciesConfData.fromParameters(DefaultSpecies.predatorParameters)
+        ).observable()
+    }
+
 }

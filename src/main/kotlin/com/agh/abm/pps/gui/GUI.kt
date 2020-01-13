@@ -13,7 +13,9 @@ data class BoardState(
     var chunkSize: Double,
     @JsonIgnore
     var agents: List<Species> = listOf()
-)
+){
+    var autosave: Boolean = false
+}
 
 object EXIT : FXEvent()
 class START(val delay: Long) : FXEvent()

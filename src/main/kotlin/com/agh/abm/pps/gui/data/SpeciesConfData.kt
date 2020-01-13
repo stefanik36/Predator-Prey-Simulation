@@ -11,6 +11,7 @@ import com.agh.abm.pps.util.geometric.Vector
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import javafx.beans.property.*
 import javafx.scene.paint.Color
 import tornadofx.getValue
@@ -154,7 +155,6 @@ class SpeciesConfData(
     var size: Double by sizeProperty
 
     fun createSpecies(area: Area, pos: Vector): Species {
-//        val color = area.speciesTypes[type]?.color ?: throw UnsupportedOperationException() //TODO parametrize in gui
 
         return Species(
             speciesName = type,
