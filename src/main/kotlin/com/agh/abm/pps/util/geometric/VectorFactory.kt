@@ -1,4 +1,4 @@
-package com.agh.abm.pps.util.factory
+package com.agh.abm.pps.util.geometric
 
 import com.agh.abm.pps.util.geometric.Vector
 import kotlin.random.Random

@@ -4,7 +4,7 @@ import com.agh.abm.pps.model.board.Area
 import com.agh.abm.pps.model.parameter.MovementParameter
 import com.agh.abm.pps.model.parameter.ReproduceParameter
 import com.agh.abm.pps.model.species.Species
-import com.agh.abm.pps.util.factory.VectorFactory
+import com.agh.abm.pps.util.geometric.VectorFactory
 import com.agh.abm.pps.util.geometric.PositionRestriction
 import com.agh.abm.pps.util.geometric.Vector
 import kotlin.random.Random

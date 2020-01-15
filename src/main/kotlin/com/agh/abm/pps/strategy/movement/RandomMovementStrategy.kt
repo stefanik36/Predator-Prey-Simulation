@@ -2,7 +2,7 @@ package com.agh.abm.pps.strategy.movement
 
 import com.agh.abm.pps.model.board.Area
 import com.agh.abm.pps.model.parameter.MovementParameter
-import com.agh.abm.pps.util.factory.VectorFactory
+import com.agh.abm.pps.util.geometric.VectorFactory
 import com.agh.abm.pps.util.geometric.Vector
 import kotlin.random.Random
 

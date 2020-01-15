@@ -4,7 +4,6 @@ import com.agh.abm.pps.SimulationController
 import com.agh.abm.pps.gui.BoardState
 import com.agh.abm.pps.gui.REFRESH_SELECTED_TYPE
 import com.agh.abm.pps.gui.data.ColorDeserializer
-import com.agh.abm.pps.gui.data.ColorSerializer
 import com.agh.abm.pps.gui.data.SpeciesConfData
 import com.agh.abm.pps.strategy.die_strategy.DieStrategyType
 import com.agh.abm.pps.strategy.energy_transfer.EnergyTransferStrategyType
@@ -246,7 +245,7 @@ class ConfigView : View() {
                             field("Max consumption [energy]") {
                                 maxConsumptionField = textfield { }
                             }
-                            field("Energy consume [energy]") {
+                            field("Energy consumption at rest [energy]") {
                                 energyConsumeField = textfield { }
                             }
                             field("Consume range [400 km]") {
