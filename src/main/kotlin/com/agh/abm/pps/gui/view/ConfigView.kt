@@ -14,8 +14,10 @@ import com.agh.abm.pps.util.default_species.DefaultSpecies
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import javafx.collections.ObservableList
+import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.*
+import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.BorderPane
 import javafx.scene.paint.Color
 import javafx.stage.FileChooser
@@ -28,16 +30,20 @@ class ConfigView : View() {
     private val filePath = "src/main/resources/models/auto_species.conf"
     private val boardPath = "src/main/resources/models/auto_board.conf"
     private val rawPath = "src/main/resources/models"
+    private var openedPath = ""
     var species: ObservableList<SpeciesConfData>
 
     var speciesTypes: ObservableList<String>
 
     private val controller: SimulationController by inject()
 
+    private var configP: Label by singleAssign()
+
     init {
         species = try {
             loadSpecies(filePath)
-        } catch (e: Exception){
+
+        } catch (e: Exception) {
             defaultSpecies()
         }
         speciesTypes = species.map { it.type }.observable()
@@ -98,67 +104,76 @@ class ConfigView : View() {
     private var typeField: TextField by singleAssign()
     private var newItemTypeField: TextField by singleAssign()
 
+
     private var bp: BorderPane by singleAssign()
 
     private val vHeight: Double = 700.0
-    private var bpChildrenTml: List<Node>?= null
+    private var bpChildrenTml: List<Node>? = null
     override val root = vbox {
-        menubar {
-            menu("File"){
+        borderpane {
+            styleClass.add("menu-bar")
+            paddingAll = 0.0
+            left = menubar {
+                menu("File") {
 
-                item("Load"){
-                    action {
-                        val extFilter = FileChooser.ExtensionFilter("Species files (*.conf)", "*.conf")
-                        val dir = chooseFile("Select file", arrayOf(extFilter), FileChooserMode.Single){
-                            initialDirectory = File(rawPath)
-                        }
-                        dir.firstOrNull()?.let {
-                            species.clear()
-                            speciesTypes.clear()
-                            species.addAll(loadSpecies(it))
-                            speciesTypes.addAll(species.map{it.type})
-                            tableViewField.selectionModel.selectFirst()
-                        }
-                    }
-                }
-                item("Save as"){
-                    action {
-                        val extFilter = FileChooser.ExtensionFilter("Species files (*.conf)", "*.conf")
-                        val dir = chooseFile("Select file", arrayOf(extFilter), FileChooserMode.Save){
-                            initialDirectory = File(rawPath)
-                        }
-                        dir.firstOrNull()?.let{
-                            saveSpecies(it)
+                    item("Load") {
+                        action {
+                            val extFilter = FileChooser.ExtensionFilter("Species files (*.conf)", "*.conf")
+                            val dir = chooseFile("Select file", arrayOf(extFilter), FileChooserMode.Single) {
+                                initialDirectory = File(rawPath)
+                            }
+                            dir.firstOrNull()?.let {
+                                species.clear()
+                                speciesTypes.clear()
+                                species.addAll(loadSpecies(it))
+                                speciesTypes.addAll(species.map { it.type })
+                                tableViewField.selectionModel.selectFirst()
+                            }
                         }
                     }
-                }
-                saveToFileField = checkmenuitem("Autosave"){
-                    isSelected = controller.board.autosave
-                    action {
-                        controller.board.autosave = isSelected
+                    item("Save"){
+                        action{
+                            val file = File(openedPath)
+                            if(file.exists()){
+                                saveSpecies(openedPath)
+                            }
+                            else{
+                                saveDefaultConfigs()
+                            }
+                            alert(Alert.AlertType.INFORMATION, "Success", "Config was saved!")
+                        }
                     }
-                }
-                separator()
-                item("Clear"){
-                    action{
-                        clearAutoFiles()
+                    item("Save as") {
+                        action {
+                            val extFilter = FileChooser.ExtensionFilter("Species files (*.conf)", "*.conf")
+                            val dir = chooseFile("Select file", arrayOf(extFilter), FileChooserMode.Save) {
+                                initialDirectory = File(rawPath)
+                            }
+                            dir.firstOrNull()?.let {
+                                saveSpecies(it)
+                            }
+                        }
+                    }
+                    saveToFileField = checkmenuitem("Autosave") {
+                        isSelected = controller.board.autosave
+                        action {
+                            controller.board.autosave = isSelected
+                        }
+                    }
+                    separator()
+                    item("Clear") {
+                        action {
+                            clearAutoFiles()
+                        }
                     }
                 }
             }
-//            menu("Edit"){
-//                item("Species").action {
-//                    if(bpChildrenTml != null){
-//                        bp.children.clear()
-//                        bp.children.addAll(bpChildrenTml!!)
-//                    }
-//                }
-//
-//                item("Board").action {
-//                    print("JD")
-//                    bpChildrenTml = bp.children.toList()
-//                    bp.children.clear()
-//                }
-//            }
+            configP = label("default") {
+                if(openedPath != ""){
+                    text = "autosave"
+                }
+            }
+            center = configP
         }
         bp = borderpane {
             prefHeight = vHeight
@@ -172,7 +187,7 @@ class ConfigView : View() {
                             prefWidth = 250.0
                         }
                         selectionModel.selectedItemProperty().onChange {
-                            if(it != null)
+                            if (it != null)
                                 editSpecies(it)
                         }
                         selectionModel.selectedIndexProperty().onChange { fire(REFRESH_SELECTED_TYPE(it)) }
@@ -293,7 +308,21 @@ class ConfigView : View() {
 
                             field("Type") {
                                 typeField = textfield {
-                                    textProperty().addListener { _, _, _ -> tableViewField.refresh() }
+                                    textProperty().addListener { _, old, new ->
+                                        if (new !in speciesTypes) {
+                                            tableViewField.refresh()
+                                            val index = speciesTypes.indexOf(old)
+                                            if (index != -1) {
+                                                speciesTypes[index] = new
+                                                for (s in species) {
+                                                    val i = s.canConsume.indexOf(old)
+                                                    if (i != -1) {
+                                                        s.canConsume[i] = new
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
 
@@ -331,6 +360,7 @@ class ConfigView : View() {
     }
 
     init {
+        canConsumeListView.items = speciesTypes
         tableViewField.selectionModel.selectFirst()
     }
 
@@ -413,6 +443,10 @@ class ConfigView : View() {
 
     override fun onUndock() {
         if (!saveToFileField.isSelected) return
+        saveDefaultConfigs()
+    }
+
+    fun saveDefaultConfigs(){
         saveSpecies(filePath)
 
         val fwBoard = FileWriter(File(boardPath))
@@ -421,22 +455,25 @@ class ConfigView : View() {
     }
 
 
-    private fun saveSpecies(path: String){
+
+    private fun saveSpecies(path: String) {
         return saveSpecies(File(path))
     }
 
-    private fun saveSpecies(file: File){
+    private fun saveSpecies(file: File) {
         val fw = FileWriter(file)
         fw.write(ObjectMapper().writeValueAsString(species.toList()))
         fw.close()
     }
 
-    private fun loadSpecies(path: String): ObservableList<SpeciesConfData>{
+    private fun loadSpecies(path: String): ObservableList<SpeciesConfData> {
         return loadSpecies(File(path))
     }
 
-    private fun loadSpecies(file: File): ObservableList<SpeciesConfData>{
+    private fun loadSpecies(file: File): ObservableList<SpeciesConfData> {
         return if (file.exists()) {
+            openedPath = file.path
+            configP.text = file.name
             val mapper = ObjectMapper()
             val module = KotlinModule()
             module.addDeserializer(Color::class.java, ColorDeserializer())
@@ -450,12 +487,12 @@ class ConfigView : View() {
         }
     }
 
-    private fun clearAutoFiles(){
+    private fun clearAutoFiles() {
         File(filePath).delete()
         File(boardPath).delete()
     }
 
-    private fun defaultSpecies(): ObservableList<SpeciesConfData>{
+    private fun defaultSpecies(): ObservableList<SpeciesConfData> {
         return mutableListOf(
             SpeciesConfData.fromParameters(DefaultSpecies.grassParameters)
             , SpeciesConfData.fromParameters(DefaultSpecies.bushParameters)

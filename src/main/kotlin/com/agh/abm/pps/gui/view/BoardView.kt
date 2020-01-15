@@ -134,16 +134,16 @@ class BoardView : View() {
                 val laterDraw = mutableListOf<Species>()
                 controller.board.agents.forEach { guy ->
                     when (guy.speciesName) {
-                        "GRASS" -> draw(guy)
+//                        "GRASS" -> draw(guy)
                         else -> laterDraw.add(guy)
                     }
                 }
                 laterDraw.forEach { draw(it) }
             }
         }
-
-
+// AND WHAT THIS LINE IS DOING? XD
         primaryStage.widthProperty().addListener { obs, oldVal, newVal -> pane.prefWidth = newVal.toDouble() }
+
         delaySlider.valueProperty()
             .addListener(ChangeListener() { _: ObservableValue<out Number>?, _: Number, number1: Number ->
                 fire(NOTIFY_DELAY_CHANGE(number1.toLong()))
@@ -155,10 +155,11 @@ class BoardView : View() {
             when (e.button) {
                 MouseButton.PRIMARY -> {
                     val realXY = canv.getRealXY(e)
+                    val type = configView.speciesTypes[typeSelect.selectionModel.selectedIndex]
                     controller.addGuy(
                         realXY.first,
                         realXY.second,
-                        configView.species.first { it.type == typeSelect.selectionModel.selectedItem },
+                        configView.species.first { it.type == type},
                         spawnNumSlider.value,
                         spawnAreaSizeSlider.value
                     )
