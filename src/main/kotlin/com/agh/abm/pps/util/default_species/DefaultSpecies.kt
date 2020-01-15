@@ -7,7 +7,7 @@ import com.agh.abm.pps.strategy.energy_transfer.NoEnergyTransferStrategy
 import com.agh.abm.pps.strategy.movement.NoMovementStrategy
 import com.agh.abm.pps.strategy.movement.RandomMovementStrategy
 import com.agh.abm.pps.strategy.reproduce.ParametrizedProbabilityReproduceStrategy
-import com.agh.abm.pps.util.factory.VectorFactory
+import com.agh.abm.pps.util.geometric.VectorFactory
 import javafx.scene.paint.Color
 
 
