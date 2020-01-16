@@ -130,13 +130,12 @@ class ConfigView : View() {
                             }
                         }
                     }
-                    item("Save"){
-                        action{
+                    item("Save") {
+                        action {
                             val file = File(openedPath)
-                            if(file.exists()){
+                            if (file.exists()) {
                                 saveSpecies(openedPath)
-                            }
-                            else{
+                            } else {
                                 saveDefaultConfigs()
                             }
                             alert(Alert.AlertType.INFORMATION, "Success", "Config was saved!")
@@ -168,7 +167,7 @@ class ConfigView : View() {
                 }
             }
             configP = label("default") {
-                if(openedPath != ""){
+                if (openedPath != "") {
                     text = "autosave"
                 }
             }
@@ -445,14 +444,13 @@ class ConfigView : View() {
         saveDefaultConfigs()
     }
 
-    fun saveDefaultConfigs(){
+    fun saveDefaultConfigs() {
         saveSpecies(filePath)
 
         val fwBoard = FileWriter(File(boardPath))
         fwBoard.write(ObjectMapper().writeValueAsString(controller.board))
         fwBoard.close()
     }
-
 
 
     private fun saveSpecies(path: String) {
@@ -472,7 +470,10 @@ class ConfigView : View() {
     private fun loadSpecies(file: File): ObservableList<SpeciesConfData> {
         return if (file.exists()) {
             openedPath = file.path
-            configP.text = file.name
+            try {
+                configP.text = file.name
+            } catch (e: UninitializedPropertyAccessException) {
+            }
             val mapper = ObjectMapper()
             val module = KotlinModule()
             module.addDeserializer(Color::class.java, ColorDeserializer())
