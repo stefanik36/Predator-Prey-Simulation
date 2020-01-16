@@ -13,10 +13,8 @@ import com.agh.abm.pps.util.default_species.DefaultSpecies
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import javafx.collections.ObservableList
-import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.*
-import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.BorderPane
 import javafx.scene.paint.Color
 import javafx.stage.FileChooser
@@ -247,7 +245,7 @@ class ConfigView : View() {
                             field("Energy consumption at rest [energy]") {
                                 energyConsumeField = textfield { }
                             }
-                            field("Consume range [400 km]") {
+                            field("Consume range") {
                                 consumeRangeField = textfield { }
                             }
                             field("Can consume") {
@@ -269,7 +267,7 @@ class ConfigView : View() {
                             field("Move cost [energy]") {
                                 moveCostField = textfield { }
                             }
-                            field("Move max distance [400 km]") {
+                            field("Move max distance") {
                                 moveMaxDistanceField = textfield { }
                             }
                         }
@@ -280,13 +278,13 @@ class ConfigView : View() {
                             field("Reproduce cost [energy]") {
                                 reproduceCostField = textfield { }
                             }
-                            field("Reproduce probability [100 %]") {
+                            field("Reproduce probability") {
                                 reproduceProbabilityField = textfield { }
                             }
                             field("Max number of offspring") {
                                 maxNumOfOffField = textfield { }
                             }
-                            field("Reproduce range [400 km]") {
+                            field("Reproduce range") {
                                 reproduceRangeField = textfield { }
                             }
                             field("Reproduce multiply energy") {
@@ -332,13 +330,13 @@ class ConfigView : View() {
                             }
                         }
                         fieldset("Area") {
-                            field("Area width [400 km]") {
+                            field("Area width") {
                                 boardWidthField = textfield { text = controller.board.width.toString() }
                             }
-                            field("Area height [400 km]") {
+                            field("Area height") {
                                 boardHeightField = textfield { text = controller.board.height.toString() }
                             }
-                            field("Chunk size [400 km]") {
+                            field("Chunk size") {
                                 chunkSizeField = textfield { text = controller.board.chunkSize.toString() }
                             }
                             button("Reload area") {
