@@ -433,8 +433,10 @@ class ConfigView : View() {
     }
 
     private fun removeSelectedSpecies() {
-        speciesTypes.remove(tableViewField.selectionModel.selectedItem.type)
-        species.remove(tableViewField.selectionModel.selectedItem)
+        if (species.size > 0 && speciesTypes.size > 0) {
+            speciesTypes.remove(tableViewField.selectionModel.selectedItem.type)
+            species.remove(tableViewField.selectionModel.selectedItem)
+        }
     }
 
     override fun onUndock() {

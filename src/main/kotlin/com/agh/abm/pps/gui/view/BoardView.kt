@@ -155,14 +155,16 @@ class BoardView : View() {
             when (e.button) {
                 MouseButton.PRIMARY -> {
                     val realXY = canv.getRealXY(e)
-                    val type = configView.speciesTypes[typeSelect.selectionModel.selectedIndex]
-                    controller.addGuy(
-                        realXY.first,
-                        realXY.second,
-                        configView.species.first { it.type == type},
-                        spawnNumSlider.value,
-                        spawnAreaSizeSlider.value
-                    )
+                    if(typeSelect.selectionModel.selectedIndex >= 0) {
+                        val type = configView.speciesTypes[typeSelect.selectionModel.selectedIndex]
+                        controller.addGuy(
+                            realXY.first,
+                            realXY.second,
+                            configView.species.first { it.type == type },
+                            spawnNumSlider.value,
+                            spawnAreaSizeSlider.value
+                        )
+                    }
                 }
                 MouseButton.MIDDLE ->
                     if (typeSelect.selectionModel.selectedIndex < configView.species.size - 1) {
