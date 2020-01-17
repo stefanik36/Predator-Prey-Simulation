@@ -49,6 +49,7 @@ class SimulationController : Controller() {
     init {
         subscribe<EXIT> { isAlive = false }
         subscribe<START> { t ->
+            if(isAlive) return@subscribe
             delay = t.delay
             isAlive = true
             runAsync(daemon = false) {
